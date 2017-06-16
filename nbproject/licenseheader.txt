@@ -1,0 +1,9 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}Created by Vojta3310
+${licensePrefix}If you want to use mi code, keep here this header, pleas!
+${licensePrefix}Thanks Vojta3310.
+<#if licenseLast??>
+${licenseLast}
+</#if>
