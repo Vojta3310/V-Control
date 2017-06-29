@@ -7,10 +7,9 @@ package Moduls;
 
 import VControl.ICommand;
 import VControl.UI.SidebarModule;
-import javax.swing.Icon;
-import javax.swing.JPanel;
 import java.util.Properties;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 /**
  *
@@ -33,7 +32,7 @@ public interface IModul {
   public JPanel getGrafics();
 
   public void setButton(SidebarModule sidebatButton);
-  
+
   public SidebarModule getSidebarButton();
 
   public void DefaultSettings(Properties p);

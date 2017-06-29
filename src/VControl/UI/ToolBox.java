@@ -5,13 +5,9 @@
  */
 package VControl.UI;
 
-import Moduls.IModul;
 import VControl.Settings.AppSettings;
-import VControl.Settings.Settings;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Graphics;
 import javax.swing.JPanel;
 
 /**

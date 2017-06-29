@@ -9,8 +9,10 @@ import VControl.ICommand;
 import Moduls.IModul;
 import Moduls.Modul;
 import VControl.UI.ToolButton;
-import com.sun.org.apache.xpath.internal.functions.Function;
+import java.awt.Image;
+import java.io.FileInputStream;
 import java.util.Properties;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.ImageIcon;
 
 /**
@@ -18,8 +20,9 @@ import javax.swing.ImageIcon;
  * @author vojta3310
  */
 public class MyPlayerMusic extends Modul implements IModul {
-
-  public MyPlayerMusic(VControl.Commander Commander) {
+  private final MusicOrganiser Player;
+  
+  public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException {
     super(Commander);
     ToolButton b = new ToolButton(this.GetIcon());
     b.addActionListener(new java.awt.event.ActionListener() {
@@ -29,20 +32,17 @@ public class MyPlayerMusic extends Modul implements IModul {
       }
     });
     super.getToolBar().addTool(b);
+    Player=new MusicOrganiser();
+    super.setMyGrafics(Player.getGui());
   }
 
   @Override
-  public ImageIcon GetIcon() {
-    return new javax.swing.ImageIcon(getClass().getResource("/Moduls/MyPlayerMusic/Icons/modul.png"));
+  public final ImageIcon GetIcon() {
+    return new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/modul.png");
   }
 
   public void onClick() {
     System.out.println("Clicked me");
-  }
-
-  @Override
-  public boolean doCommand(ICommand co) {
-    return false;
   }
 
   @Override
@@ -62,7 +62,7 @@ public class MyPlayerMusic extends Modul implements IModul {
 
   @Override
   public void getDefaultSettings(Properties p) {
-    ;
+    p.setProperty("Modul_" + this.GetModulName() + "_MusicDir", "/home/vojta3310/Hudba/MP/");
   }
 
 }

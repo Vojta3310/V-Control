@@ -7,6 +7,7 @@ package VControl;
 
 import Moduls.AnotherModule;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
+import javax.sound.sampled.LineUnavailableException;
 
 /**
  *
@@ -16,8 +17,9 @@ public class VControl {
 
   /**
    * @param args the command line arguments
+   * @throws javax.sound.sampled.LineUnavailableException
    */
-  public static void main(String[] args) {
+  public static void main(String[] args) throws LineUnavailableException {
     Commander Commander = new Commander();
     MyPlayerMusic a = new MyPlayerMusic(Commander);
     Commander.addIModule(a);

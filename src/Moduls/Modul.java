@@ -14,11 +14,9 @@ import VControl.UI.ToolBox;
 import VControl.UI.components.MyScrollPanelLayout;
 import VControl.UI.components.MyScrollbarUI;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Properties;
 import static javax.swing.BorderFactory.createEmptyBorder;
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
@@ -32,7 +30,7 @@ public abstract class Modul implements IModul {
 
   private final Commander Commander;
   private final JPanel FullGrafics;
-  private final JPanel MyGrafics;
+  private JPanel MyGrafics;
   private final ToolBox ToolBar;
   private SidebarModule sidebarButton;
 
@@ -76,7 +74,7 @@ public abstract class Modul implements IModul {
 
   @Override
   public ImageIcon GetIcon() {
-    return new javax.swing.ImageIcon(getClass().getResource("/VControl/console.png"));
+    return new javax.swing.ImageIcon("res/icons/modules/video/console.png");
   }
 
   @Override
@@ -111,6 +109,7 @@ public abstract class Modul implements IModul {
     this.sidebarButton = sidebatButton;
   }
 
+  @Override
   public SidebarModule getSidebarButton() {
     return sidebarButton;
   }
@@ -125,6 +124,12 @@ public abstract class Modul implements IModul {
 
   public ToolBox getToolBar() {
     return ToolBar;
+  }
+
+  public void setMyGrafics(JPanel MyGrafic) {
+    this.FullGrafics.remove(MyGrafics);
+    this.MyGrafics = MyGrafic;
+    this.FullGrafics.add(MyGrafics, BorderLayout.CENTER);
   }
 
   @Override

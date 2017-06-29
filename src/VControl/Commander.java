@@ -13,7 +13,6 @@ import VControl.UI.Sidebar;
 import VControl.UI.components.MyScrollbarUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Properties;
 import static javax.swing.BorderFactory.createEmptyBorder;
@@ -26,12 +25,12 @@ import javax.swing.JScrollPane;
  */
 public class Commander {
 
-  private ArrayList<IModul> moduls;
-  private Sidebar sidebar;
+  private final ArrayList<IModul> moduls;
+  private final Sidebar sidebar;
   private IModul active;
-  private GUI gui;
-  private Settings setings;
-  private JScrollPane scSidebar;
+  private final GUI gui;
+  private final Settings setings;
+  private final JScrollPane scSidebar;
 
   public Commander() {
     this.moduls = new ArrayList<>();
