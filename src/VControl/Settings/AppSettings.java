@@ -20,9 +20,11 @@ public class AppSettings {
     p.setProperty("@_Window_Width", "1360");
     p.setProperty("@_Window_Height", "768");
     p.setProperty("@_Window_Undecorated", "false");
-    p.setProperty("@_Icon_Size", "100");
+    p.setProperty("@_Icon_Size", "150");
     p.setProperty("@_Border_Size", "6");
     p.setProperty("@_Icon_Chanhe_Color", "true");
+    p.setProperty("@_Font_Name", "Arial");
+    p.setProperty("@_Font_Size", "20");
 
   }
 

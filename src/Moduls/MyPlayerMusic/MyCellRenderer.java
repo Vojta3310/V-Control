@@ -38,7 +38,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     renderer.setSelected(isSelected);
-    renderer.setData((Skladba) value);
+    renderer.setData((ISkladba) value);
     return renderer;
   }
 
@@ -47,24 +47,15 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
    */
   private static class CustomLabel extends JLabel {
 
-    private static final Color backgroundColor = Color.WHITE;
     private final int GAP = AppSettings.getInt("Border_Size");
-
     private boolean selected;
-    private Skladba data;
-
-    public CustomLabel() {
-      super();
-      setOpaque(false);
-      setBorder(BorderFactory.createEmptyBorder(0, 36 + 5, 0, 40));
-    }
+    private ISkladba data;
 
     private void setSelected(boolean selected) {
       this.selected = selected;
-//      setForeground(selected ? Color.WHITE : Color.BLACK);
     }
 
-    private void setData(Skladba data) {
+    private void setData(ISkladba data) {
       this.data = data;
     }
 
@@ -73,28 +64,27 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
       Graphics2D g2d = (Graphics2D) g;
       g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       g2d.setBackground(AppSettings.getColour("BG_Color"));
-      paintString(data.getTitle()+"-"+data.getAutor(), 0, getHeight()/2, AppSettings.getColour("FG_Color"), g2d);
-
+      g2d.setColor(AppSettings.getColour("FG_Color"));
       if (selected) {
-        g2d.fillRect(0, getHeight()-GAP, getWidth(), GAP);
+        g2d.fillRect(2 * GAP, getHeight() - GAP / 2, getWidth() - 4 * GAP, GAP / 2);
       }
 
-      super.paintComponent(g);
-    }
-
-    public void paintString(String text, int x, int y, Color c, Graphics2D g2d) {
-      final Font oldFont = g2d.getFont();
-      g2d.setFont(oldFont.deriveFont(oldFont.getSize() + 3f));
+      g2d.setFont(new Font(AppSettings.getString("Font_Name"), 0, AppSettings.getInt("Font_Size")));
       final FontMetrics fm = g2d.getFontMetrics();
-      g2d.setPaint(c);
-      g2d.drawString(text, x + GAP - fm.stringWidth(text) / 2, y-fm.getHeight()); //vykresli obsah boxu
-      g2d.setFont(oldFont);
+      String s = data.getLabel();
+      if (fm.stringWidth(s) > getWidth() - 4 * GAP) {
+        while (fm.stringWidth(s) + fm.stringWidth("...") > getWidth() - 4 * GAP) {
+          s = s.substring(0, s.length() - 1);
+        }
+        s = s + "...";
+      }
+      g2d.drawString(s, 2 * GAP, (int) (GAP / 2 + fm.getHeight() - 5));
     }
 
     @Override
     public Dimension getPreferredSize() {
       final Dimension ps = super.getPreferredSize();
-      ps.height = 15;
+      ps.height = (int) (AppSettings.getInt("Font_Size") + 2 * GAP);
       return ps;
     }
   }

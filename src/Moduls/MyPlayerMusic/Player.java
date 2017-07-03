@@ -53,6 +53,10 @@ public class Player {
     }
   }
 
+  public long getPos() {
+    return Aplayer.getPosition();
+  }
+
   public void setVolume(float v) {
     if (v < this.gainControl.getMaximum() && v > this.gainControl.getMinimum()) {
       this.volume = (v);

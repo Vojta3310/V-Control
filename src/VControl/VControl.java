@@ -7,7 +7,9 @@ package VControl;
 
 import Moduls.AnotherModule;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
+import java.io.IOException;
 import javax.sound.sampled.LineUnavailableException;
+import org.farng.mp3.TagException;
 
 /**
  *
@@ -19,7 +21,7 @@ public class VControl {
    * @param args the command line arguments
    * @throws javax.sound.sampled.LineUnavailableException
    */
-  public static void main(String[] args) throws LineUnavailableException {
+  public static void main(String[] args) throws LineUnavailableException, IOException, TagException {
     Commander Commander = new Commander();
     MyPlayerMusic a = new MyPlayerMusic(Commander);
     Commander.addIModule(a);

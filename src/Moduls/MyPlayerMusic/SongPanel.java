@@ -41,6 +41,7 @@ public class SongPanel extends JPanel {
     rlist.setBackground(AppSettings.getColour("BG_Color"));
     slist.setCellRenderer(new MyCellRenderer(slist));
     rlist.setCellRenderer(new MyCellRenderer(rlist));
+//    rlist.se
     JScrollPane b = new JScrollPane(slist);
     b.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     b.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -54,18 +55,30 @@ public class SongPanel extends JPanel {
     c.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
     c.setViewportBorder(null);
     c.setBorder(createEmptyBorder());
-    c.setPreferredSize(new Dimension(Integer.MAX_VALUE,(int) (0.3* AppSettings.getInt("Icon_Size"))));
+    c.setPreferredSize(new Dimension(Integer.MAX_VALUE, (int) (0.3 * AppSettings.getInt("Icon_Size"))));
     JScrollBar sbt = c.getVerticalScrollBar();
     sbt.setPreferredSize(new Dimension(AppSettings.getInt("Border_Size"), Integer.MAX_VALUE));
     sbt.setUI(new MyScrollbarUI());
     slabel = new JLabel("Tonight we go to war-TryhardNinja");
     slabel.setForeground(AppSettings.getColour("BG_Color"));
     slabel.setIconTextGap(AppSettings.getInt("Border_Size"));
-    slabel.setFont(new Font("Arial", 1, 24));
-    slabel.setPreferredSize(new Dimension((int) (1.6 * AppSettings.getInt("Icon_Size")), 40));
+    slabel.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    slabel.setPreferredSize(new Dimension((int) (1.6 * AppSettings.getInt("Icon_Size")), 2 * AppSettings.getInt("Font_Size")));
     this.add(b);
     this.add(slabel);
     this.add(c);
+  }
+
+  public JList getSlist() {
+    return slist;
+  }
+
+  public JList getRlist() {
+    return rlist;
+  }
+
+  public JLabel getSlabel() {
+    return slabel;
   }
 
 }

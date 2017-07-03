@@ -11,9 +11,11 @@ import Moduls.Modul;
 import VControl.UI.ToolButton;
 import java.awt.Image;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Properties;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.ImageIcon;
+import org.farng.mp3.TagException;
 
 /**
  *
@@ -22,7 +24,7 @@ import javax.swing.ImageIcon;
 public class MyPlayerMusic extends Modul implements IModul {
   private final MusicOrganiser Player;
   
-  public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException {
+  public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException {
     super(Commander);
     ToolButton b = new ToolButton(this.GetIcon());
     b.addActionListener(new java.awt.event.ActionListener() {
@@ -32,7 +34,7 @@ public class MyPlayerMusic extends Modul implements IModul {
       }
     });
     super.getToolBar().addTool(b);
-    Player=new MusicOrganiser();
+    Player=new MusicOrganiser(this);
     super.setMyGrafics(Player.getGui());
   }
 

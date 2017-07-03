@@ -11,8 +11,8 @@ package Moduls.MyPlayerMusic;
  */
 public interface ISkladba {
 
-  public Skladba getSkladba();
+//  public Skladba getSkladba();
 
-  //public Component getInfoPanel();
+  public String getLabel();
 
 }

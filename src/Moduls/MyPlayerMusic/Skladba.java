@@ -5,7 +5,6 @@
  */
 package Moduls.MyPlayerMusic;
 
-import java.awt.Component;
 import java.io.IOException;
 import java.io.File;
 import javax.sound.sampled.AudioInputStream;
@@ -35,6 +34,7 @@ public class Skladba implements ISkladba {
   private final MP3File mp3file;
   private AudioInputStream audioInputStream;
   private int played = 0;
+  private int repead = 1;
   // private InfoPanel iPanel;
 
   public Skladba(String pathtofile) throws IOException, TagException {
@@ -68,6 +68,11 @@ public class Skladba implements ISkladba {
       sum += bytes[i];
     }
     this.volume = (float) sum / bytes.length;
+  }
+
+  @Override
+  public String getLabel() {
+    return Title + "-" + Autor;
   }
 
   public String getTitle() {
@@ -132,10 +137,10 @@ public class Skladba implements ISkladba {
     return oblibenost;
   }
 
-  @Override
-  public Skladba getSkladba() {
-    return this;
-  }
+//  @Override
+//  public Skladba getSkladba() {
+//    return this;
+//  }
 
 //  @Override
 //  public Component getInfoPanel() {
@@ -146,6 +151,20 @@ public class Skladba implements ISkladba {
   }
 
   public void Played() {
+    Repeaded();
     this.played += 1;
   }
+
+  public int getRepead() {
+    return repead;
+  }
+
+  public void setRepead(int repead) {
+    this.repead = repead;
+  }
+
+  public void Repeaded() {
+    this.repead -= 1;
+  }
+
 }
