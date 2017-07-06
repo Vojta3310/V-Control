@@ -18,7 +18,6 @@ public class Player {
   private final AudioPlayer Aplayer;
   private final FloatControl gainControl;
   private boolean paused;
-  private boolean LastPaused;
 
   public Player() {
     this.volume = 0.5f;
@@ -40,23 +39,18 @@ public class Player {
     paused = true;
   }
 
-  public void PauseIfPlay() {
-    LastPaused = paused;
-    if (!paused) {
-      pause();
-    }
-  }
-
-  public void RestoreIfPaused() {
-    if (paused && !LastPaused) {
-      play();
-    }
-  }
-
   public long getPos() {
     return Aplayer.getPosition();
   }
 
+  public float getVolume(){
+    return volume;
+  }
+  
+  public boolean getPaused(){
+    return paused;
+  }
+  
   public void setVolume(float v) {
     if (v < this.gainControl.getMaximum() && v > this.gainControl.getMinimum()) {
       this.volume = (v);

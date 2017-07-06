@@ -9,8 +9,6 @@ import VControl.ICommand;
 import Moduls.IModul;
 import Moduls.Modul;
 import VControl.UI.ToolButton;
-import java.awt.Image;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sound.sampled.LineUnavailableException;
@@ -65,6 +63,8 @@ public class MyPlayerMusic extends Modul implements IModul {
   @Override
   public void getDefaultSettings(Properties p) {
     p.setProperty("Modul_" + this.GetModulName() + "_MusicDir", "/home/vojta3310/Hudba/MP/");
+    p.setProperty("Modul_" + this.GetModulName() + "_Transfet_Lenght", "1000");
+    p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
   }
 
 }
