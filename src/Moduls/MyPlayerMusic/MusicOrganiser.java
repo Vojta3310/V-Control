@@ -208,10 +208,13 @@ public class MusicOrganiser {
       switch (afterTransform) {
         case 1:
           UplayNext();
+          break;
         case 2:
           UplayPrew();
+          break;
         case 3:
           tooglePause();
+          break;
       }
       afterTransform = 0;
     }
@@ -253,6 +256,10 @@ public class MusicOrganiser {
       }
       lastSelected = gui.getSpanel().getRlist().getSelectedIndex();
     }
+  }
+
+  public Modul getModul() {
+    return modul;
   }
 
   public MPgui getGui() {

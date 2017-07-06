@@ -8,7 +8,6 @@ package VControl.UI;
 import Moduls.IModul;
 import VControl.Settings.AppSettings;
 import VControl.utiliti;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -66,7 +65,6 @@ public class SidebarModule extends JButton {
     Graphics2D g2d = (Graphics2D) g;
 
     g2d.setPaint(AppSettings.getColour("BG_Color"));
-    g2d.fillRect(0, 0, getWidth(), getHeight());
     g2d.fillRect(0, 0, getWidth(), getHeight());
     g2d.setPaint(AppSettings.getColour("FG_Color"));
     if (this.active) {

@@ -22,7 +22,7 @@ public class MPgui extends JPanel {
   public MPgui(MusicOrganiser o) {
     ipanel = new InfoPanel();
     spanel = new SongPanel();
-    ppanel = new PlayerPanel();
+    ppanel = new PlayerPanel(o);
     JPanel a = new JPanel();
     a.setLayout(new BorderLayout());
     a.add(ipanel, BorderLayout.CENTER);
