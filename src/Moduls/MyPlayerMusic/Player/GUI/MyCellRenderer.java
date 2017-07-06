@@ -1,5 +1,6 @@
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player.GUI;
 
+import Moduls.MyPlayerMusic.Player.ISkladba;
 import VControl.Settings.AppSettings;
 import java.awt.Color;
 import java.awt.Component;

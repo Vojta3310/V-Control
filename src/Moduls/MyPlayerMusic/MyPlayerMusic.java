@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic;
 
+import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.ICommand;
 import Moduls.IModul;
 import Moduls.Modul;
@@ -42,7 +43,7 @@ public class MyPlayerMusic extends Modul implements IModul {
   }
 
   public void onClick() {
-    System.out.println("Clicked me");
+    
   }
 
   @Override
@@ -65,6 +66,7 @@ public class MyPlayerMusic extends Modul implements IModul {
     p.setProperty("Modul_" + this.GetModulName() + "_MusicDir", "/home/vojta3310/Hudba/MP/");
     p.setProperty("Modul_" + this.GetModulName() + "_Transfet_Lenght", "1000");
     p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
+    p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
   }
 
 }

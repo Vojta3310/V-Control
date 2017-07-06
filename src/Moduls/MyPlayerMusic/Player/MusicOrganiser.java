@@ -3,9 +3,10 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player;
 
 import Moduls.Modul;
+import Moduls.MyPlayerMusic.Player.GUI.MPgui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -36,11 +37,12 @@ public class MusicOrganiser {
   private long transformStart;
   private float transferTo = 0.5f;
   private float transferFrom = 0.5f;
-  private float volume = 0.5f;
+  private float volume;
   private final Modul modul;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     modul = mod;
+    volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     gui = new MPgui(this);
     player = new Player();
     Songs = new Songs();
@@ -158,6 +160,7 @@ public class MusicOrganiser {
     transferFrom = player.getVolume();
     transferTo = v;
     transformStart = player.getPos();
+    volume=v;
   }
 
   public void Next() {

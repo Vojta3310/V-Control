@@ -3,7 +3,7 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player;
 
 import java.util.ArrayList;
 

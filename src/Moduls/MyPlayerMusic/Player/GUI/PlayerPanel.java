@@ -3,8 +3,9 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player.GUI;
 
+import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.Settings.AppSettings;
 import java.awt.Graphics;
 import javax.swing.JLabel;
@@ -74,7 +75,6 @@ public class PlayerPanel extends JPanel {
           .addComponent(next))
         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
     );
-
   }
 
   @Override

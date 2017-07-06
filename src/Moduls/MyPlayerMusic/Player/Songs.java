@@ -3,8 +3,9 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player;
 
+import Moduls.MyPlayerMusic.Player.Skladba;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

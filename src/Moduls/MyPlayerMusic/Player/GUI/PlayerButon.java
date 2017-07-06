@@ -3,8 +3,9 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player.GUI;
 
+import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.Settings.AppSettings;
 import VControl.utiliti;
 import java.awt.Dimension;

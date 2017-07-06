@@ -3,11 +3,11 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic;
+package Moduls.MyPlayerMusic.Player.GUI;
 
+import Moduls.MyPlayerMusic.Player.Skladba;
 import VControl.Settings.AppSettings;
 import java.awt.Font;
-import javax.print.DocFlavor;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -15,7 +15,7 @@ import javax.swing.JPanel;
  *
  * @author vojta3310
  */
-class InfoPanel extends JPanel {
+public class InfoPanel extends JPanel {
 
   private final JLabel Title;
   private final JLabel Autor;
