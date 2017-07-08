@@ -31,8 +31,7 @@ public class ToolButton extends JButton {
         AppSettings.getColour("FG_Color"));
     }
     this.setBackground(AppSettings.getColour("BG_Color"));
-    this.setBorder(javax.swing.BorderFactory.createLineBorder(
-      AppSettings.getColour("FG_Color"), 0));
+    this.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     this.setPreferredSize(new Dimension(AppSettings.getInt("Icon_Size"),
       AppSettings.getInt("Icon_Size")));
     this.setBorderPainted(false);
@@ -49,10 +48,6 @@ public class ToolButton extends JButton {
     this.active = false;
 //    this.setBorder(javax.swing.BorderFactory.createLineBorder(
 //      AppSettings.getColour("FG_Color"), 0));
-  }
-
-  public void onClick() {
-
   }
 
   @Override

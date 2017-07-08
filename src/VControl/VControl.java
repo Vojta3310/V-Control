@@ -20,6 +20,8 @@ public class VControl {
   /**
    * @param args the command line arguments
    * @throws javax.sound.sampled.LineUnavailableException
+   * @throws java.io.IOException
+   * @throws org.farng.mp3.TagException
    */
   public static void main(String[] args) throws LineUnavailableException, IOException, TagException {
     Commander Commander = new Commander();

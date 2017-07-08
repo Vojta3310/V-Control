@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 public class ToolBox extends JPanel {
 
   public ToolBox() {
-    this.setAutoscrolls(true);
+//    this.setAutoscrolls(true);
     this.setBackground(AppSettings.getColour("BG_Color"));
     this.setPreferredSize(new Dimension(AppSettings.getInt("Window_Width")
       - (AppSettings.getInt("Icon_Size") + 20 + AppSettings.getInt("Border_Size")),
@@ -32,7 +32,7 @@ public class ToolBox extends JPanel {
   public void addTool(ToolButton b) {
     this.add(b);
     this.setPreferredSize(new Dimension(
-      AppSettings.getInt("Icon_Size") + 20,
-      (AppSettings.getInt("Icon_Size") + 10) * this.getComponentCount() + 10));
+      (AppSettings.getInt("Icon_Size") + 10) * this.getComponentCount() + 10,
+      AppSettings.getInt("Icon_Size") + 20));
   }
 }

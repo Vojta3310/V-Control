@@ -42,7 +42,6 @@ public class MusicOrganiser {
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     modul = mod;
-    volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     gui = new MPgui(this);
     player = new Player();
     Songs = new Songs();
@@ -59,13 +58,6 @@ public class MusicOrganiser {
         clearRlist();
       }
     });
-    Path p = Paths.get(modul.SgetString("MusicDir"));
-    if (Files.exists(p)) {
-      DirectoryStream<Path> dirStream = Files.newDirectoryStream(p);
-      if (dirStream.iterator().hasNext()) {
-        start();
-      }
-    }
   }
 
   public final void start() throws IOException, TagException {
@@ -76,6 +68,7 @@ public class MusicOrganiser {
         checkNextSong();
       }
     });
+    volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     tim.start();
     Songs.load(modul.SgetString("MusicDir"));
     playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
@@ -125,6 +118,7 @@ public class MusicOrganiser {
   }
 
   private void playSong(Skladba ns) {
+    modul.repaint();
     Playing = ns;
     player.PrepareSong(Playing);
     gui.getSpanel().getSlabel().setText(Playing.getLabel());

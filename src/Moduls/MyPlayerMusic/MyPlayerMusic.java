@@ -9,6 +9,7 @@ import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.ICommand;
 import Moduls.IModul;
 import Moduls.Modul;
+import Moduls.MyPlayerMusic.songAdder.addFromFile;
 import VControl.UI.ToolButton;
 import java.io.IOException;
 import java.util.Properties;
@@ -22,18 +23,33 @@ import org.farng.mp3.TagException;
  */
 public class MyPlayerMusic extends Modul implements IModul {
   private final MusicOrganiser Player;
+  private final addFromFile addSong;
   
   public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException {
     super(Commander);
-    ToolButton b = new ToolButton(this.GetIcon());
+    Player=new MusicOrganiser(this);
+    addSong=new addFromFile();
+    final ToolButton b = new ToolButton(this.GetIcon());
+    final ToolButton c = new ToolButton(this.GetIcon());
+    b.Activate();
     b.addActionListener(new java.awt.event.ActionListener() {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent evt) {
-        onClick();
+        c.Deactivate();
+        b.Activate();
+        setMyGrafics(Player.getGui());
+      }
+    });
+    c.addActionListener(new java.awt.event.ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        b.Deactivate();
+        c.Activate();
+        setMyGrafics(addSong.getGui());
       }
     });
     super.getToolBar().addTool(b);
-    Player=new MusicOrganiser(this);
+    super.getToolBar().addTool(c);
     super.setMyGrafics(Player.getGui());
   }
 

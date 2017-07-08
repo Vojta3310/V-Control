@@ -130,6 +130,13 @@ public abstract class Modul implements IModul {
     this.FullGrafics.remove(MyGrafics);
     this.MyGrafics = MyGrafic;
     this.FullGrafics.add(MyGrafics, BorderLayout.CENTER);
+    this.FullGrafics.repaint();
+    this.FullGrafics.revalidate();
+  }
+
+  public void repaint() {
+    this.FullGrafics.repaint();
+    this.FullGrafics.revalidate();
   }
 
   @Override

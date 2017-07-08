@@ -49,6 +49,7 @@ public class Skladba implements ISkladba {
       this.SpecialTags = mp3file.getID3v2Tag().getFrame("STags").toString();
       this.Langue = mp3file.getID3v2Tag().getFrame("Lang").toString();
       this.oblibenost = Float.parseFloat(mp3file.getID3v2Tag().getFrame("Fav").toString());
+      this.volume = Float.parseFloat(mp3file.getID3v2Tag().getFrame("Vol").toString());
       this.start = Long.parseLong(mp3file.getID3v2Tag().getFrame("Start").toString());
       this.lenght = Long.parseLong(mp3file.getID3v2Tag().getFrame("len").toString());
       //  this.iPanel = new InfoPanel(this);
@@ -59,16 +60,17 @@ public class Skladba implements ISkladba {
 
   public void load() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
-    this.audioInputStream = AudioSystem.getAudioInputStream(
-      new File("some_file.wav"));
-    byte[] bytes = new byte[(int) (audioInputStream.getFrameLength())
-      * (audioInputStream.getFormat().getFrameSize())];
-    audioInputStream.read(bytes);
-    long sum = 0;
-    for (int i = 0; i < bytes.length; i++) {
-      sum += bytes[i];
-    }
-    this.volume = (float) sum / bytes.length;
+    this.audioInputStream = AudioSystem.getAudioInputStream(new File(Path));
+    
+    
+//    byte[] bytes = new byte[(int) (audioInputStream.getFrameLength())
+//      * (audioInputStream.getFormat().getFrameSize())];
+//    audioInputStream.read(bytes);
+//    long sum = 0;
+//    for (int i = 0; i < bytes.length; i++) {
+//      sum += bytes[i];
+//    }
+//    this.volume = (float) sum / bytes.length;
   }
 
   @Override
