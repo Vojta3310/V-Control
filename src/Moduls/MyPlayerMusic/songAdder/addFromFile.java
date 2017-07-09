@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -36,6 +37,7 @@ public class addFromFile {
     gui.setLayout(new BorderLayout());
     ma = new MusicAnalizer();
     sep = new SongEditPanel(new String[]{"", "", "", "", "", "", "", "",}, ma);
+    MyButton add = new MyButton("Přidat ...");
     final JFileChooser fc = new JFileChooser();
     FileFilter ff = new FileFilter() {
       @Override
@@ -52,7 +54,7 @@ public class addFromFile {
     fc.setFileFilter(ff);
     fc.setFileSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    final JButton select = new JButton("Vybrat soubor ...");
+    final MyButton select = new MyButton("Vybrat soubor ...");
     select.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
@@ -69,10 +71,39 @@ public class addFromFile {
       }
     });
     select.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    select.setForeground(AppSettings.getColour("FG_Color"));
+    select.setBackground(AppSettings.getColour("BG_Color"));
+    add.setForeground(AppSettings.getColour("FG_Color"));
+    add.setBackground(AppSettings.getColour("BG_Color"));
+    add.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    add.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent ae) {
+        try {
+          if (fc.getSelectedFile() != null) {
+            add(fc.getSelectedFile(), sep.getSet());
+            fc.setSelectedFile(null);
+            select.setText("Vybrat soubor ...");
+            select.requestFocus();
+            ma = new MusicAnalizer();
+            sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
+          }
+        } catch (IOException | UnsupportedAudioFileException ex) {
+          Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
+    });
 
     gui.add(select, BorderLayout.PAGE_START);
+    gui.add(add, BorderLayout.PAGE_END);
 
     gui.add(sep);
+  }
+
+  public static void add(File f, String[] set) {
+    System.out.println(f.getName());
+    System.out.println(Arrays.toString(set));
   }
 
   private void load(File f) throws UnsupportedAudioFileException, IOException {

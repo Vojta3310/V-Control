@@ -14,6 +14,7 @@ import VControl.UI.ToolButton;
 import java.io.IOException;
 import java.util.Properties;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.ImageIcon;
 import org.farng.mp3.TagException;
 
@@ -25,7 +26,7 @@ public class MyPlayerMusic extends Modul implements IModul {
   private final MusicOrganiser Player;
   private final addFromFile addSong;
   
-  public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException {
+  public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     super(Commander);
     Player=new MusicOrganiser(this);
     addSong=new addFromFile();
