@@ -31,12 +31,17 @@ import org.tritonus.share.sampled.file.TAudioFileFormat;
 public class MusicAnalizer {
 
   private AudioInputStream audioInputStream;
-  private ArrayList<Line2D.Double> lines = new ArrayList<>();
   protected AudioFileFormat audioFileFormat;
   protected Map<String, Object> properties;
+ 
+  
+  private ArrayList<Line2D.Double> lines = new ArrayList<>();
   private int h;
   private int w;
   private File file;
+  private ArrayList<Integer> AudioData = new ArrayList<>();
+  private long Lenght;
+  private int byteLenght;
 
   public void createWaveForm() throws IOException, UnsupportedAudioFileException {
     initAudioStream();
@@ -45,76 +50,98 @@ public class MusicAnalizer {
       byte[] audioBytes;
       lines.clear();
       AudioFormat format = audioInputStream.getFormat();
-      System.out.println(audioFileFormat.getFrameLength());
-      audioBytes = new byte[getByteLength()];//(int) (audioFileFormat.getFrameLength() * format.getFrameSize())];
-      audioInputStream.read(audioBytes);
+//      System.out.println(audioFileFormat.getFrameLength());
 
-      int[] audioData = null;
-
-      if (format.getSampleSizeInBits() == 16) {
-        int nlengthInSamples = audioBytes.length / 2;
-        audioData = new int[nlengthInSamples];
-        if (format.isBigEndian()) {
-          for (int i = 0; i < nlengthInSamples; i++) {
-            /* First byte is MSB (high order) */
-            int MSB = (int) audioBytes[2 * i];
-            /* Second byte is LSB (low order) */
-            int LSB = (int) audioBytes[2 * i + 1];
-            audioData[i] = MSB << 8 | (255 & LSB);
+      if (file.toString().endsWith(".mp3")) {
+        ArrayList<Integer> data = new ArrayList<>();
+        while (true) {
+          int currentByte = audioInputStream.read();
+          if (currentByte == -1) {
+            break;
           }
-        } else {
-          for (int i = 0; i < nlengthInSamples; i++) {
-            /* First byte is LSB (low order) */
-            int LSB = (int) audioBytes[2 * i];
-            /* Second byte is MSB (high order) */
-            int MSB = (int) audioBytes[2 * i + 1];
-            audioData[i] = MSB << 8 | (255 & LSB);
+          data.add(currentByte);
+        }
+        double y_last = 0;
+        
+        System.out.println(data.size());
+        System.out.println(audioFileFormat.getFrameLength());
+        System.out.println(getByteLength());
+        System.out.println(getLenght());
+        
+        int frames_per_pixel = data.size() / w;
+        for (double x = 0; x < w; x++) {
+          int idx = (int) (frames_per_pixel * x);
+
+          int buf1 = data.get(idx + 1);
+          int buf2 = data.get(idx);
+
+          buf1 = (short) ((buf1 & 0xff) << 8);
+          buf2 = (short) (buf2 & 0xff);
+
+          short res = (short) (buf1 | buf2);
+
+          double y_new = (double) (h * (128 - (128 * res / 32768)) / 256);
+          lines.add(new Line2D.Double(x - 1, y_last, x, y_new));
+          y_last = y_new;
+        }
+
+      } else {
+
+        audioBytes = new byte[getByteLength()];//(int) (audioFileFormat.getFrameLength() * format.getFrameSize())];
+        audioInputStream.read(audioBytes);
+
+        int[] audioData = null;
+
+        if (format.getSampleSizeInBits() == 16) {
+          int nlengthInSamples = audioBytes.length / 2;
+          audioData = new int[nlengthInSamples];
+          if (format.isBigEndian()) {
+            for (int i = 0; i < nlengthInSamples; i++) {
+              /* First byte is MSB (high order) */
+              int MSB = (int) audioBytes[2 * i];
+              /* Second byte is LSB (low order) */
+              int LSB = (int) audioBytes[2 * i + 1];
+              audioData[i] = MSB << 8 | (255 & LSB);
+            }
+          } else {
+            for (int i = 0; i < nlengthInSamples; i++) {
+              /* First byte is LSB (low order) */
+              int LSB = (int) audioBytes[2 * i];
+              /* Second byte is MSB (high order) */
+              int MSB = (int) audioBytes[2 * i + 1];
+              audioData[i] = MSB << 8 | (255 & LSB);
+            }
+          }
+        } else if (format.getSampleSizeInBits() == 8) {
+          int nlengthInSamples = audioBytes.length;
+          audioData = new int[nlengthInSamples];
+          if (format.getEncoding().toString().startsWith("PCM_SIGN")) {
+            for (int i = 0; i < audioBytes.length; i++) {
+              audioData[i] = audioBytes[i];
+            }
+          } else {
+            for (int i = 0; i < audioBytes.length; i++) {
+              audioData[i] = audioBytes[i] - 128;
+            }
           }
         }
-      } else if (format.getSampleSizeInBits() == 8) {
-        int nlengthInSamples = audioBytes.length;
-        audioData = new int[nlengthInSamples];
-        if (format.getEncoding().toString().startsWith("PCM_SIGN")) {
-          for (int i = 0; i < audioBytes.length; i++) {
-            audioData[i] = audioBytes[i];
+
+        int frames_per_pixel = audioBytes.length / format.getFrameSize() / w;
+        byte my_byte;
+        double y_last = 0;
+        int numChannels = format.getChannels();
+        for (double x = 0; x < w && audioData != null; x++) {
+          int idx = (int) (frames_per_pixel * numChannels * x);
+          if (format.getSampleSizeInBits() == 8) {
+            my_byte = (byte) audioData[idx];
+          } else {
+            my_byte = (byte) (128 * audioData[idx] / 32768);
           }
-        } else {
-          for (int i = 0; i < audioBytes.length; i++) {
-            audioData[i] = audioBytes[i] - 128;
-          }
+          double y_new = (double) (h * (128 - my_byte) / 256);
+          lines.add(new Line2D.Double(x - 1, y_last, x, y_new));
+          y_last = y_new;
         }
       }
-
-      int frames_per_pixel = audioBytes.length / format.getFrameSize() / w;
-      byte my_byte;
-      double y_last = 0;
-      int numChannels = format.getChannels();
-      for (double x = 0; x < w && audioData != null; x++) {
-        int idx = (int) (frames_per_pixel * numChannels * x);
-        if (format.getSampleSizeInBits() == 8) {
-          my_byte = (byte) audioData[idx];
-        } else {
-          my_byte = (byte) (128 * audioData[idx] / 32768);
-        }
-        double y_new = (double) (h * (128 - my_byte) / 256);
-        lines.add(new Line2D.Double(x, y_last, x, y_new));
-        y_last = y_new;
-      }
-    }
-  }
-
-  public void saveToFile(String filename) {
-    BufferedImage bufferedImage = new BufferedImage(lines.size(), h, BufferedImage.TYPE_INT_RGB);
-    Graphics2D g2 = bufferedImage.createGraphics();
-
-    Paint(g2);
-    g2.dispose();
-    // Write generated image to a file
-    try {
-      // Save as PNG
-      File file = new File(filename);
-      ImageIO.write(bufferedImage, "png", file);
-    } catch (IOException e) {
     }
   }
 
@@ -264,14 +291,21 @@ public class MusicAnalizer {
 
   public void initAudioStream() throws UnsupportedAudioFileException, IOException {
     if (file != null) {
-      final AudioInputStream sourceAIS = AudioSystem.getAudioInputStream(file);
-
-      AudioFormat sourceFormat = sourceAIS.getFormat();
-      AudioFormat convertFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceFormat.getSampleRate(), 16, sourceFormat.getChannels(), sourceFormat.getChannels() * 2, sourceFormat.getSampleRate(), false);
-      final AudioInputStream convert1AIS = AudioSystem.getAudioInputStream(convertFormat, sourceAIS);
-      final AudioInputStream convert2AIS = AudioSystem.getAudioInputStream(AudioFormat.Encoding.PCM_SIGNED, convert1AIS);
-
-      audioInputStream = convert2AIS;
+//      final AudioInputStream sourceAIS = AudioSystem.getAudioInputStream(file);
+//
+//      File file = new File(file);
+      AudioInputStream in = AudioSystem.getAudioInputStream(file);
+      AudioInputStream din = null;
+      AudioFormat baseFormat = in.getFormat();
+      AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
+        baseFormat.getSampleRate(),
+        16,
+        baseFormat.getChannels(),
+        baseFormat.getChannels() * 2,
+        baseFormat.getSampleRate(),
+        false);
+      din = AudioSystem.getAudioInputStream(decodedFormat, in);
+      audioInputStream = din;
       audioFileFormat = AudioSystem.getAudioFileFormat(file);
       initAudioInputStream();
     }
