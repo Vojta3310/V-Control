@@ -29,7 +29,7 @@ public class MyPlayerMusic extends Modul implements IModul {
   public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     super(Commander);
     Player=new MusicOrganiser(this);
-    addSong=new addFromFile();
+    addSong=new addFromFile(this);
     final ToolButton b = new ToolButton(this.GetIcon());
     final ToolButton c = new ToolButton(this.GetIcon());
     b.Activate();
@@ -57,10 +57,6 @@ public class MyPlayerMusic extends Modul implements IModul {
   @Override
   public final ImageIcon GetIcon() {
     return new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/modul.png");
-  }
-
-  public void onClick() {
-    
   }
 
   @Override

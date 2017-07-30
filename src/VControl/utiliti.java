@@ -44,4 +44,10 @@ public class utiliti {
     // Return the buffered image
     return bimage;
   }
+
+  public static String MilToTime(long m) {
+    String min = Long.toString(m / 60000);
+    String s = Double.toString((double) Math.round(((double) m / 60000 - Math.floor(m / 60000)) * 6000) / 100);
+    return min + ":" + s;
+  }
 }

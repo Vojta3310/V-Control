@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import Moduls.MyPlayerMusic.MyPlayerMusic;
 import VControl.Settings.AppSettings;
 import java.awt.BorderLayout;
 import java.awt.Font;
@@ -12,6 +13,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,6 +24,23 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
+import org.farng.mp3.MP3File;
+import org.farng.mp3.TagConstant;
+import org.farng.mp3.TagException;
+import org.farng.mp3.TagOptionSingleton;
+import org.farng.mp3.id3.AbstractID3v2Frame;
+import org.farng.mp3.id3.AbstractID3v2FrameBody;
+import org.farng.mp3.id3.FrameBodyAENC;
+import org.farng.mp3.id3.FrameBodyASPI;
+import org.farng.mp3.id3.FrameBodyOWNE;
+import org.farng.mp3.id3.FrameBodyPIC;
+import org.farng.mp3.id3.FrameBodyRBUF;
+import org.farng.mp3.id3.FrameBodySEEK;
+import org.farng.mp3.id3.FrameBodyTALB;
+import org.farng.mp3.id3.FrameBodyTDAT;
+import org.farng.mp3.id3.FrameBodyUnsupported;
+import org.farng.mp3.id3.FrameBodyWXXX;
+import org.farng.mp3.id3.ID3v2_4Frame;
 
 /**
  *
@@ -30,8 +51,10 @@ public class addFromFile {
   private final JPanel gui;
   private MusicAnalizer ma;
   private SongEditPanel sep;
+  private MyPlayerMusic MP;
 
-  public addFromFile() throws IOException, UnsupportedAudioFileException {
+  public addFromFile(MyPlayerMusic mod) throws IOException, UnsupportedAudioFileException {
+    MP = mod;
     gui = new JPanel();
     gui.setLayout(new BorderLayout());
     ma = new MusicAnalizer();
@@ -88,7 +111,7 @@ public class addFromFile {
             ma = new MusicAnalizer();
             sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
           }
-        } catch (IOException | UnsupportedAudioFileException ex) {
+        } catch (IOException | UnsupportedAudioFileException | TagException ex) {
           Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
@@ -100,9 +123,10 @@ public class addFromFile {
     gui.add(sep);
   }
 
-  public static void add(File f, String[] set) {
+  public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
     System.out.println(f.getName());
     System.out.println(Arrays.toString(set));
+    save();
   }
 
   private void load(File f) throws UnsupportedAudioFileException, IOException {
@@ -113,7 +137,37 @@ public class addFromFile {
 
   private void load(File f, String s) throws UnsupportedAudioFileException, IOException {
     ma.setFile(f);
-    sep.load(s.split("|@|"), ma);
+    sep.load(s.split("%@%"), ma);
+  }
+
+  private void save() throws UnsupportedAudioFileException, IOException, TagException {
+    String[] set = sep.getSet();
+    File directory = new File(MP.SgetString("MusicDir"));
+    if (!directory.exists()) {
+      directory.mkdir();
+    }
+
+    Path f = new File(directory.toString()+File.separator+set[1] + "-" + set[0] + ".mp3").toPath();
+
+    Files.copy(ma.getFile().toPath(), f, StandardCopyOption.REPLACE_EXISTING);
+
+    MP3File mp3file = new MP3File(f.toString());
+    TagOptionSingleton.getInstance().setDefaultSaveMode(TagConstant.MP3_FILE_SAVE_OVERWRITE);
+
+    mp3file.getID3v2Tag().clearFrameMap();
+
+    String s = "MyPlayer%@%";
+    for (String seti : set) {
+      s += seti + "%@%";
+    }
+    s += "0.5%@%" + Float.toString(ma.getAverangeVolume());
+
+    AbstractID3v2Frame frame;
+    AbstractID3v2FrameBody frameBody;
+    frameBody = new FrameBodyTDAT((byte) 0, s);
+    frame = new ID3v2_4Frame(frameBody);
+    mp3file.getID3v2Tag().setFrame(frame);
+    mp3file.save();
   }
 
   public JPanel getGui() {

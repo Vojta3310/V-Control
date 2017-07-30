@@ -5,7 +5,6 @@
  */
 package Moduls.MyPlayerMusic.Player;
 
-import Moduls.MyPlayerMusic.Player.ISkladba;
 import java.io.IOException;
 import java.io.File;
 import javax.sound.sampled.AudioInputStream;
@@ -36,23 +35,27 @@ public class Skladba implements ISkladba {
   private AudioInputStream audioInputStream;
   private int played = 0;
   private int repead = 1;
-  // private InfoPanel iPanel;
 
   public Skladba(String pathtofile) throws IOException, TagException {
     this.Path = pathtofile;
     this.mp3file = new MP3File(pathtofile);
-    if (mp3file.getID3v2Tag().hasFrame("MyPlayer")) {
-      this.Autor = mp3file.getID3v2Tag().getFrame("TPE1").toString();
-      this.Title = mp3file.getID3v2Tag().getFrame("TIT2").toString();
-      this.Album = mp3file.getID3v2Tag().getFrame("TALB").toString();
-      this.Tags = mp3file.getID3v2Tag().getFrame("Tags").toString();
-      this.SpecialTags = mp3file.getID3v2Tag().getFrame("STags").toString();
-      this.Langue = mp3file.getID3v2Tag().getFrame("Lang").toString();
-      this.oblibenost = Float.parseFloat(mp3file.getID3v2Tag().getFrame("Fav").toString());
-      this.volume = Float.parseFloat(mp3file.getID3v2Tag().getFrame("Vol").toString());
-      this.start = Long.parseLong(mp3file.getID3v2Tag().getFrame("Start").toString());
-      this.lenght = Long.parseLong(mp3file.getID3v2Tag().getFrame("len").toString());
-      //  this.iPanel = new InfoPanel(this);
+    if (mp3file.getID3v2Tag().hasFrame("TDAT")) {
+      if (mp3file.getID3v2Tag().getFrame("TDAT").getBody().getBriefDescription().startsWith("MyPlayer%@%")) {
+        String[] s = mp3file.getID3v2Tag().getFrame("TDAT").getBody().getBriefDescription().split("%@%", 20);
+        this.Autor = s[2];
+        this.Title = s[1];
+        this.Album = s[3];
+        this.Tags = s[5];
+        this.SpecialTags = s[6];
+        this.Langue = s[4];
+        this.oblibenost = Float.parseFloat(s[9]);
+        this.volume = Float.parseFloat(s[10]);
+        this.start = Long.parseLong(s[7]);
+        this.lenght = Long.parseLong(s[8]);
+      } else {
+        System.err.println("Not my song!!!");
+      }
+
     } else {
       System.err.println("Not my song!!!");
     }
@@ -61,16 +64,7 @@ public class Skladba implements ISkladba {
   public void load() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
 
     this.audioInputStream = AudioSystem.getAudioInputStream(new File(Path));
-    
-    
-//    byte[] bytes = new byte[(int) (audioInputStream.getFrameLength())
-//      * (audioInputStream.getFormat().getFrameSize())];
-//    audioInputStream.read(bytes);
-//    long sum = 0;
-//    for (int i = 0; i < bytes.length; i++) {
-//      sum += bytes[i];
-//    }
-//    this.volume = (float) sum / bytes.length;
+
   }
 
   @Override
@@ -140,15 +134,6 @@ public class Skladba implements ISkladba {
     return oblibenost;
   }
 
-//  @Override
-//  public Skladba getSkladba() {
-//    return this;
-//  }
-
-//  @Override
-//  public Component getInfoPanel() {
-//    return iPanel;
-//  }
   public int getPlayed() {
     return played;
   }

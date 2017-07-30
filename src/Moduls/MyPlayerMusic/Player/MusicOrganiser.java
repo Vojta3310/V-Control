@@ -10,10 +10,6 @@ import Moduls.MyPlayerMusic.Player.GUI.MPgui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
@@ -58,9 +54,13 @@ public class MusicOrganiser {
         clearRlist();
       }
     });
+    start();
   }
 
   public final void start() throws IOException, TagException {
+    volume = Float.parseFloat(modul.SgetString("Default_Volume"));
+    Songs.load(modul.SgetString("MusicDir"));
+    playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
     Timer tim = new Timer(10, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
@@ -68,10 +68,7 @@ public class MusicOrganiser {
         checkNextSong();
       }
     });
-    volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     tim.start();
-    Songs.load(modul.SgetString("MusicDir"));
-    playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
   }
 
   private void UplayNext() {
@@ -151,22 +148,28 @@ public class MusicOrganiser {
   }
 
   public void setVolume(float v) {
-    transferFrom = player.getVolume();
-    transferTo = v;
+    transferFrom = volume;
+    if (v <= 1 && v >= 0) {
+      this.volume = (v);
+    } else if (v > 1) {
+      this.volume = 1;
+    } else if (v < 0) {
+      this.volume = 0;
+    }
+    transferTo = volume;
     transformStart = player.getPos();
-    volume=v;
   }
 
   public void Next() {
     afterTransform = 1; //0 nic; 1 další; 2 předchozí; 3 pause;
-    transferFrom = player.getVolume();
+    transferFrom = volume;
     transferTo = 0;
     transformStart = player.getPos();
   }
 
   public void Prew() {
     afterTransform = 2; //0 nic; 1 další; 2 předchozí; 3 pause;
-    transferFrom = player.getVolume();
+    transferFrom = volume;
     transferTo = 0;
     transformStart = player.getPos();
   }
@@ -174,7 +177,7 @@ public class MusicOrganiser {
   public void Pause() {
     if (!player.getPaused()) {
       afterTransform = 3; //0 nic; 1 další; 2 předchozí; 3 pause;
-      transferFrom = player.getVolume();
+      transferFrom = volume;
       transferTo = 0;
       transformStart = player.getPos();
     }
@@ -183,7 +186,7 @@ public class MusicOrganiser {
   public void Play() {
     if (player.getPaused()) {
       player.play();
-      transferFrom = player.getVolume();
+      transferFrom = volume;
       transferTo = volume;
       transformStart = player.getPos();
     }

@@ -5,7 +5,6 @@
  */
 package Moduls.MyPlayerMusic.Player;
 
-import Moduls.MyPlayerMusic.Player.Skladba;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -27,6 +26,7 @@ public class Songs {
   private void loadDir(String path) throws IOException, TagException {
     File f = new File(path);
     String[] files = f.list();
+    Songs = new ArrayList<>();
     for (String file : files) {
       File fil = new File(path + File.separator + file);
       if (fil.isDirectory()) {

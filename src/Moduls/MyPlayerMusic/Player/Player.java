@@ -5,8 +5,10 @@
  */
 package Moduls.MyPlayerMusic.Player;
 
-import java.io.File;
-import javax.sound.sampled.FloatControl;
+import ddf.minim.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  *
@@ -15,21 +17,24 @@ import javax.sound.sampled.FloatControl;
 public class Player {
 
   private float volume;
-  private final MyAudioPlayer Aplayer;
-  private final FloatControl gainControl;
+  private AudioPlayer Aplayer;
   private boolean paused;
+  public Minim minim;
 
   public Player() {
     this.volume = 0.5f;
-    this.Aplayer = new MyAudioPlayer();
-    this.gainControl = Aplayer.getGain();
+//    this.Aplayer = new MyAudioPlayer();
+    minim = new Minim(this);
+
   }
 
   public void PrepareSong(Skladba s) {
-    Aplayer.open(new File(s.getPath()));
+    setV();
+    Aplayer = minim.loadFile(s.getPath());
   }
 
   public void play() {
+    setV();
     Aplayer.play();
     paused = false;
   }
@@ -40,40 +45,34 @@ public class Player {
   }
 
   public long getPos() {
-    return Aplayer.getPosition();
+    return Aplayer.position();
   }
 
-  public float getVolume(){
+  public float getVolume() {
     return volume;
   }
-  
-  public boolean getPaused(){
+
+  public boolean getPaused() {
     return paused;
   }
-  
+
   public void setVolume(float v) {
-    if (v < this.gainControl.getMaximum() && v > this.gainControl.getMinimum()) {
-      this.volume = (v);
-    } else if (v > this.gainControl.getMaximum()) {
-      this.volume = (this.gainControl.getMaximum());
-    } else if (v < this.gainControl.getMinimum()) {
-      this.volume = (this.gainControl.getMinimum());
-    }
-    this.setV();
+    volume = v;
+    setV();
   }
 
   private void setV() {
-    this.gainControl.setValue(volume);
+    //todo recalculate volume
+    if (Aplayer != null) {
+      Aplayer.setGain(volume);
+    }
   }
 
-  public void Vup() {
-    this.setVolume(this.volume + 0.05f);
-    setV();
+  public String sketchPath(String fileName) {
+    return fileName;
   }
 
-  public void Vdown() {
-    this.setVolume(this.volume - 0.05f);
-    setV();
+  public InputStream createInput(String fileName) throws FileNotFoundException {
+    return new FileInputStream(fileName);
   }
-
 }

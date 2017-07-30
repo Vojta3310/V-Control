@@ -7,6 +7,7 @@ package Moduls.MyPlayerMusic.songAdder;
 
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyScrollbarUI;
+import VControl.utiliti;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -24,9 +25,8 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
 import javax.swing.JTextField;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.SwingConstants;
 
 /**
  *
@@ -35,8 +35,10 @@ import javax.swing.SpinnerNumberModel;
 public class WaveEdit extends JPanel {
 
   private MusicAnalizer ma;
-  private JTextField start;
-  private JTextField end;
+  private final JTextField start;
+  private final JTextField end;
+  private Long Lstart;
+  private Long Lend;
   private final JPanel wave;
 
   public WaveEdit(MusicAnalizer m) throws IOException {
@@ -45,10 +47,10 @@ public class WaveEdit extends JPanel {
     end = new JTextField();//new JSpinner(new SpinnerNumberModel(0L,Long.MIN_VALUE,Long.MAX_VALUE,1L));
     JButton zoomIN = new JButton("+");
     JButton zoomOUT = new JButton("-");
-    
-    Font f = new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size")-3);
+
+    Font f = new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") - 3);
     this.setBackground(AppSettings.getColour("BG_Color"));
-    end.setText(Long.toString(ma.getLenght()));
+    this.setEnd(ma.getLenght());
     start.setText("0");
     end.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     start.setBorder(javax.swing.BorderFactory.createEmptyBorder());
@@ -60,26 +62,30 @@ public class WaveEdit extends JPanel {
     start.setFont(f);
     end.setEditable(false);
     start.setEditable(false);
-    
-    
+    end.setHorizontalAlignment(SwingConstants.RIGHT);
+
     wave = new JPanel() {
       @Override
       protected void paintComponent(Graphics g) {
-        long s = Long.parseLong(start.getText());
-        long e = Long.parseLong(end.getText());
         g.setColor(Color.GRAY);
         g.fillRect(0, 0, getWidth(), getHeight());
 
         g.setColor(Color.BLACK);
-        g.fillRect(toPixels(s), 0, toPixels(e) - toPixels(s), getHeight());
+        g.fillRect(toPixels(Lstart), 0, toPixels(Lend) - toPixels(Lstart), getHeight());
+        
+        g.setColor(Color.DARK_GRAY);
+        int v = (int) (getHeight() * 0.6 * ma.getAverangeVolume() + getHeight() / 2);
+        int v2 = getHeight() - v;
+        g.drawLine(0, v, getWidth(), v);
+        g.drawLine(0, v2, getWidth(), v2);
 
         g.setColor(Color.BLUE);
         ma.Paint((Graphics2D) g);
 
         g.setColor(Color.GREEN);
-        g.fillRect(toPixels(s), 0, 1, getHeight());
+        g.fillRect(toPixels(Lstart), 0, 1, getHeight());
         g.setColor(Color.RED);
-        g.fillRect(toPixels(e), 0, 1, getHeight());
+        g.fillRect(toPixels(Lend), 0, 1, getHeight());
       }
     };
 
@@ -88,12 +94,12 @@ public class WaveEdit extends JPanel {
       @Override
       public void mouseClicked(MouseEvent me) {
         if (me.getButton() == 1) {
-          if (toLen(me.getX()) < Long.parseLong(end.getText())) {
-            start.setText(Long.toString(toLen(me.getX())));
+          if (toLen(me.getX()) < Lend) {
+            setStart(toLen(me.getX()));
           }
         } else if (me.getButton() == 3) {
-          if (toLen(me.getX()) > Long.parseLong(start.getText())) {
-            end.setText(Long.toString(toLen(me.getX())));
+          if (toLen(me.getX()) > Lstart) {
+            setEnd(toLen(me.getX()));
           }
         }
         wave.repaint();
@@ -125,7 +131,7 @@ public class WaveEdit extends JPanel {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        Dimension a=new Dimension(wave.getSize().width * 2, wave.getSize().height);
+        Dimension a = new Dimension(wave.getSize().width * 2, wave.getSize().height);
         wave.setPreferredSize(a);
         ma.setSize(a);
         try {
@@ -142,7 +148,7 @@ public class WaveEdit extends JPanel {
 
       @Override
       public void actionPerformed(ActionEvent ae) {
-        Dimension a=new Dimension(wave.getSize().width / 2, wave.getSize().height);
+        Dimension a = new Dimension(wave.getSize().width / 2, wave.getSize().height);
         wave.setPreferredSize(a);
         ma.setSize(a);
         try {
@@ -176,11 +182,11 @@ public class WaveEdit extends JPanel {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
-            .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(start, 80, 80, 80)
             .addComponent(zoomIN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(zoomOUT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(end, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addComponent(end, 80,80,80)))
       )
     );
     layout.setVerticalGroup(
@@ -213,24 +219,26 @@ public class WaveEdit extends JPanel {
     this.ma = m;
     ma.setSize(wave.getSize());
     ma.createWaveForm();
-    end.setText(Long.toString(ma.getLenght()));
+    this.setEnd(ma.getLenght());
     wave.repaint();
     wave.revalidate();
   }
 
   public long getStart() {
-    return Long.parseLong(start.getText());
+    return Lstart;
   }
 
   public void setStart(long start) {
-    this.start.setText(Long.toString(start));
+    Lstart = start;
+    this.start.setText(utiliti.MilToTime(start));
   }
 
   public long getEnd() {
-    return Long.parseLong(end.getText());
+    return Lend;
   }
 
-  public void setEnd(Long end) {
-    this.end.setText(Long.toString(end));
+  public final void setEnd(Long end) {
+    Lend = end;
+    this.end.setText(utiliti.MilToTime(end));
   }
 }

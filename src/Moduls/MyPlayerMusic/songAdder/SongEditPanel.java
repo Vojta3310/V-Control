@@ -227,13 +227,13 @@ public class SongEditPanel extends JPanel {
     fspecialtags.setText(settings[5]);
     if (!"".equals(settings[6])) {
       WE.setStart(Long.parseLong(settings[6]));
+      if (!"".equals(settings[7])) {
+        WE.setEnd(WE.getStart()+Long.parseLong(settings[7]));
+      } else {
+        WE.setEnd(0L);
+      }
     } else {
       WE.setStart(0L);
-    }
-    if (!"".equals(settings[7])) {
-      WE.setEnd(Long.parseLong(settings[7]));
-    } else {
-      WE.setEnd(0L);
     }
     WE.setMa(ma);
   }

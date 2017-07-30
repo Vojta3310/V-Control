@@ -5,7 +5,6 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
-import Moduls.MyPlayerMusic.Player.MyAudioPlayer;
 import ddf.minim.Minim;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -13,17 +12,12 @@ import java.awt.geom.Line2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Map;
-import javax.sound.sampled.AudioFileFormat;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import org.tritonus.share.sampled.file.TAudioFileFormat;
 import ddf.minim.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import static java.lang.Math.abs;
 
 /**
  *
@@ -87,7 +81,13 @@ public class MusicAnalizer {
       AudioSample jingle = minim.loadSample(file.toString(), 2048);
       audioData = jingle.getChannel(AudioSample.LEFT);
       Lenght = jingle.length();
-      Volume = jingle.left.level();
+      minim.stop();
+
+      double sum = 0;
+      for (int i = 0; i < audioData.length; i++) {
+        sum += abs(audioData[i]);
+      }
+      Volume = (float) sum / audioData.length;
     }
   }
 
@@ -118,5 +118,9 @@ public class MusicAnalizer {
 
   public Dimension getSize() {
     return new Dimension(w, h);
+  }
+
+  public File getFile() {
+    return file;
   }
 }
