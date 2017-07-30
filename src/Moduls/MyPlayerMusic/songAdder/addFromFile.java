@@ -107,6 +107,7 @@ public class addFromFile {
 
   private void load(File f) throws UnsupportedAudioFileException, IOException {
     ma.setFile(f);
+    ma.initAudioStream();
     sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
   }
 

@@ -5,24 +5,25 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import Moduls.MyPlayerMusic.Player.MyAudioPlayer;
+import ddf.minim.Minim;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import javax.imageio.ImageIO;
 import javax.sound.sampled.AudioFileFormat;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import org.tritonus.share.sampled.TAudioFormat;
 import org.tritonus.share.sampled.file.TAudioFileFormat;
+import ddf.minim.*;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 /**
  *
@@ -30,117 +31,29 @@ import org.tritonus.share.sampled.file.TAudioFileFormat;
  */
 public class MusicAnalizer {
 
-  private AudioInputStream audioInputStream;
-  protected AudioFileFormat audioFileFormat;
-  protected Map<String, Object> properties;
- 
-  
   private ArrayList<Line2D.Double> lines = new ArrayList<>();
   private int h;
   private int w;
   private File file;
-  private ArrayList<Integer> AudioData = new ArrayList<>();
-  private long Lenght;
-  private int byteLenght;
+  public Minim minim;
+  AudioPlayer player;
+  float[] audioData;
+  long Lenght = 0;
+  float Volume;
 
   public void createWaveForm() throws IOException, UnsupportedAudioFileException {
-    initAudioStream();
-    lines = new ArrayList<>();
-    if (audioInputStream != null) {
-      byte[] audioBytes;
-      lines.clear();
-      AudioFormat format = audioInputStream.getFormat();
-//      System.out.println(audioFileFormat.getFrameLength());
-
-      if (file.toString().endsWith(".mp3")) {
-        ArrayList<Integer> data = new ArrayList<>();
-        while (true) {
-          int currentByte = audioInputStream.read();
-          if (currentByte == -1) {
-            break;
-          }
-          data.add(currentByte);
-        }
-        double y_last = 0;
-        
-        System.out.println(data.size());
-        System.out.println(audioFileFormat.getFrameLength());
-        System.out.println(getByteLength());
-        System.out.println(getLenght());
-        
-        int frames_per_pixel = data.size() / w;
-        for (double x = 0; x < w; x++) {
-          int idx = (int) (frames_per_pixel * x);
-
-          int buf1 = data.get(idx + 1);
-          int buf2 = data.get(idx);
-
-          buf1 = (short) ((buf1 & 0xff) << 8);
-          buf2 = (short) (buf2 & 0xff);
-
-          short res = (short) (buf1 | buf2);
-
-          double y_new = (double) (h * (128 - (128 * res / 32768)) / 256);
-          lines.add(new Line2D.Double(x - 1, y_last, x, y_new));
-          y_last = y_new;
-        }
-
-      } else {
-
-        audioBytes = new byte[getByteLength()];//(int) (audioFileFormat.getFrameLength() * format.getFrameSize())];
-        audioInputStream.read(audioBytes);
-
-        int[] audioData = null;
-
-        if (format.getSampleSizeInBits() == 16) {
-          int nlengthInSamples = audioBytes.length / 2;
-          audioData = new int[nlengthInSamples];
-          if (format.isBigEndian()) {
-            for (int i = 0; i < nlengthInSamples; i++) {
-              /* First byte is MSB (high order) */
-              int MSB = (int) audioBytes[2 * i];
-              /* Second byte is LSB (low order) */
-              int LSB = (int) audioBytes[2 * i + 1];
-              audioData[i] = MSB << 8 | (255 & LSB);
-            }
-          } else {
-            for (int i = 0; i < nlengthInSamples; i++) {
-              /* First byte is LSB (low order) */
-              int LSB = (int) audioBytes[2 * i];
-              /* Second byte is MSB (high order) */
-              int MSB = (int) audioBytes[2 * i + 1];
-              audioData[i] = MSB << 8 | (255 & LSB);
-            }
-          }
-        } else if (format.getSampleSizeInBits() == 8) {
-          int nlengthInSamples = audioBytes.length;
-          audioData = new int[nlengthInSamples];
-          if (format.getEncoding().toString().startsWith("PCM_SIGN")) {
-            for (int i = 0; i < audioBytes.length; i++) {
-              audioData[i] = audioBytes[i];
-            }
-          } else {
-            for (int i = 0; i < audioBytes.length; i++) {
-              audioData[i] = audioBytes[i] - 128;
-            }
-          }
-        }
-
-        int frames_per_pixel = audioBytes.length / format.getFrameSize() / w;
-        byte my_byte;
-        double y_last = 0;
-        int numChannels = format.getChannels();
-        for (double x = 0; x < w && audioData != null; x++) {
-          int idx = (int) (frames_per_pixel * numChannels * x);
-          if (format.getSampleSizeInBits() == 8) {
-            my_byte = (byte) audioData[idx];
-          } else {
-            my_byte = (byte) (128 * audioData[idx] / 32768);
-          }
-          double y_new = (double) (h * (128 - my_byte) / 256);
-          lines.add(new Line2D.Double(x - 1, y_last, x, y_new));
-          y_last = y_new;
-        }
+    if (file != null) {
+      if (Lenght == 0) {
+        initAudioStream();
+      }
+      lines = new ArrayList<>();
+      int frames_per_pixel = audioData.length / w;
+      double y_last = 0;
+      for (double x = 0; x < w; x++) {
+        int idx = (int) (frames_per_pixel * x);
+        double y_new = (double) (h * 0.6 * audioData[idx] + h / 2);
+        lines.add(new Line2D.Double(x - 1, y_last, x, y_new));
+        y_last = y_new;
       }
     }
   }
@@ -151,163 +64,30 @@ public class MusicAnalizer {
     }
   }
 
-  public int getByteLength() {
-    int bytesLength = AudioSystem.NOT_SPECIFIED;
-    if (properties != null) {
-      if (properties.containsKey("audio.length.bytes")) {
-        bytesLength = ((Integer) properties.get("audio.length.bytes"));
-      }
-    }
-    return bytesLength;
-  }
-
-  private void initAudioInputStream() {
-
-//                throw new PlayerException(ex);
-//                throw new PlayerException(ex);
-    AudioFormat sourceAudioFormat = audioInputStream.getFormat();
-    int nSampleSizeInBits = sourceAudioFormat.getSampleSizeInBits();
-    if (nSampleSizeInBits <= 0) {
-      nSampleSizeInBits = 16;
-    }
-    if ((sourceAudioFormat.getEncoding() == AudioFormat.Encoding.ULAW) || (sourceAudioFormat.getEncoding() == AudioFormat.Encoding.ALAW)) {
-      nSampleSizeInBits = 16;
-    }
-    if (nSampleSizeInBits != 8) {
-      nSampleSizeInBits = 16;
-    }
-    AudioFormat targetAudioFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, sourceAudioFormat.getSampleRate(), nSampleSizeInBits, sourceAudioFormat.getChannels(), sourceAudioFormat.getChannels() * (nSampleSizeInBits / 8), sourceAudioFormat.getSampleRate(), false);
-    audioInputStream = AudioSystem.getAudioInputStream(targetAudioFormat, audioInputStream);
-    if (audioFileFormat instanceof TAudioFileFormat) {
-      // Tritonus SPI compliant audio file format.
-      properties = ((TAudioFileFormat) audioFileFormat).properties();
-      // Clone the Map because it is not mutable.
-      properties = deepCopy(properties);
-    } else {
-      properties = new HashMap<>();
-    }
-    if (audioFileFormat.getByteLength() > 0) {
-      properties.put("audio.length.bytes", audioFileFormat.getByteLength());
-    }
-    if (audioFileFormat.getFrameLength() > 0) {
-      properties.put("audio.length.frames", audioFileFormat.getFrameLength());
-    }
-    if (audioFileFormat.getType() != null) {
-      properties.put("audio.type", audioFileFormat.getType().toString());
-    }
-    AudioFormat audioFormat = audioFileFormat.getFormat();
-    if (audioFormat.getFrameRate() > 0) {
-      properties.put("audio.framerate.fps", audioFormat.getFrameRate());
-    }
-    if (audioFormat.getFrameSize() > 0) {
-      properties.put("audio.framesize.bytes", audioFormat.getFrameSize());
-    }
-    if (audioFormat.getSampleRate() > 0) {
-      properties.put("audio.samplerate.hz", audioFormat.getSampleRate());
-    }
-    if (audioFormat.getSampleSizeInBits() > 0) {
-      properties.put("audio.samplesize.bits", audioFormat.getSampleSizeInBits());
-    }
-    if (audioFormat.getChannels() > 0) {
-      properties.put("audio.channels", audioFormat.getChannels());
-    }
-    if (audioFormat instanceof TAudioFormat) {
-      // Tritonus SPI compliant audio format.
-      properties.putAll(((TAudioFormat) audioFormat).properties());
-    }
-  }
-
-  protected Map<String, Object> deepCopy(Map<String, Object> src) {
-    Map<String, Object> map = new HashMap<>();
-    if (src != null) {
-      Set<String> keySet = src.keySet();
-      for (String key : keySet) {
-        Object value = src.get(key);
-        map.put(key, value);
-//                logger.info("key: {}, value: {}", key, value);
-      }
-    }
-    return map;
-  }
-
-  protected long getTimeLengthEstimation(Map properties) {
-    long milliseconds = AudioSystem.NOT_SPECIFIED;
-    int byteslength = AudioSystem.NOT_SPECIFIED;
-    if (properties != null) {
-      if (properties.containsKey("audio.length.bytes")) {
-        byteslength = ((Integer) properties.get("audio.length.bytes"));
-      }
-      if (properties.containsKey("duration")) {
-        milliseconds = (int) (((Long) properties.get("duration")) / 1000);
-      } else {
-        // Try to compute duration
-        int bitspersample = AudioSystem.NOT_SPECIFIED;
-        int channels = AudioSystem.NOT_SPECIFIED;
-        float samplerate = AudioSystem.NOT_SPECIFIED;
-        int framesize = AudioSystem.NOT_SPECIFIED;
-        if (properties.containsKey("audio.samplesize.bits")) {
-          bitspersample = ((Integer) properties.get("audio.samplesize.bits"));
-        }
-        if (properties.containsKey("audio.channels")) {
-          channels = ((Integer) properties.get("audio.channels"));
-        }
-        if (properties.containsKey("audio.samplerate.hz")) {
-          samplerate = ((Float) properties.get("audio.samplerate.hz"));
-        }
-        if (properties.containsKey("audio.framesize.bytes")) {
-          framesize = ((Integer) properties.get("audio.framesize.bytes"));
-        }
-        if (bitspersample > 0) {
-          milliseconds = (long) (1000.0f * byteslength / (samplerate * channels * (bitspersample / 8)));
-        } else {
-          milliseconds = (long) (1000.0f * byteslength / (samplerate * framesize));
-        }
-      }
-    }
-    return milliseconds * 1000;
-  }
-
   public long getLenght() {
-    if (audioInputStream != null) {
-      long duration;
-      if (properties.containsKey("duration")) {
-        duration = ((Long) properties.get("duration"));
-      } else {
-        duration = getTimeLengthEstimation(properties);
-      }
-      return duration;
-    } else {
-      return 1;
-    }
+    return Lenght;
   }
 
   public float getAverangeVolume() {
-    return 0; //TODO calculate it
+    return Volume;
   }
 
-  public AudioInputStream getAudioInputStream() {
-    return audioInputStream;
+  public String sketchPath(String fileName) {
+    return fileName;
+  }
+
+  public InputStream createInput(String fileName) throws FileNotFoundException {
+    return new FileInputStream(fileName);
   }
 
   public void initAudioStream() throws UnsupportedAudioFileException, IOException {
     if (file != null) {
-//      final AudioInputStream sourceAIS = AudioSystem.getAudioInputStream(file);
-//
-//      File file = new File(file);
-      AudioInputStream in = AudioSystem.getAudioInputStream(file);
-      AudioInputStream din = null;
-      AudioFormat baseFormat = in.getFormat();
-      AudioFormat decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-        baseFormat.getSampleRate(),
-        16,
-        baseFormat.getChannels(),
-        baseFormat.getChannels() * 2,
-        baseFormat.getSampleRate(),
-        false);
-      din = AudioSystem.getAudioInputStream(decodedFormat, in);
-      audioInputStream = din;
-      audioFileFormat = AudioSystem.getAudioFileFormat(file);
-      initAudioInputStream();
+      minim = new Minim(this);
+      minim.debugOff();
+      AudioSample jingle = minim.loadSample(file.toString(), 2048);
+      audioData = jingle.getChannel(AudioSample.LEFT);
+      Lenght = jingle.length();
+      Volume = jingle.left.level();
     }
   }
 

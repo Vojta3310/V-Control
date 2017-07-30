@@ -15,13 +15,13 @@ import javax.sound.sampled.FloatControl;
 public class Player {
 
   private float volume;
-  private final AudioPlayer Aplayer;
+  private final MyAudioPlayer Aplayer;
   private final FloatControl gainControl;
   private boolean paused;
 
   public Player() {
     this.volume = 0.5f;
-    this.Aplayer = new AudioPlayer();
+    this.Aplayer = new MyAudioPlayer();
     this.gainControl = Aplayer.getGain();
   }
 

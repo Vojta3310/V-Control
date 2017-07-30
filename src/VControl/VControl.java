@@ -9,6 +9,7 @@ import Moduls.AnotherModule;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
 import java.io.IOException;
 import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import org.farng.mp3.TagException;
 
 /**
@@ -23,7 +24,7 @@ public class VControl {
    * @throws java.io.IOException
    * @throws org.farng.mp3.TagException
    */
-  public static void main(String[] args) throws LineUnavailableException, IOException, TagException {
+  public static void main(String[] args) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     Commander Commander = new Commander();
     MyPlayerMusic a = new MyPlayerMusic(Commander);
     Commander.addIModule(a);
