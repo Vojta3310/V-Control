@@ -21,6 +21,7 @@ import javax.swing.JButton;
 public class PlayerButon extends JButton {
 
   private BufferedImage image;
+  private BufferedImage image2;
   private ButonTipe tip;
   MusicOrganiser player;
 
@@ -30,24 +31,27 @@ public class PlayerButon extends JButton {
     this.setBackground(AppSettings.getColour("BG_Color"));
     this.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     switch (tip) {
-      case play:
+      case play_pause:
         image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/play.png").getImage());
-        break;
-      case pause:
-        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/pause.png").getImage());
+        image2 = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/pause.png").getImage());
         break;
       case next:
         image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/next.png").getImage());
         break;
-
       case prew:
         image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/prew.png").getImage());
         break;
-
+      case repeat:
+        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/repeat.png").getImage());
+        break;
     }
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
       utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
         AppSettings.getColour("FG_Color"));
+      if (tip == ButonTipe.play_pause) {
+        utiliti.changeColor(image2, AppSettings.getColour("BG_Color"),
+          AppSettings.getColour("FG_Color"));
+      }
     }
 
     this.setPreferredSize(new Dimension(image.getWidth(),
@@ -59,10 +63,7 @@ public class PlayerButon extends JButton {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         switch (tip) {
-          case play:
-            player.tooglePause();
-            break;
-          case pause:
+          case play_pause:
             player.tooglePause();
             break;
           case next:
@@ -71,32 +72,14 @@ public class PlayerButon extends JButton {
           case prew:
             player.Prew();
             break;
+          case repeat:
+            player.Repeat();
+            break;
         }
       }
     });
   }
 
-//  public void setTip(ButonTipe tip) {
-//    switch (tip) {
-//      case play:
-//        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/play.png").getImage());
-//      case pause:
-//        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/pause.png").getImage());
-//      case next:
-//        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/next.png").getImage());
-//      case prew:
-//        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/prew.png").getImage());
-//    }
-//    if (AppSettings.getBool("Icon_Chanhe_Color")) {
-//      utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
-//        AppSettings.getColour("FG_Color"));
-//    }
-//
-//    this.setPreferredSize(new Dimension(image.getWidth(),
-//      image.getHeight()));
-//    this.setSize(new Dimension(image.getWidth(),
-//      image.getHeight()));
-//  }
   @Override
   public void paintComponent(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
@@ -106,12 +89,21 @@ public class PlayerButon extends JButton {
     g2d.setPaint(AppSettings.getColour("FG_Color"));
 
     if (image != null) {
-      g2d.drawImage(
-        image,
-        (getWidth() - image.getWidth()) / 2,
-        (getHeight() - image.getHeight()) / 2,
-        this
-      );
+      if ((tip == ButonTipe.play_pause) && !player.getAplayer().getPaused()) {
+        g2d.drawImage(
+          image2,
+          (getWidth() - image2.getWidth()) / 2,
+          (getHeight() - image2.getHeight()) / 2,
+          this
+        );
+      } else {
+        g2d.drawImage(
+          image,
+          (getWidth() - image.getWidth()) / 2,
+          (getHeight() - image.getHeight()) / 2,
+          this
+        );
+      }
     }
   }
 }

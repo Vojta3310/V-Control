@@ -34,7 +34,7 @@ public class Skladba implements ISkladba {
   private final MP3File mp3file;
   private AudioInputStream audioInputStream;
   private int played = 0;
-  private int repead = 1;
+  private int repead = 0;
 
   public Skladba(String pathtofile) throws IOException, TagException {
     this.Path = pathtofile;
@@ -51,13 +51,13 @@ public class Skladba implements ISkladba {
         this.oblibenost = Float.parseFloat(s[9]);
         this.volume = Float.parseFloat(s[10]);
         this.start = Long.parseLong(s[7]);
-        this.lenght = Long.parseLong(s[8]);
+        this.lenght = Long.parseLong(s[8])-start;
       } else {
-        System.err.println("Not my song!!!");
+        System.err.println("Not my song!!!2");
       }
 
     } else {
-      System.err.println("Not my song!!!");
+      System.err.println("Not my song!!!"+ pathtofile);
     }
   }
 
@@ -139,7 +139,6 @@ public class Skladba implements ISkladba {
   }
 
   public void Played() {
-    Repeaded();
     this.played += 1;
   }
 

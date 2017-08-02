@@ -30,16 +30,7 @@ import org.farng.mp3.TagException;
 import org.farng.mp3.TagOptionSingleton;
 import org.farng.mp3.id3.AbstractID3v2Frame;
 import org.farng.mp3.id3.AbstractID3v2FrameBody;
-import org.farng.mp3.id3.FrameBodyAENC;
-import org.farng.mp3.id3.FrameBodyASPI;
-import org.farng.mp3.id3.FrameBodyOWNE;
-import org.farng.mp3.id3.FrameBodyPIC;
-import org.farng.mp3.id3.FrameBodyRBUF;
-import org.farng.mp3.id3.FrameBodySEEK;
-import org.farng.mp3.id3.FrameBodyTALB;
 import org.farng.mp3.id3.FrameBodyTDAT;
-import org.farng.mp3.id3.FrameBodyUnsupported;
-import org.farng.mp3.id3.FrameBodyWXXX;
 import org.farng.mp3.id3.ID3v2_4Frame;
 
 /**
@@ -124,8 +115,6 @@ public class addFromFile {
   }
 
   public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
-    System.out.println(f.getName());
-    System.out.println(Arrays.toString(set));
     save();
   }
 
@@ -168,6 +157,8 @@ public class addFromFile {
     frame = new ID3v2_4Frame(frameBody);
     mp3file.getID3v2Tag().setFrame(frame);
     mp3file.save();
+    
+    MP.reloadSongs();
   }
 
   public JPanel getGui() {

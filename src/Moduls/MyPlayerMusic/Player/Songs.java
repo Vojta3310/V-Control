@@ -17,6 +17,8 @@ import org.farng.mp3.TagException;
 public class Songs {
 
   private ArrayList<Skladba> Songs;
+  private float statMinVol = 1;
+  private float statMaxVol = 0;
 //  private model
 
   public void load(String path) throws IOException, TagException {
@@ -32,7 +34,10 @@ public class Songs {
       if (fil.isDirectory()) {
         loadDir(fil.getPath());
       } else {
-        Songs.add(new Skladba(fil.getPath()));
+        Skladba a = new Skladba(fil.getPath());
+        Songs.add(a);
+        statMinVol = Math.min(a.getVolume(), statMinVol);
+        statMaxVol = Math.max(a.getVolume(), statMaxVol);
       }
     }
   }
@@ -43,5 +48,13 @@ public class Songs {
 
   public int getCount() {
     return Songs.size();
+  }
+
+  public float getStatMinVol() {
+    return statMinVol;
+  }
+
+  public float getStatMaxVol() {
+    return statMaxVol;
   }
 }

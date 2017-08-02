@@ -7,6 +7,8 @@ package Moduls.MyPlayerMusic.Player;
 
 import Moduls.Modul;
 import Moduls.MyPlayerMusic.Player.GUI.MPgui;
+import VControl.utiliti;
+import ddf.minim.AudioPlayer;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -29,12 +31,12 @@ public class MusicOrganiser {
   private int lastSelected;
   private final Player player;
   private byte afterTransform = 0; //0 nic; 1 další; 2 předchozí; 3 pause;
-  private long transformEnd;
   private long transformStart;
   private float transferTo = 0.5f;
-  private float transferFrom = 0.5f;
+  private float transferFrom = 0.0f;
   private float volume;
   private final Modul modul;
+  private boolean newSong;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     modul = mod;
@@ -44,6 +46,7 @@ public class MusicOrganiser {
     NextSongs = new DefaultListModel<>();
     PlayedSongs = new DefaultListModel<>();
     gui.getSpanel().getRlist().setModel(NextSongs);
+    gui.getSpanel().getSlist().setModel(PlayedSongs);
     NextSongs.addElement(new RandomSong(Songs));
     NextSongs.addElement(new AddSongSign(Songs));
     gui.getSpanel().getRlist().setSelectedIndex(0);
@@ -60,83 +63,158 @@ public class MusicOrganiser {
   public final void start() throws IOException, TagException {
     volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     Songs.load(modul.SgetString("MusicDir"));
+    player.setStatMaxVol(Songs.getStatMaxVol());
+    player.setStatMinVol(Songs.getStatMinVol());
     playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
     Timer tim = new Timer(10, new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent ae) {
         doTransform();
         checkNextSong();
+        updateGUI();
+        updateVolume();
       }
     });
     tim.start();
   }
 
+  private void updateVolume() {
+//    System.out.println(gui.getPpanel().getVcontrol().getVolume());
+    if (gui.getPpanel().getVcontrol().getVolume() != volume) {
+      IsetVolume(gui.getPpanel().getVcontrol().getVolume());
+    }
+  }
+
+  public void reloadSongs() throws IOException, TagException {
+    Songs.load(modul.SgetString("MusicDir"));
+    player.setStatMaxVol(Songs.getStatMaxVol());
+    player.setStatMinVol(Songs.getStatMinVol());
+  }
+
+  public Player getAplayer() {
+    return player;
+  }
+
   private void UplayNext() {
+    transferFrom = 0;
+    transferTo = 0;
     Playing.Played();
     //@TODO playing.oblibenost --
     Skladba ns = getNextSong();
-    if (!ns.equals(Playing)) {
-      PlayedSongs.addElement(Playing);
-      gui.getSpanel().getRlist().setSelectedIndex(PlayedSongs.size() - 1);
-      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    }
-    gui.getIpanel().ShowSong(ns);
+//    if (!ns.equals(Playing)) {
+//      PlayedSongs.addElement(Playing);
+//      gui.getSpanel().getRlist().setSelectedIndex(PlayedSongs.size());
+//      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+//    }
     playSong(ns);
     //@TODO kdyš ns dohraje ns.oblineost ++
   }
 
   private void UplayPrew() {
+    transferFrom = 0;
+    transferTo = 0;
     Playing.Played();
-    if (gui.getSpanel().getSlist().getSelectedIndex() > 0) {
-      gui.getSpanel().getSlist().setSelectedIndex(gui.getSpanel().getSlist().getSelectedIndex() - 1);
+    if (gui.getSpanel().getSlist().getModel().getSize() > 0) {
+      if (gui.getSpanel().getSlist().getSelectedIndex() > 0) {
+        if (newSong) {
+          gui.getSpanel().getSlist().setSelectedIndex(PlayedSongs.getSize() - 1);
+          PlayedSongs.addElement(Playing);
+          gui.getSpanel().getSlist().scrollRectToVisible(gui.getSpanel().getSlist().getCellBounds(PlayedSongs.size() - 1, PlayedSongs.size() - 1));
+        } else {
+          gui.getSpanel().getSlist().setSelectedIndex(gui.getSpanel().getSlist().getSelectedIndex() - 1);
+        }
+        //@TODO kdyš ns dohraje ns.oblineost ++
+      }
+      Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
+      newSong = false;
+      playSong(ns);
+    } else {
+      newSong = false;
+      playSong(Playing);
     }
-    Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
-    gui.getIpanel().ShowSong(ns);
-    playSong(ns);
-    //@TODO kdyš ns dohraje ns.oblineost ++
+  }
+
+  private void UplaySel() {
+    transferFrom = 0;
+    transferTo = 0;
+    Playing.Played();
+    if (gui.getSpanel().getSlist().getModel().getSize() > 0) {
+      if (gui.getSpanel().getSlist().getSelectedIndex() >= 0) {
+        if (newSong) {
+          PlayedSongs.addElement(Playing);
+        }
+        //@TODO kdyš ns dohraje ns.oblineost ++
+      }
+      Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
+      newSong = false;
+      playSong(ns);
+    }
   }
 
   private Skladba getNextSong() {
     if (!PlayedSongs.isEmpty()) {
       if (gui.getSpanel().getSlist().getSelectedIndex() < PlayedSongs.getSize() - 1) {
         gui.getSpanel().getSlist().setSelectedIndex(gui.getSpanel().getSlist().getSelectedIndex() + 1);
+        newSong = false;
         return PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
       }
     }
+    newSong = true;
     RandomSong rs = NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex());
     if ((rs.getRepead() > 0) || (rs.getRepead() == -1)) {
-      return rs.getSkladba();
+      Skladba ns = rs.getSkladba();
+      rs.Repeaded();
+      if (PlayedSongs.isEmpty() || !Playing.equals(PlayedSongs.elementAt(PlayedSongs.getSize() - 1))) {
+        PlayedSongs.addElement(Playing);
+        gui.getSpanel().getSlist().scrollRectToVisible(gui.getSpanel().getSlist().getCellBounds(PlayedSongs.size() - 1, PlayedSongs.size() - 1));
+        gui.getSpanel().getSlist().setSelectedIndex(PlayedSongs.size() - 1);
+        gui.getSpanel().getSlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      }
+      return ns;
     }
     int index = gui.getSpanel().getRlist().getSelectedIndex() + 1;
-    if (index == NextSongs.size() - 1) {
+    if (index >= NextSongs.size() - 2) {
       index = 0;
     }
-    return NextSongs.elementAt(index).getSkladba();
+    gui.getSpanel().getRlist().setSelectedIndex(index);
+
+    Skladba ns = NextSongs.elementAt(index).getSkladba();
+    if (!ns.equals(Playing)) {
+      PlayedSongs.addElement(Playing);
+      gui.getSpanel().getSlist().scrollRectToVisible(gui.getSpanel().getSlist().getCellBounds(PlayedSongs.size() - 1, PlayedSongs.size() - 1));
+      gui.getSpanel().getSlist().setSelectedIndex(PlayedSongs.size() - 1);
+      gui.getSpanel().getSlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    }
+    return ns;
   }
 
   private void playSong(Skladba ns) {
-    modul.repaint();
     Playing = ns;
-    player.PrepareSong(Playing);
+    AudioPlayer ap = player.PrepareSong(Playing);
+    gui.getIpanel().setupEqualizer(ap);
+    gui.getPpanel().getVcontrol().setAp(ap);
     gui.getSpanel().getSlabel().setText(Playing.getLabel());
     transferTo = volume;
     player.setVolume(volume);
     player.play();
+    gui.getIpanel().ShowSong(ns);
+    modul.repaint();
   }
 
   private void playNextSong() {
     Playing.Played();
-    Skladba ns = getNextSong();
     if ((Playing.getRepead() > 0) || (Playing.getRepead() == -1)) {
-      ns = Playing;
+      Playing.Repeaded();
+      playSong(Playing);
+    } else {
+      playSong(getNextSong());
     }
-    if (!ns.equals(Playing)) {
-      PlayedSongs.addElement(Playing);
-      gui.getSpanel().getRlist().setSelectedIndex(PlayedSongs.size() - 1);
-      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    }
-    gui.getIpanel().ShowSong(ns);
-    playSong(ns);
+    //    if (!ns.equals(Playing)) {
+    //      PlayedSongs.addElement(Playing);
+    //      gui.getSpanel().getRlist().setSelectedIndex(PlayedSongs.size());
+    //      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    //    }
+
   }
 
   public void Vup() {
@@ -148,6 +226,10 @@ public class MusicOrganiser {
   }
 
   public void setVolume(float v) {
+    gui.getPpanel().getVcontrol().setVolume(v);
+  }
+
+  private void IsetVolume(float v) {
     transferFrom = volume;
     if (v <= 1 && v >= 0) {
       this.volume = (v);
@@ -160,6 +242,19 @@ public class MusicOrganiser {
     transformStart = player.getPos();
   }
 
+  public void Repeat() {
+    System.out.println(Playing.getRepead());
+    if (Playing.getRepead() > 0 && Playing.getRepead() < 5) {
+      Playing.setRepead(Playing.getRepead() + 1);
+    } else if (Playing.getRepead() == 0) {
+      Playing.setRepead(-1);
+    } else if (Playing.getRepead() == -1) {
+      Playing.setRepead(1);
+    } else if (Playing.getRepead() == 5) {
+      Playing.setRepead(0);
+    }
+  }
+
   public void Next() {
     afterTransform = 1; //0 nic; 1 další; 2 předchozí; 3 pause;
     transferFrom = volume;
@@ -169,6 +264,13 @@ public class MusicOrganiser {
 
   public void Prew() {
     afterTransform = 2; //0 nic; 1 další; 2 předchozí; 3 pause;
+    transferFrom = volume;
+    transferTo = 0;
+    transformStart = player.getPos();
+  }
+
+  public void PlaySel() {
+    afterTransform = 4; //0 nic; 1 další; 2 předchozí; 3 pause; 4 playsel;
     transferFrom = volume;
     transferTo = 0;
     transformStart = player.getPos();
@@ -186,9 +288,10 @@ public class MusicOrganiser {
   public void Play() {
     if (player.getPaused()) {
       player.play();
-      transferFrom = volume;
+      transferFrom = 0;
       transferTo = volume;
       transformStart = player.getPos();
+      afterTransform = 0;
     }
   }
 
@@ -200,9 +303,18 @@ public class MusicOrganiser {
     }
   }
 
+  private void pltooglePause() {
+    if (player.getPaused()) {
+      player.play();
+    } else {
+      player.pause();
+    }
+  }
+
   private void doTransform() {
-    if (transferTo != player.getVolume()) {
-      float stat = (player.getPos() - transformStart) / modul.SgetInt("Transfet_Lenght");
+    if (!(((transferFrom > transferTo) && (transferTo >= player.getVolume()))
+      || ((transferFrom < transferTo) && (transferTo <= player.getVolume())))) {
+      float stat = (float) (player.getPos() - transformStart) / modul.SgetInt("Transfet_Lenght");
       player.setVolume(transferFrom + (transferTo - transferFrom) * stat);
     } else {
       switch (afterTransform) {
@@ -213,7 +325,10 @@ public class MusicOrganiser {
           UplayPrew();
           break;
         case 3:
-          tooglePause();
+          pltooglePause();
+          break;
+        case 4:
+          UplaySel();
           break;
       }
       afterTransform = 0;
@@ -221,9 +336,20 @@ public class MusicOrganiser {
   }
 
   private void checkNextSong() {
-    if (player.getPos() >= (Playing.getLenght() + Playing.getStart())) {
+    if (player.finished()) {
       playNextSong();
     }
+  }
+
+  private void updateGUI() {
+    gui.getPpanel().getSizeLabel().setText(utiliti.MilToTime(Playing.getLenght()));
+    gui.getPpanel().getStateLabel().setText(utiliti.MilToTime(player.getPos() - Playing.getStart()));
+    gui.getPpanel().getSlider().setMaximum(Integer.MAX_VALUE);
+    if (!player.getPaused()) {
+      gui.getPpanel().getSlider().setValue(
+        (int) (((float) (player.getPos() - Playing.getStart()) / Playing.getLenght()) * Integer.MAX_VALUE));
+    }
+    gui.repaint();
   }
 
   private void clearRlist() {
@@ -256,6 +382,10 @@ public class MusicOrganiser {
       }
       lastSelected = gui.getSpanel().getRlist().getSelectedIndex();
     }
+  }
+
+  public Skladba getPlaying() {
+    return Playing;
   }
 
   public Modul getModul() {

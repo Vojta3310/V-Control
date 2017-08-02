@@ -53,6 +53,10 @@ public class MyPlayerMusic extends Modul implements IModul {
     super.getToolBar().addTool(c);
     super.setMyGrafics(Player.getGui());
   }
+  
+  public void reloadSongs() throws IOException, TagException{
+    Player.reloadSongs();
+  }
 
   @Override
   public final ImageIcon GetIcon() {

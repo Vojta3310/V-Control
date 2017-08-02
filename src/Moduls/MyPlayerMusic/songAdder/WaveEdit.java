@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import Moduls.MyPlayerMusic.Player.GUI.zoomButton;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyScrollbarUI;
 import VControl.utiliti;
@@ -45,8 +46,8 @@ public class WaveEdit extends JPanel {
     ma = m;
     start = new JTextField();//new JSpinner(new SpinnerNumberModel(0L,Long.MIN_VALUE,Long.MAX_VALUE,1L));
     end = new JTextField();//new JSpinner(new SpinnerNumberModel(0L,Long.MIN_VALUE,Long.MAX_VALUE,1L));
-    JButton zoomIN = new JButton("+");
-    JButton zoomOUT = new JButton("-");
+    zoomButton zoomIN = new zoomButton("zoomin");
+    zoomButton zoomOUT = new zoomButton("zoomout");
 
     Font f = new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") - 3);
     this.setBackground(AppSettings.getColour("BG_Color"));
@@ -183,8 +184,8 @@ public class WaveEdit extends JPanel {
           .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
           .addGroup(layout.createSequentialGroup()
             .addComponent(start, 80, 80, 80)
-            .addComponent(zoomIN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(zoomOUT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(zoomIN)
+            .addComponent(zoomOUT)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(end, 80,80,80)))
       )
@@ -194,8 +195,8 @@ public class WaveEdit extends JPanel {
       .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
           .addComponent(start, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(zoomIN, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-          .addComponent(zoomOUT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+          .addComponent(zoomIN)
+          .addComponent(zoomOUT)
           .addComponent(end, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
         .addComponent(jScrollPane1, 10, javax.swing.GroupLayout.DEFAULT_SIZE, Integer.MAX_VALUE)

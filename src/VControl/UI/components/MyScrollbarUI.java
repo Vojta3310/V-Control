@@ -9,7 +9,9 @@ import VControl.Settings.AppSettings;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
@@ -40,12 +42,18 @@ public class MyScrollbarUI extends BasicScrollBarUI {
 
   @Override
   protected void paintTrack(Graphics g, JComponent c, Rectangle r) {
+    Graphics2D g2d = (Graphics2D) g;
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+      RenderingHints.VALUE_ANTIALIAS_ON);
     g.setColor(AppSettings.getColour("FG_Color"));
     g.fillRect(r.x, r.y, r.width, r.height);
   }
 
   @Override
   protected void paintThumb(Graphics g, JComponent c, Rectangle r) {
+    Graphics2D g2d = (Graphics2D) g;
+    g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+      RenderingHints.VALUE_ANTIALIAS_ON);
     Color a = AppSettings.getColour("FG_Color");
     g.setColor(a.darker());
     if (r.width < r.height) {

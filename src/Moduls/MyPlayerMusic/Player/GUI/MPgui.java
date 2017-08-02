@@ -5,11 +5,11 @@
  */
 package Moduls.MyPlayerMusic.Player.GUI;
 
-import Moduls.MyPlayerMusic.Player.GUI.PlayerPanel;
-import Moduls.MyPlayerMusic.Player.GUI.SongPanel;
 import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.Settings.AppSettings;
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import javax.swing.JPanel;
 
 /**
@@ -22,7 +22,7 @@ public class MPgui extends JPanel {
   private final SongPanel spanel;
   private final PlayerPanel ppanel;
 
-  public MPgui(MusicOrganiser o) {
+  public MPgui(final MusicOrganiser o) {
     ipanel = new InfoPanel();
     spanel = new SongPanel();
     ppanel = new PlayerPanel(o);
@@ -34,6 +34,35 @@ public class MPgui extends JPanel {
     this.add(a, BorderLayout.CENTER);
     this.add(spanel, BorderLayout.LINE_START);
     this.setBackground(AppSettings.getColour("BG_Color"));
+
+    spanel.getSlist().addMouseListener(new MouseListener() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        System.out.println(e.getClickCount());
+        if (e.getClickCount() == 2) {
+          o.PlaySel();
+        }
+
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+      }
+    });
+
   }
 
   public InfoPanel getIpanel() {

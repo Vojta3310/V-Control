@@ -11,5 +11,5 @@ package Moduls.MyPlayerMusic.Player.GUI;
  */
 public enum ButonTipe {
 
-  play, pause, next, prew;
+  play_pause, next, prew, repeat;
 }

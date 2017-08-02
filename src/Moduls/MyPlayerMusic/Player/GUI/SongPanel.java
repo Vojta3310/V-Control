@@ -7,19 +7,15 @@ package Moduls.MyPlayerMusic.Player.GUI;
 
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyScrollbarUI;
-import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.text.StyleConstants;
 
 /**
  *

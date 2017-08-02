@@ -22,7 +22,7 @@ public class RandomSong implements ISkladba {
   private String Langue;
   private String SpecialTags;
   private float oblibenost = 0f;
-  private int repead = 1;
+  private int repead = 0;
   private boolean choosedOne = false;
   //!private InfoPanel iPanel;
 
@@ -73,14 +73,14 @@ public class RandomSong implements ISkladba {
         choosedOne = true;
         song = a.get(0);
         song.setRepead(repead);
-        this.repead = 1;
+        this.repead = 0;
       } else {
         choosedOne = false;
         ArrayList<Integer> b = new ArrayList<>();
         int sum = 0;
 
         for (Skladba s : a) {
-          int o = (int) s.getOblibenost() * songs.getCount() / (s.getPlayed() + 1);
+          int o = (int)( s.getOblibenost() * songs.getCount() / (s.getPlayed()*3 + 1))+1;
           b.add(o);
           sum += o;
         }
@@ -89,7 +89,7 @@ public class RandomSong implements ISkladba {
           n -= b.get(i);
           if (n <= 0) {
             this.song = a.get(i);
-            this.song.setRepead(1);
+            this.song.setRepead(0);
             break;
           }
         }
@@ -111,7 +111,7 @@ public class RandomSong implements ISkladba {
   @Override
   public String getLabel() {
     String l = "";
-    if (repead > 1) {
+    if (repead > 0) {
       l = "(" + repead + "x) ";
     }
     if ((Title != null) && (Autor != null)) {
@@ -223,6 +223,5 @@ public class RandomSong implements ISkladba {
   public void setRepead(int repead) {
     this.repead = repead;
   }
-  
-  
+
 }
