@@ -154,4 +154,9 @@ public class Skladba implements ISkladba {
     this.repead -= 1;
   }
 
+  @Override
+  public String toString() {
+    return Title + " - " + Autor;
+  }
+
 }

@@ -25,18 +25,22 @@ import org.farng.mp3.TagException;
 public class MyPlayerMusic extends Modul implements IModul {
   private final MusicOrganiser Player;
   private final addFromFile addSong;
+  private final EditSong edit;
   
   public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     super(Commander);
     Player=new MusicOrganiser(this);
     addSong=new addFromFile(this);
-    final ToolButton b = new ToolButton(this.GetIcon());
-    final ToolButton c = new ToolButton(this.GetIcon());
+    edit=new EditSong(this,Player.getSongs());
+    final ToolButton b = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/PlayFile.png"));
+    final ToolButton c = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/addFromFile.png"));
+    final ToolButton d = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/EditSong.png"));
     b.Activate();
     b.addActionListener(new java.awt.event.ActionListener() {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         c.Deactivate();
+        d.Deactivate();
         b.Activate();
         setMyGrafics(Player.getGui());
       }
@@ -45,12 +49,23 @@ public class MyPlayerMusic extends Modul implements IModul {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent evt) {
         b.Deactivate();
+        d.Deactivate();
         c.Activate();
         setMyGrafics(addSong.getGui());
       }
     });
+    d.addActionListener(new java.awt.event.ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        b.Deactivate();
+        c.Deactivate();
+        d.Activate();
+        setMyGrafics(edit.getGui());
+      }
+    });
     super.getToolBar().addTool(b);
     super.getToolBar().addTool(c);
+    super.getToolBar().addTool(d);
     super.setMyGrafics(Player.getGui());
   }
   

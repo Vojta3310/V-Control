@@ -24,7 +24,7 @@ public class Player {
   private Skladba s;
   private float statMinVol;
   private float statMaxVol;
-  private final float Strenght = 0.8F;
+  private final float Strenght = 0.4F;
 
   public Player() {
     this.volume = 0.5f;

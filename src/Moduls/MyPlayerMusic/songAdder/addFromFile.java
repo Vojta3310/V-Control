@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -95,7 +94,7 @@ public class addFromFile {
       public void actionPerformed(ActionEvent ae) {
         try {
           if (fc.getSelectedFile() != null) {
-            add(fc.getSelectedFile(), sep.getSet());
+            save();
             fc.setSelectedFile(null);
             select.setText("Vybrat soubor ...");
             select.requestFocus();
@@ -114,9 +113,9 @@ public class addFromFile {
     gui.add(sep);
   }
 
-  public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
-    save();
-  }
+//  public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
+//    save();
+//  }
 
   private void load(File f) throws UnsupportedAudioFileException, IOException {
     ma.setFile(f);

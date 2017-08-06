@@ -6,16 +6,13 @@
 package Moduls.MyPlayerMusic.songAdder;
 
 import VControl.Settings.AppSettings;
-import VControl.UI.components.MyScrollbarUI;
-import java.awt.Dimension;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.ActionListener;
+import javax.swing.ComboBoxEditor;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 
 /**
@@ -33,6 +30,7 @@ public class MyComboUI extends javax.swing.plaf.basic.BasicComboBoxUI {
   public void paint(Graphics g, JComponent c) {
     super.paint(g, c);
     g.setColor(AppSettings.getColour("FG_Color"));
+
     if (c.isFocusOwner()) {
       g.fillRect(0, c.getHeight() - AppSettings.getInt("Border_Size"), c.getWidth(), c.getHeight());
     } else {
@@ -43,6 +41,49 @@ public class MyComboUI extends javax.swing.plaf.basic.BasicComboBoxUI {
   @Override
   protected ComboPopup createPopup() {
     return new MyComboPopup(comboBox);
+  }
+
+  @Override
+  protected ComboBoxEditor createEditor() {
+//    return super.createEditor(); //To change body of generated methods, choose Tools | Templates.
+    return new ComboBoxEditor() {
+      private final MyComboTextField edit;
+
+      {
+        this.edit = new MyComboTextField();
+        edit.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+      }
+
+      @Override
+      public Component getEditorComponent() {
+        return edit;
+      }
+
+      @Override
+      public void setItem(Object anObject) {
+        edit.setText(anObject == null ? null : anObject.toString());
+      }
+
+      @Override
+      public Object getItem() {
+        return edit.getText();
+      }
+
+      @Override
+      public void selectAll() {
+        edit.selectAll();
+      }
+
+      @Override
+      public void addActionListener(ActionListener l) {
+        edit.addActionListener(l);
+      }
+
+      @Override
+      public void removeActionListener(ActionListener l) {
+        edit.removeActionListener(l);
+      }
+    };
   }
 
   @Override

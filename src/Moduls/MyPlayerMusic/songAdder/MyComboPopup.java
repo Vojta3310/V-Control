@@ -35,6 +35,7 @@ public class MyComboPopup extends BasicComboPopup {
   protected void configureList() {
     super.configureList(); //To change body of generated methods, choose Tools | Templates.
     this.getList().setBackground(AppSettings.getColour("BG_Color"));
+    this.getList().setForeground(AppSettings.getColour("FG_Color"));
   }
 
   @Override

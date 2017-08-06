@@ -84,7 +84,7 @@ public class RandomSong implements ISkladba {
           b.add(o);
           sum += o;
         }
-        int n = (int) (Math.random() * sum);
+        int n = (int) (Math.random() * (sum-1))+1;
         for (int i = 0; i < b.size(); i++) {
           n -= b.get(i);
           if (n <= 0) {

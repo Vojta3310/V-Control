@@ -16,10 +16,11 @@ import javax.swing.JTextField;
  *
  * @author vojta3310
  */
-public class MyField extends JTextField {
+public class MyComboTextField extends JTextField {
 
-  public MyField() {
-    setSelectionColor(Color.GRAY);
+  public MyComboTextField() {
+    setSelectionColor(AppSettings.getColour("BG_Color"));
+    setSelectedTextColor(Color.gray);
     this.addFocusListener(new FocusListener() {
 
       @Override
@@ -40,12 +41,11 @@ public class MyField extends JTextField {
   @Override
   protected void paintComponent(Graphics g) {
     super.paintComponent(g);
+
     g.setColor(AppSettings.getColour("FG_Color"));
-    if (this.isFocusOwner()) {
-      g.fillRect(0, getHeight() - AppSettings.getInt("Border_Size"), getWidth(), getHeight());
-    } else {
-      g.fillRect(0, getHeight() - AppSettings.getInt("Border_Size") / 2, getWidth(), getHeight());
-    }
+
+    g.fillRect(0, getHeight() - AppSettings.getInt("Border_Size") / 2, getWidth(), getHeight());
+
   }
 
 }

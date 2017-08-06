@@ -395,4 +395,8 @@ public class MusicOrganiser {
   public MPgui getGui() {
     return gui;
   }
+
+  public Songs getSongs() {
+    return Songs;
+  }
 }
