@@ -120,12 +120,9 @@ public class addFromFile {
   private void load(File f) throws UnsupportedAudioFileException, IOException {
     ma.setFile(f);
     ma.initAudioStream();
-    sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
-  }
-
-  private void load(File f, String s) throws UnsupportedAudioFileException, IOException {
-    ma.setFile(f);
-    sep.load(s.split("%@%"), ma);
+    SongInfo i =new SongInfo();
+    i.load(f);
+    sep.load(i.getSet(), ma);
   }
 
   private void save() throws UnsupportedAudioFileException, IOException, TagException {
