@@ -1,0 +1,3 @@
+[submodule "src/Moduls/Skladnik"]
+	path = src/Moduls/Skladnik
+	url = https://github.com/rasic/Skladnik
