@@ -11,8 +11,8 @@ import VControl.utiliti;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -28,21 +28,21 @@ public class SidebarModule extends JButton {
   public SidebarModule(final IModul modul) {
     this.modul = modul;
     this.setBackground(AppSettings.getColour("BG_Color"));
-    ImageIcon ico = modul.GetIcon();
-    
-    image = utiliti.toBufferedImage(ico.getImage());
-    
+    Image ico = modul.GetIcon();
+
+    image = utiliti.toBufferedImage(ico);
+
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
-      
+
       utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
         AppSettings.getColour("FG_Color"));
     }
-    
+
     this.setBorder(javax.swing.BorderFactory.createLineBorder(
       AppSettings.getColour("FG_Color"), 0));
     this.setPreferredSize(new Dimension(AppSettings.getInt("Icon_Size"),
       AppSettings.getInt("Icon_Size")));
-    this.modul.setButton(this);
+    modul.setButton(this);
 
     this.addActionListener(new java.awt.event.ActionListener() {
       @Override
@@ -59,7 +59,7 @@ public class SidebarModule extends JButton {
   public void Deactivate() {
     active = false;
   }
-  
+
   @Override
   public void paintComponent(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;

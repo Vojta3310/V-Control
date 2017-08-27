@@ -13,6 +13,10 @@ import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 /**
@@ -21,15 +25,21 @@ import javax.swing.JPanel;
  */
 public class Stars extends JPanel {
 
-  private final BufferedImage emty;
-  private final BufferedImage full;
+  private BufferedImage emty;
+  private BufferedImage full;
   private int maxStars = 5;
   private float Stars = 2.5F;
   private boolean editabe = false;
 
   public Stars() {
-    emty = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/EmtyStar.png").getImage());
-    full = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/FullStar.png").getImage());
+    emty = null;
+    full = null;
+    try {
+      emty = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/app/EmtyStar.png")));
+      full = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/app/FullStar.png")));
+    } catch (IOException ex) {
+      Logger.getLogger(Stars.class.getName()).log(Level.SEVERE, null, ex);
+    }
 
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
       utiliti.changeColor(emty, AppSettings.getColour("BG_Color"),

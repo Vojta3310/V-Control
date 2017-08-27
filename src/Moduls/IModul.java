@@ -7,8 +7,8 @@ package Moduls;
 
 import VControl.ICommand;
 import VControl.UI.SidebarModule;
+import java.awt.Image;
 import java.util.Properties;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
@@ -23,7 +23,7 @@ public interface IModul {
 
   public boolean HaveGUI();
 
-  public ImageIcon GetIcon();
+  public Image GetIcon();
 
   public void Activate();
 

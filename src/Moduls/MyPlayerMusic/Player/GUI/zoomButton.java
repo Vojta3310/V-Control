@@ -11,6 +11,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 /**
@@ -21,12 +23,12 @@ public class zoomButton extends JButton {
 
   private final BufferedImage image;
 
-  public zoomButton(String i) {
+  public zoomButton(String i) throws IOException {
 
     this.setBackground(AppSettings.getColour("BG_Color"));
     this.setBorder(javax.swing.BorderFactory.createEmptyBorder());
 
-    image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/" + i + ".png").getImage());
+    image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/" + i + ".png")));
 
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
       utiliti.changeColor(image, AppSettings.getColour("BG_Color"),

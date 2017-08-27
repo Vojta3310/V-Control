@@ -10,8 +10,8 @@ import VControl.utiliti;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
 /**
@@ -23,9 +23,9 @@ public class ToolButton extends JButton {
   private boolean active = false;
   private final BufferedImage image;
 
-  public ToolButton(ImageIcon ico) {
+  public ToolButton(Image ico) {
 
-    image = utiliti.toBufferedImage(ico.getImage());
+    image = utiliti.toBufferedImage(ico);
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
       utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
         AppSettings.getColour("FG_Color"));

@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.JButton;
 
 /**
@@ -30,21 +32,26 @@ public class PlayerButon extends JButton {
     player = pl;
     this.setBackground(AppSettings.getColour("BG_Color"));
     this.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-    switch (tip) {
-      case play_pause:
-        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/play.png").getImage());
-        image2 = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/pause.png").getImage());
-        break;
-      case next:
-        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/next.png").getImage());
-        break;
-      case prew:
-        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/prew.png").getImage());
-        break;
-      case repeat:
-        image = utiliti.toBufferedImage(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/repeat.png").getImage());
-        break;
+    
+    try {
+      switch (tip) {
+        case play_pause:
+          image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/play.png")));
+          image2 = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/pause.png")));
+          break;
+        case next:
+          image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/next.png")));
+          break;
+        case prew:
+          image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/prew.png")));
+          break;
+        case repeat:
+          image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/repeat.png")));
+          break;
+      }
+    } catch (IOException iOException) {
     }
+    
     if (AppSettings.getBool("Icon_Chanhe_Color")) {
       utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
         AppSettings.getColour("FG_Color"));

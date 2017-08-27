@@ -11,11 +11,14 @@ import Moduls.IModul;
 import Moduls.Modul;
 import Moduls.MyPlayerMusic.songAdder.addFromFile;
 import VControl.UI.ToolButton;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.ImageIcon;
 import org.farng.mp3.TagException;
 
 /**
@@ -23,18 +26,19 @@ import org.farng.mp3.TagException;
  * @author vojta3310
  */
 public class MyPlayerMusic extends Modul implements IModul {
+
   private final MusicOrganiser Player;
   private final addFromFile addSong;
   private final EditSong edit;
-  
+
   public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     super(Commander);
-    Player=new MusicOrganiser(this);
-    addSong=new addFromFile(this);
-    edit=new EditSong(this,Player.getSongs());
-    final ToolButton b = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/PlayFile.png"));
-    final ToolButton c = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/addFromFile.png"));
-    final ToolButton d = new ToolButton(new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/EditSong.png"));
+    Player = new MusicOrganiser(this);
+    addSong = new addFromFile(this);
+    edit = new EditSong(this, Player.getSongs());
+    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
+    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
+    final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/EditSong.png")));
     b.Activate();
     b.addActionListener(new java.awt.event.ActionListener() {
       @Override
@@ -68,14 +72,19 @@ public class MyPlayerMusic extends Modul implements IModul {
     super.getToolBar().addTool(d);
     super.setMyGrafics(Player.getGui());
   }
-  
-  public void reloadSongs() throws IOException, TagException{
+
+  public void reloadSongs() throws IOException, TagException {
     Player.reloadSongs();
   }
 
   @Override
-  public final ImageIcon GetIcon() {
-    return new javax.swing.ImageIcon("res/icons/modules/MyPlayerMusic/modul.png");
+  public final Image GetIcon() {
+    try {
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/modul.png"));
+    } catch (IOException ex) {
+      Logger.getLogger(MyPlayerMusic.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
   }
 
   @Override

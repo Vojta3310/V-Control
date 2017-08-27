@@ -15,9 +15,13 @@ import VControl.UI.components.MyScrollPanelLayout;
 import VControl.UI.components.MyScrollbarUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Image;
+import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import static javax.swing.BorderFactory.createEmptyBorder;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -73,8 +77,13 @@ public abstract class Modul implements IModul {
   }
 
   @Override
-  public ImageIcon GetIcon() {
-    return new javax.swing.ImageIcon("res/icons/modules/video/console.png");
+  public Image GetIcon() {
+    try {
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/video/console.png"));
+    } catch (IOException ex) {
+      Logger.getLogger(Modul.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
   }
 
   @Override
