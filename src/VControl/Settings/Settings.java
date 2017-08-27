@@ -7,7 +7,6 @@ package VControl.Settings;
 
 import VControl.Commander;
 import VControl.ICommand;
-import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -30,8 +29,11 @@ public class Settings {
   public static Path path;
 
   public Settings(Commander comander) {
-    //PRO WIN:   Settings.path = Paths.get(System.getenv("APPDATA") + File.separator + ".V-Control");
-    Settings.path = Paths.get(System.getProperty("user.home") + File.separator + ".V-Control");
+    if (System.getProperty("os.name").equals("Linux")) {
+      Settings.path = Paths.get(System.getProperty("user.home") + File.separator + ".V-Control");
+    } else {
+      Settings.path = Paths.get(System.getenv("APPDATA") + File.separator + ".V-Control");
+    }
     this.commander = comander;
     Settings.p = new Properties();
   }

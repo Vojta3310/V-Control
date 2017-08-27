@@ -146,7 +146,7 @@ public class addFromFile {
     for (String seti : set) {
       s += seti + "%@%";
     }
-    s += "0.5%@%" + Float.toString(ma.getAverangeVolume());
+    s += "0.0%@%" + Float.toString(ma.getAverangeVolume());
 
     AbstractID3v2Frame frame;
     AbstractID3v2FrameBody frameBody;

@@ -37,6 +37,7 @@ public class MusicOrganiser {
   private float volume;
   private final Modul modul;
   private boolean newSong;
+  private boolean ASAddFavoriti=false;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     Songs = new Songs();
@@ -99,7 +100,7 @@ public class MusicOrganiser {
     transferFrom = 0;
     transferTo = 0;
     Playing.Played();
-    //@TODO playing.oblibenost --
+    Playing.editFavority(-1);
     Skladba ns = getNextSong();
 //    if (!ns.equals(Playing)) {
 //      PlayedSongs.addElement(Playing);
@@ -107,7 +108,7 @@ public class MusicOrganiser {
 //      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //    }
     playSong(ns);
-    //@TODO kdyš ns dohraje ns.oblineost ++
+    ASAddFavoriti=true;
   }
 
   private void UplayPrew() {
@@ -123,7 +124,7 @@ public class MusicOrganiser {
         } else {
           gui.getSpanel().getSlist().setSelectedIndex(gui.getSpanel().getSlist().getSelectedIndex() - 1);
         }
-        //@TODO kdyš ns dohraje ns.oblineost ++
+        ASAddFavoriti=true;
       }
       Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
       newSong = false;
@@ -143,7 +144,7 @@ public class MusicOrganiser {
         if (newSong) {
           PlayedSongs.addElement(Playing);
         }
-        //@TODO kdyš ns dohraje ns.oblineost ++
+        ASAddFavoriti=true;
       }
       Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
       newSong = false;
@@ -340,6 +341,10 @@ public class MusicOrganiser {
 
   private void checkNextSong() {
     if (player.finished()) {
+      if(ASAddFavoriti){
+        ASAddFavoriti=false;
+        Playing.editFavority(+1);
+      }
       playNextSong();
     }
   }
