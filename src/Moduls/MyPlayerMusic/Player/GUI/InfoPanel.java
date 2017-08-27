@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.Player.GUI;
 
+import VControl.UI.components.Stars;
 import Moduls.MyPlayerMusic.Player.Skladba;
 import VControl.Settings.AppSettings;
 import ddf.minim.AudioPlayer;

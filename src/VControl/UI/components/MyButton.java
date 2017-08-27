@@ -3,7 +3,7 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic.songAdder;
+package VControl.UI.components;
 
 import VControl.Settings.AppSettings;
 import java.awt.Dimension;
@@ -26,26 +26,41 @@ public class MyButton extends JButton {
 
   public MyButton() {
     this.setBorder(BorderFactory.createEmptyBorder());
+    setBackground(AppSettings.getColour("BG_Color"));
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    setForeground(AppSettings.getColour("FG_Color"));
   }
 
   public MyButton(Icon icon) {
     super(icon);
     this.setBorder(BorderFactory.createEmptyBorder());
+    setBackground(AppSettings.getColour("BG_Color"));
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    setForeground(AppSettings.getColour("FG_Color"));
   }
 
   public MyButton(String text) {
     super(text);
     this.setBorder(BorderFactory.createEmptyBorder());
+    setBackground(AppSettings.getColour("BG_Color"));
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    setForeground(AppSettings.getColour("FG_Color"));
   }
 
   public MyButton(Action a) {
     super(a);
     this.setBorder(BorderFactory.createEmptyBorder());
+    setBackground(AppSettings.getColour("BG_Color"));
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    setForeground(AppSettings.getColour("FG_Color"));
   }
 
   public MyButton(String text, Icon icon) {
     super(text, icon);
     this.setBorder(BorderFactory.createEmptyBorder());
+    setBackground(AppSettings.getColour("BG_Color"));
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
+    setForeground(AppSettings.getColour("FG_Color"));
   }
 
   @Override

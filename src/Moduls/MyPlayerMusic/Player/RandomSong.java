@@ -15,14 +15,10 @@ public class RandomSong implements ISkladba {
 
   private final Songs songs;
   private Skladba song;
-  private String Title;
-  private String Autor;
-  private String Tags;
-  private String Album;
-  private String Langue;
-  private String SpecialTags;
-  private float oblibenost = 0f;
+  private ArrayList<Term> podm = new ArrayList<>();
+  private ArrayList<Skladba> Pripustne;
   private int repead = 0;
+  private int repeaded = 0;
   private boolean choosedOne = false;
   //!private InfoPanel iPanel;
 
@@ -32,63 +28,33 @@ public class RandomSong implements ISkladba {
 
   public void chooseSong() {
     if (!choosedOne) {
-      ArrayList<Skladba> a = new ArrayList<>();
-      for (int i = 0; i < songs.getSongs().size(); i++) {
-        Skladba s = songs.getSongs().get(i);
-        boolean ok = true;
-        if (Title != null) {
-          ok &= Title.equals(s.getTitle());
-        }
-        if (Autor != null) {
-          ok &= Autor.equals(s.getAutor());
-        }
-        if (Album != null) {
-          ok &= Album.equals(s.getAlbum());
-        }
-        if (Langue != null) {
-          ok &= Langue.equals(s.getLangue());
-        }
-        if (Tags != null) {
-          String[] t = Tags.split("|");
-          for (String t1 : t) {
-            ok &= s.getTags().contains(t1);
-          }
-        }
-        if (SpecialTags != null) {
-//        String[] t = SpecialTags.split("|");
-          for (String aSpecialTag : s.getASpecialTags()) {
-            ok &= SpecialTags.contains(aSpecialTag);
-          }
-        }
-        ok &= (s.getOblibenost() >= oblibenost);
-        if (ok) {
-          a.add(s);
-        }
+      if (Pripustne == null) {
+        Pripustne = songs.getSongsByTern(podm);
       }
-
-      //v a máme všechny přijatelné skladby
-      if (a.isEmpty()) {
+      //v Pripustne máme všechny přijatelné skladby
+      if (Pripustne.isEmpty()) {
         System.out.println("Není co hrát: neexistuje skladba která by odpovídala všem podmínkám");
-      } else if (a.size() == 1) {
+        Pripustne = songs.getSongs();
+      } else if (Pripustne.size() == 1) {
         choosedOne = true;
-        song = a.get(0);
+        song = Pripustne.get(0);
         song.setRepead(repead);
-        this.repead = 0;
+        this.repeaded = repead - 1;
       } else {
         choosedOne = false;
         ArrayList<Integer> b = new ArrayList<>();
         int sum = 0;
 
-        for (Skladba s : a) {
-          int o = (int)( s.getOblibenost() * songs.getCount() / (s.getPlayed()*3 + 1))+1;
+        for (Skladba s : Pripustne) {
+          int o = (int) (s.getOblibenost() * songs.getCount() / (s.getPlayed() * 3 + 1)) + 1;
           b.add(o);
           sum += o;
         }
-        int n = (int) (Math.random() * (sum-1))+1;
+        int n = (int) (Math.random() * (sum - 1)) + 1;
         for (int i = 0; i < b.size(); i++) {
           n -= b.get(i);
           if (n <= 0) {
-            this.song = a.get(i);
+            this.song = Pripustne.get(i);
             this.song.setRepead(0);
             break;
           }
@@ -97,37 +63,27 @@ public class RandomSong implements ISkladba {
     }
   }
 
-  public void setSong(Skladba song) {
-    this.song = song;
-    this.Album = song.getAlbum();
-    this.Autor = song.getAutor();
-    this.Langue = song.getLangue();
-    this.SpecialTags = song.getSpecialTags();
-    this.Tags = song.getTags();
-    this.Title = song.getTitle();
-    this.oblibenost = song.getOblibenost();
-  }
-
   @Override
   public String getLabel() {
     String l = "";
     if (repead > 0) {
       l = "(" + repead + "x) ";
     }
-    if ((Title != null) && (Autor != null)) {
-      l = l + Title + "-" + Autor;
-    } else if (Title != null) {
-      l = l + "Tit.=" + Title;
-    } else if (Autor != null) {
-      l = l + "Aut.=" + Autor;
-    } else if (Album != null) {
-      l = l + "Alb.=" + Album;
-    } else if (Langue != null) {
-      l = l + "Jaz.=" + Langue;
-    } else if (Tags != null) {
-      l = l + "Tag.=" + Tags;
-    } else if (SpecialTags != null) {
-      l = l + "STag.=" + SpecialTags;
+    if (choosedOne) {
+      l = l + song.getTitle() + "-" + song.getAutor();
+    } else if (podm != null) {
+
+      String s = null;
+      int i = 0;
+      while (s == null && i < podm.size()) {
+        s = podm.get(i).getLabel();
+        i++;
+      }
+      if (s != null) {
+        l = l + s;
+      } else {
+        l = l + "Náhodná skladba";
+      }
     } else {
       l = l + "Náhodná skladba";
     }
@@ -135,12 +91,10 @@ public class RandomSong implements ISkladba {
   }
 
   public boolean isEmty() {
-    return (Title == null)
-      && (Autor == null)
-      && (Album == null)
-      && (Langue == null)
-      && (Tags == null)
-      && (oblibenost == 0);
+    if (podm == null) {
+      return true;
+    }
+    return podm.isEmpty();
   }
 
 //  @Override
@@ -149,71 +103,20 @@ public class RandomSong implements ISkladba {
     return song;
   }
 
-  public String getTitle() {
-    return Title;
-  }
-
-  public void setTitle(String Title) {
-    this.Title = Title;
-    choosedOne = false;
-  }
-
-  public String getAutor() {
-    return Autor;
-  }
-
-  public void setAutor(String Autor) {
-    this.Autor = Autor;
-    choosedOne = false;
-  }
-
-  public String getTags() {
-    return Tags;
-  }
-
-  public void setTags(String Tags) {
-    this.Tags = Tags;
-    choosedOne = false;
-  }
-
-  public String getAlbum() {
-    return Album;
-  }
-
-  public void setAlbum(String Album) {
-    this.Album = Album;
-    choosedOne = false;
-  }
-
-  public String getLangue() {
-    return Langue;
-  }
-
-  public void setLangue(String Langue) {
-    this.Langue = Langue;
-    choosedOne = false;
-  }
-
-  public String getSpecialTags() {
-    return SpecialTags;
-  }
-
-  public void setSpecialTags(String SpecialTags) {
-    this.SpecialTags = SpecialTags;
-    choosedOne = false;
-  }
-
-  public float getOblibenost() {
-    return oblibenost;
-  }
-
-  public void setOblibenost(float oblibenost) {
-    this.oblibenost = oblibenost;
-    choosedOne = false;
-  }
-
   public void Repeaded() {
-    this.repead -= 1;
+    this.repeaded += 1;
+  }
+
+  public int getRepeaded() {
+    return repeaded;
+  }
+
+  public void ResetRepeaded() {
+    if (!choosedOne) {
+      this.repeaded = 0;
+    } else {
+      repeaded = repead - 1;
+    }
   }
 
   public int getRepead() {
@@ -222,6 +125,17 @@ public class RandomSong implements ISkladba {
 
   public void setRepead(int repead) {
     this.repead = repead;
+  }
+
+  public void setPodm(ArrayList<Term> podm) {
+    choosedOne = false;
+    this.podm = new ArrayList<>(podm);
+    Pripustne = songs.getSongsByTern(podm);
+    chooseSong();
+  }
+
+  public ArrayList<Term> getPodm() {
+    return podm;
   }
 
 }

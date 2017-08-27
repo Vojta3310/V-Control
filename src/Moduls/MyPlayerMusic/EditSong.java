@@ -5,6 +5,8 @@
  */
 package Moduls.MyPlayerMusic;
 
+import VControl.UI.components.MyButton;
+import VControl.UI.components.MyComboUI;
 import Moduls.MyPlayerMusic.Player.Skladba;
 import Moduls.MyPlayerMusic.Player.Songs;
 import Moduls.MyPlayerMusic.songAdder.*;

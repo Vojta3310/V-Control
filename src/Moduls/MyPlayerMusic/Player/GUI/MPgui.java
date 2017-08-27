@@ -6,6 +6,7 @@
 package Moduls.MyPlayerMusic.Player.GUI;
 
 import Moduls.MyPlayerMusic.Player.MusicOrganiser;
+import Moduls.MyPlayerMusic.Player.RandomSong;
 import VControl.Settings.AppSettings;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
@@ -21,12 +22,16 @@ public class MPgui extends JPanel {
   private final InfoPanel ipanel;
   private final SongPanel spanel;
   private final PlayerPanel ppanel;
+  private final NextSongFilter RSpanel;
+  private final JPanel a;
+  private boolean i = true;
 
   public MPgui(final MusicOrganiser o) {
     ipanel = new InfoPanel();
     spanel = new SongPanel();
+    RSpanel = new NextSongFilter(this, o);
     ppanel = new PlayerPanel(o);
-    JPanel a = new JPanel();
+    a = new JPanel();
     a.setLayout(new BorderLayout());
     a.add(ipanel, BorderLayout.CENTER);
     a.add(ppanel, BorderLayout.PAGE_END);
@@ -39,11 +44,9 @@ public class MPgui extends JPanel {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        System.out.println(e.getClickCount());
         if (e.getClickCount() == 2) {
           o.PlaySel();
         }
-
       }
 
       @Override
@@ -63,6 +66,54 @@ public class MPgui extends JPanel {
       }
     });
 
+    spanel.getRlist().addMouseListener(new MouseListener() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2 && 
+          spanel.getRlist().getSelectedIndex() < spanel.getRlist().getModel().getSize()) {
+          showRS();
+        } else {
+          showInfo();
+        }
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+      }
+    });
+
+  }
+
+  public void showInfo() {
+    if (!i) {
+      i = true;
+      a.remove(RSpanel);
+      a.add(ipanel, BorderLayout.CENTER);
+    }
+  }
+
+  public void showRS() {
+    if (i) {
+      i = false;
+      a.remove(ipanel);
+      a.add(RSpanel, BorderLayout.CENTER);
+      RSpanel.setRS((RandomSong) spanel.getRlist().getSelectedValue());
+      RSpanel.revalidate();
+      RSpanel.repaint();
+    }
   }
 
   public InfoPanel getIpanel() {

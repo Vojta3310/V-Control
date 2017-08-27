@@ -1,4 +1,4 @@
-package Moduls.MyPlayerMusic.Player.GUI;
+package VControl.UI.components;
 
 import Moduls.MyPlayerMusic.Player.ISkladba;
 import VControl.Settings.AppSettings;

@@ -3,7 +3,7 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic.Player.GUI;
+package VControl.UI.components;
 
 import VControl.Settings.AppSettings;
 import VControl.utiliti;
@@ -43,7 +43,7 @@ public class Stars extends JPanel {
       @Override
       public void mouseClicked(MouseEvent e) {
         if (editabe) {
-          Stars = (float) maxStars - ((float) e.getX() / getWidth() * (float) maxStars);
+          Stars = (float) ((float) e.getX() / getWidth() * (float) maxStars);
         }
       }
 
@@ -85,7 +85,7 @@ public class Stars extends JPanel {
       );
     }
 
-    g.fillRect(getWidth() - (int) (getWidth() * Stars / maxStars), 0, getWidth(), getHeight());
+    g.fillRect(getWidth() - (int) (getWidth() * ((maxStars - Stars) / maxStars)), 0, getWidth(), getHeight());
 
 //    gap = (getWidth() - emty.getWidth() * maxStars) / (maxStars + 1);
     for (int i = 0; i < maxStars; i++) {

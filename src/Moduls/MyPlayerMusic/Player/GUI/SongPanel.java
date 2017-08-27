@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.Player.GUI;
 
+import VControl.UI.components.MyCellRenderer;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyScrollbarUI;
 import java.awt.Dimension;

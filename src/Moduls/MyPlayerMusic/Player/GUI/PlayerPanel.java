@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.Player.GUI;
 
+import VControl.UI.components.VolumeControl;
 import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MySliderUI;

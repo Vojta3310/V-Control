@@ -39,10 +39,10 @@ public class MusicOrganiser {
   private boolean newSong;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
+    Songs = new Songs();
     modul = mod;
     gui = new MPgui(this);
     player = new Player();
-    Songs = new Songs();
     NextSongs = new DefaultListModel<>();
     PlayedSongs = new DefaultListModel<>();
     gui.getSpanel().getRlist().setModel(NextSongs);
@@ -161,7 +161,7 @@ public class MusicOrganiser {
     }
     newSong = true;
     RandomSong rs = NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex());
-    if ((rs.getRepead() > 0) || (rs.getRepead() == -1)) {
+    if (rs.getRepead() > rs.getRepeaded()) {
       Skladba ns = rs.getSkladba();
       rs.Repeaded();
       if (PlayedSongs.isEmpty() || !Playing.equals(PlayedSongs.elementAt(PlayedSongs.getSize() - 1))) {
@@ -172,8 +172,11 @@ public class MusicOrganiser {
       }
       return ns;
     }
+    if (rs.getRepead() == rs.getRepeaded()) {
+      rs.ResetRepeaded();
+    }
     int index = gui.getSpanel().getRlist().getSelectedIndex() + 1;
-    if (index >= NextSongs.size() - 2) {
+    if (index >= NextSongs.size() - 1) {
       index = 0;
     }
     gui.getSpanel().getRlist().setSelectedIndex(index);

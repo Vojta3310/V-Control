@@ -7,6 +7,7 @@ package Moduls.MyPlayerMusic.songAdder;
 
 import VControl.Settings.AppSettings;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
@@ -20,6 +21,12 @@ public class MyField extends JTextField {
 
   public MyField() {
     setSelectionColor(Color.GRAY);
+    setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size")));
+    setForeground(AppSettings.getColour("FG_Color"));
+    setCaretColor(AppSettings.getColour("FG_Color"));
+    setBackground(AppSettings.getColour("BG_Color"));
+    setBorder(javax.swing.BorderFactory.createEmptyBorder());
+    
     this.addFocusListener(new FocusListener() {
 
       @Override

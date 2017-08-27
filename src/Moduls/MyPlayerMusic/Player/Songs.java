@@ -46,6 +46,52 @@ public class Songs {
     return Songs;
   }
 
+  public ArrayList<Skladba> getSongsByTern(ArrayList<Term> podm) {
+    if (podm == null) {
+      return Songs;
+    }
+    ArrayList<Skladba> a = new ArrayList<>();
+    for (Skladba s : Songs) {
+      boolean ok = true;
+      for (Term p : podm) {
+        ok = ok & p.ValidSong(s);
+      }
+      if (ok) {
+        a.add(s);
+      }
+    }
+    return a;
+  }
+
+  public ArrayList<String> getLabelsByTerms(String Type, ArrayList<Term> podm) {
+    ArrayList<Skladba> s = getSongsByTern(podm);
+    ArrayList<String> out = new ArrayList<>();
+    for (Skladba sk : s) {
+      String a = sk.getTitle();
+      switch (Type) {
+        case "Název":
+          a = sk.getTitle();
+          break;
+        case "Autor":
+          a = sk.getAutor();
+          break;
+        case "Album":
+          a = sk.getAlbum();
+          break;
+        case "Jazyk":
+          a = sk.getLangue();
+          break;
+        case "Tagy":
+          a = sk.getTags();
+          break;
+      }
+      if (!out.contains(a) && !a.equals("")) {
+        out.add(a);
+      }
+    }
+    return out;
+  }
+
   public int getCount() {
     return Songs.size();
   }

@@ -6,11 +6,9 @@
 package Moduls.MyPlayerMusic.songAdder;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLEncoder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -42,7 +40,6 @@ public class SongInfo {
         if (a.html().contains("Více informací o: ")) {
           Title = (a.select("div:containsOwn(Více informací o: )").html().replace("Více informací o: ", ""));
         }
-
       }
     } catch (Exception e) {
       System.out.println("Nepodařilo se vyGooglit informase o skladbě.");

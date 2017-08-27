@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import VControl.UI.components.MyComboUI;
 import VControl.Settings.AppSettings;
 import java.awt.Font;
 import java.io.IOException;
@@ -94,40 +95,40 @@ public class SongEditPanel extends JPanel {
     tags.setForeground(AppSettings.getColour("FG_Color"));
     specialtags.setForeground(AppSettings.getColour("FG_Color"));
 
-    ftitle.setForeground(AppSettings.getColour("FG_Color"));
-    fautor.setForeground(AppSettings.getColour("FG_Color"));
-    falbum.setForeground(AppSettings.getColour("FG_Color"));
+//    ftitle.setForeground(AppSettings.getColour("FG_Color"));
+//    fautor.setForeground(AppSettings.getColour("FG_Color"));
+//    falbum.setForeground(AppSettings.getColour("FG_Color"));
     flangue.setForeground(AppSettings.getColour("FG_Color"));
-    ftags.setForeground(AppSettings.getColour("FG_Color"));
-    fspecialtags.setForeground(AppSettings.getColour("FG_Color"));
-
-    ftitle.setCaretColor(AppSettings.getColour("FG_Color"));
-    fautor.setCaretColor(AppSettings.getColour("FG_Color"));
-    falbum.setCaretColor(AppSettings.getColour("FG_Color"));
-    ftags.setCaretColor(AppSettings.getColour("FG_Color"));
-    fspecialtags.setCaretColor(AppSettings.getColour("FG_Color"));
+//    ftags.setForeground(AppSettings.getColour("FG_Color"));
+//    fspecialtags.setForeground(AppSettings.getColour("FG_Color"));
+//
+//    ftitle.setCaretColor(AppSettings.getColour("FG_Color"));
+//    fautor.setCaretColor(AppSettings.getColour("FG_Color"));
+//    falbum.setCaretColor(AppSettings.getColour("FG_Color"));
+//    ftags.setCaretColor(AppSettings.getColour("FG_Color"));
+//    fspecialtags.setCaretColor(AppSettings.getColour("FG_Color"));
     flangue.setUI(new MyComboUI());
-
-    ftitle.setBackground(AppSettings.getColour("BG_Color"));
-    fautor.setBackground(AppSettings.getColour("BG_Color"));
-    falbum.setBackground(AppSettings.getColour("BG_Color"));
+//
+//    ftitle.setBackground(AppSettings.getColour("BG_Color"));
+//    fautor.setBackground(AppSettings.getColour("BG_Color"));
+//    falbum.setBackground(AppSettings.getColour("BG_Color"));
     flangue.setBackground(AppSettings.getColour("BG_Color"));
-    ftags.setBackground(AppSettings.getColour("BG_Color"));
-    fspecialtags.setBackground(AppSettings.getColour("BG_Color"));
-
-    ftitle.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-    fautor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-    falbum.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+//    ftags.setBackground(AppSettings.getColour("BG_Color"));
+//    fspecialtags.setBackground(AppSettings.getColour("BG_Color"));
+//
+//    ftitle.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+//    fautor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+//    falbum.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     flangue.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-    ftags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-    fspecialtags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-
-    ftitle.setFont(f);
-    fautor.setFont(f);
-    falbum.setFont(f);
+//    ftags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+//    fspecialtags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+//
+//    ftitle.setFont(f);
+//    fautor.setFont(f);
+//    falbum.setFont(f);
     flangue.setFont(f);
-    ftags.setFont(f);
-    fspecialtags.setFont(f);
+//    ftags.setFont(f);
+//    fspecialtags.setFont(f);
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     int labelWidth = AppSettings.getInt("Icon_Size") / 2;

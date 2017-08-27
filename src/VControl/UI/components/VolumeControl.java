@@ -3,7 +3,7 @@
  * If you want to use mi code, keep here this header, pleas!
  * Thanks Vojta3310.
  */
-package Moduls.MyPlayerMusic.Player.GUI;
+package VControl.UI.components;
 
 import VControl.Settings.AppSettings;
 import ddf.minim.AudioPlayer;

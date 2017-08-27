@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import VControl.UI.components.MyButton;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
 import VControl.Settings.AppSettings;
 import java.awt.BorderLayout;
