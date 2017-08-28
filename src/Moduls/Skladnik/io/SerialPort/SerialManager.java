@@ -27,10 +27,9 @@ public class SerialManager implements ISerialManager {
 
   }
 
-  @Override
-  public boolean send(String text) {
+  public boolean Ping() {
     reader.lock();
-    writer.write(text);
+    writer.write("PING");
     int i = 0;
     while (reader.getLock()) {
       try {
@@ -44,6 +43,19 @@ public class SerialManager implements ISerialManager {
       i++;
     }
     return true;
+  }
+
+  @Override
+  public void send(String text) {
+    reader.lock();
+    writer.write(text);
+    while (reader.getLock()) {
+      try {
+        Thread.sleep(100); //reprezentuje odesílání příkazu (spí 0.1 sekundy)
+      } catch (InterruptedException ex) {
+        System.err.println("Nepovedlo se uspat vlákno!");
+      }
+    }
   }
 
   @Override

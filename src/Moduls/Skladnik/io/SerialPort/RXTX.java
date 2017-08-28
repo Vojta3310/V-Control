@@ -25,15 +25,15 @@ public class RXTX {
   }
 
   public boolean Ping() {
-    return port.send("PING");
+    return port.Ping();
   }
 
   public void DisableMot() {
-    port.send("DM");
+    port.send("MD");
   }
 
   public void EnableMot() {
-    port.send("EM");
+    port.send("ME");
   }
 
   public void pojedXY(int X, int Y, int roztec) {
