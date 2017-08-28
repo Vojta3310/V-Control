@@ -137,6 +137,8 @@ public class GUI extends javax.swing.JFrame {
         } catch (IOException | XMLStreamException ex) {
             Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
         }*/
+        revalidate();
+        repaint();
     }
     
     private void nactiInfo(Box box){

@@ -12,7 +12,7 @@ public class FakeIO implements ISerialManager{
     }
     
     @Override
-    synchronized public void send(String text){
+    synchronized public boolean send(String text){
         while(locked){
             cekej(100);
         }
@@ -21,6 +21,7 @@ public class FakeIO implements ISerialManager{
         cekej(500);
         System.out.println("Jakoby přijato OK");
         locked = false;
+        return false;
     }
     
     private void cekej(int cas){

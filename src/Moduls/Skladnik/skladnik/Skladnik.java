@@ -1,12 +1,12 @@
 package Moduls.Skladnik.skladnik;
 
-import utilities.Settings;
 import Moduls.Skladnik.DataStructure.ISklad;
 import Moduls.Skladnik.io.SerialPort.RXTX;
 import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.ui.CMD.CMD;
 import Moduls.Skladnik.ui.graphics.GUI;
 import Moduls.Skladnik.ui.graphics.Splash;
+import Moduls.Skladnik.utilities.Settings;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;

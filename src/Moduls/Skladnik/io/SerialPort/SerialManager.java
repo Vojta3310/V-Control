@@ -17,59 +17,65 @@ import java.util.logging.Logger;
  *
  * @author Ondřej Bleha & Vojta3310
  */
-public class SerialManager implements ISerialManager{
-    private SerialPort serialPort;
-    private SerialWriter writer;
-    private SerialReader reader;
-    
-    
-    public SerialManager(){
-        
-    }
-    
-    @Override
-    public void send(String text){
-        reader.lock();
-        writer.write(text);
-        while(reader.getLock()){
-            try {
-                Thread.sleep(100); //reprezentuje odesílání příkazu (spí 0.1 sekundy)
-            } catch (InterruptedException ex) {
-                System.err.println("Nepovedlo se uspat vlákno!");
-            }
-        }
-    }
-    
-    @Override
-    public int connect(String portName){
-        CommPortIdentifier portIdentifier;
+public class SerialManager implements ISerialManager {
 
-        try{
-            portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+  private SerialPort serialPort;
+  private SerialWriter writer;
+  private SerialReader reader;
 
-            if (portIdentifier.isCurrentlyOwned()){
-                System.err.println("error: port is currently in use");
-                return -1;
-            }
+  public SerialManager() {
 
-            serialPort = (SerialPort) portIdentifier.open(portName, 3000);
-            serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+  }
 
-            InputStream in = serialPort.getInputStream();
-            OutputStream out = serialPort.getOutputStream();         
-
-            writer = new SerialWriter(out);
-            reader = new SerialReader(in);
-
-            serialPort.addEventListener(reader);
-            serialPort.notifyOnDataAvailable(true);
-        }catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException | IOException e){
-            return -1;
-        } catch (TooManyListenersException ex) {
-        Logger.getLogger(SerialManager.class.getName()).log(Level.SEVERE, null, ex);
+  @Override
+  public boolean send(String text) {
+    reader.lock();
+    writer.write(text);
+    int i = 0;
+    while (reader.getLock()) {
+      try {
+        Thread.sleep(100); //reprezentuje odesílání příkazu (spí 0.1 sekundy)
+      } catch (InterruptedException ex) {
+        System.err.println("Nepovedlo se uspat vlákno!");
       }
-        System.out.println("Serial port successfully connected!");
-        return 0;       
+      if (i >= 100) {
+        return false;
+      }
+      i++;
     }
-    
+    return true;
+  }
+
+  @Override
+  public int connect(String portName) {
+    CommPortIdentifier portIdentifier;
+
+    try {
+      portIdentifier = CommPortIdentifier.getPortIdentifier(portName);
+
+      if (portIdentifier.isCurrentlyOwned()) {
+        System.err.println("error: port is currently in use");
+        return -1;
+      }
+
+      serialPort = (SerialPort) portIdentifier.open(portName, 3000);
+      serialPort.setSerialPortParams(9600, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+
+      InputStream in = serialPort.getInputStream();
+      OutputStream out = serialPort.getOutputStream();
+
+      writer = new SerialWriter(out);
+      reader = new SerialReader(in);
+
+      serialPort.addEventListener(reader);
+      serialPort.notifyOnDataAvailable(true);
+    } catch (NoSuchPortException | PortInUseException | UnsupportedCommOperationException | IOException e) {
+      return -1;
+    } catch (TooManyListenersException ex) {
+      Logger.getLogger(SerialManager.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    System.out.println("Serial port successfully connected!");
+    return 0;
+  }
+
 }

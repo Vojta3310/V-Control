@@ -1,4 +1,4 @@
-package utilities;
+package Moduls.Skladnik.utilities;
 
 /**
  *
@@ -30,6 +30,8 @@ public class Settings {
     public static int Z_prejeti=9;
     //casova prodleva pred polozenim krabicky [ms]
     public static int cekani=800;
+    //spící režim (vypnutí motoru > nutná reference) po Xs
+    public static int SleepAfter=10;
     //soubor skladu
     public static String file="home/vojta3310/Sklad.xml";
     //oznaceni comu  (COM1;/dev/ttyUSB0)

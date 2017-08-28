@@ -6,7 +6,7 @@ package Moduls.Skladnik.io.SerialPort;
  */
 public interface ISerialManager {
     
-    void send(String text);
+    boolean send(String text);
     
     int connect(String portName);
     

@@ -2,10 +2,10 @@ package Moduls.Skladnik.DataStructure;
 import Moduls.Skladnik.AbstractList.AbstractList;
 import Moduls.Skladnik.AbstractList.IAbstractList;
 import Moduls.Skladnik.AbstractList.IIterator;
+import Moduls.Skladnik.utilities.Settings;
 import javax.swing.DefaultListModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-import utilities.Settings;
 
 /**
  *
