@@ -9,7 +9,7 @@ import VControl.UI.components.Stars;
 import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import Moduls.MyPlayerMusic.Player.RandomSong;
 import Moduls.MyPlayerMusic.Player.Term;
-import Moduls.MyPlayerMusic.songAdder.MyField;
+import VControl.UI.components.MyField;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyButton;
 import java.awt.Font;

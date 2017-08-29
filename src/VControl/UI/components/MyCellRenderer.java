@@ -1,8 +1,6 @@
 package VControl.UI.components;
 
-import Moduls.MyPlayerMusic.Player.ISkladba;
 import VControl.Settings.AppSettings;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -10,7 +8,6 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.JLabel;
@@ -39,7 +36,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
   @Override
   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
     renderer.setSelected(isSelected);
-    renderer.setData((ISkladba) value);
+    renderer.setData( value);
     return renderer;
   }
 
@@ -50,13 +47,13 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 
     private final int GAP = AppSettings.getInt("Border_Size");
     private boolean selected;
-    private ISkladba data;
+    private Object data;
 
     private void setSelected(boolean selected) {
       this.selected = selected;
     }
 
-    private void setData(ISkladba data) {
+    private void setData(Object data) {
       this.data = data;
     }
 
@@ -72,7 +69,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
 
       g2d.setFont(new Font(AppSettings.getString("Font_Name"), 0, AppSettings.getInt("Font_Size")));
       final FontMetrics fm = g2d.getFontMetrics();
-      String s = data.getLabel();
+      String s = data.toString();
       if (fm.stringWidth(s) > getWidth() - 4 * GAP) {
         while (fm.stringWidth(s) + fm.stringWidth("...") > getWidth() - 4 * GAP) {
           s = s.substring(0, s.length() - 1);

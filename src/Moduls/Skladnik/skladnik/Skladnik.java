@@ -63,7 +63,7 @@ public class Skladnik {
         if(rxtx.connect() == -1){
             splash.error("Nebyl nalezen seriový port!");
         }
-        rob = new Robot(sklad, rxtx);
+        rob = new Robot(sklad, rxtx, xml);
         
         splash.setStatus("Provádím referenci skladu...");
         rob.reference();

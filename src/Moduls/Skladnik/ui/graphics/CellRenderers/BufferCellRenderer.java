@@ -2,7 +2,7 @@ package Moduls.Skladnik.ui.graphics.CellRenderers;
 
 import Moduls.Skladnik.DataStructure.Box;
 import Moduls.Skladnik.Enums.typOperace;
-import Moduls.Skladnik.ui.graphics.GUI;
+import Moduls.Skladnik.ui.graphics.IGUI;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -29,15 +29,15 @@ import javax.swing.SwingUtilities;
 public class BufferCellRenderer extends JLabel implements ListCellRenderer {
 
     protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
-    private final ImageIcon crossIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/cross.png"));
-    private final ImageIcon downIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/down.png"));
-    private final ImageIcon upIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/up.png"));
-    private final ImageIcon doubleUpIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/double_arrow_16px.png"));
-    private final ImageIcon plusIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/vlozit.png"));
-    private final ImageIcon minusIcon = new ImageIcon(getClass().getResource("/ui/graphics/icons/buffer/podat.png"));
+    private final ImageIcon crossIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/cross.png"));
+    private final ImageIcon downIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/down.png"));
+    private final ImageIcon upIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/up.png"));
+    private final ImageIcon doubleUpIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/double_arrow_16px.png"));
+    private final ImageIcon plusIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/vlozit.png"));
+    private final ImageIcon minusIcon = new ImageIcon(getClass().getResource("/icons/modules/Skladnik/buffer/podat.png"));
     private final CustomLabel renderer;
     
-    public BufferCellRenderer (final JList list, final GUI gui){
+    public BufferCellRenderer (final JList list, final IGUI gui){
         renderer = new CustomLabel();
 
         list.addMouseListener ( new MouseAdapter ()

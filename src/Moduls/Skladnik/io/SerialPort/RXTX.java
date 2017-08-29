@@ -16,12 +16,12 @@ public class RXTX {
   }
 
   public int connect() {
-    port = new SerialManager();
-    if (port.connect(Settings.port) == -1) {
+//    port = new SerialManager();
+//    if (port.connect(Settings.port) == -1) {
       port = new FakeIO();
       return -1;
-    }
-    return 0;
+//    }
+//    return 0;
   }
 
   public boolean Ping() {

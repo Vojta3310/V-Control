@@ -138,4 +138,9 @@ public class RandomSong implements ISkladba {
     return podm;
   }
 
+  @Override
+  public String toString() {
+    return getLabel();
+  }
+
 }

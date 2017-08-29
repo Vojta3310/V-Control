@@ -7,15 +7,21 @@ import Moduls.Skladnik.DataStructure.IVzdalenost;
 import Moduls.Skladnik.DataStructure.ModelService;
 import Moduls.Skladnik.Enums.typOperace;
 import Moduls.Skladnik.io.SerialPort.RXTX;
+import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.ui.graphics.GUI;
+import Moduls.Skladnik.ui.graphics.IGUI;
 import Moduls.Skladnik.utilities.Settings;
 import java.awt.Color;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JTextPane;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import javax.xml.stream.XMLStreamException;
 
 /**
  *
@@ -29,17 +35,18 @@ public class Robot extends Thread {
   private final ModelService vyndane;
   private final RXTX rxtx;
   private final JTextPane console;
-  private GUI gui;
+  private IGUI gui;
   private final Buffer<Box> buffer;
   private Box box;
+  private final XML xml;
 
   private boolean pracuje;
   private boolean sleep = true;
 
-  public Robot(ISklad sklad, RXTX rxtx) {
+  public Robot(ISklad sklad, RXTX rxtx, XML xml) {
     this.sklad = sklad;
     this.rxtx = rxtx;
-
+    this.xml = xml;
     this.pracuje = false;
 
     this.console = new JTextPane();
@@ -66,9 +73,11 @@ public class Robot extends Thread {
         }
         if (s == Settings.SleepAfter) {
           pracuje = true;
-          posunNa(1, 1);
           sleep = true;
-          rxtx.DisableMot();
+          if (rxtx.Ping()) {
+            posunNa(1, 1);
+            rxtx.DisableMot();
+          }
           pracuje = false;
         }
         s++;
@@ -88,6 +97,14 @@ public class Robot extends Thread {
         buffer.Odeber();
       }
       gui.nacti();
+
+      if (buffer.jePrazdny()) {
+        try {
+          xml.stow(sklad);
+        } catch (IOException | XMLStreamException ex) {
+          Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
     }
   }
 
@@ -97,7 +114,7 @@ public class Robot extends Thread {
     y = 1;
   }
 
-  public void setGui(GUI gui) {
+  public void setGui(IGUI gui) {
     this.gui = gui;
     this.gui.nacti();
   }

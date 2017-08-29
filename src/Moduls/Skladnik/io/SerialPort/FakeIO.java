@@ -14,6 +14,7 @@ public class FakeIO implements ISerialManager {
 
   @Override
   public boolean Ping() {
+    System.out.println("Pig");
     return true;
   }
 

@@ -33,7 +33,7 @@ import javax.xml.stream.XMLStreamException;
  *
  * @author Ondřej Bleha & Vojta3310
  */
-public class GUI extends javax.swing.JFrame {
+public class GUI extends javax.swing.JFrame implements IGUI{
 
     private final ISklad sklad;
     private final ModelService vyndane;
@@ -105,6 +105,7 @@ public class GUI extends javax.swing.JFrame {
         this.setVisible(true);
     }
     
+    @Override
     public void nacti() {
         int vyndaneSelect = listVyndane.getSelectedIndex();
         
