@@ -8,20 +8,23 @@ package Moduls.Skladnik.ui.ModulUI;
 import Moduls.Skladnik.DataStructure.Box;
 import Moduls.Skladnik.DataStructure.ISklad;
 import Moduls.Skladnik.DataStructure.ModelService;
+import Moduls.Skladnik.Enums.typOperace;
 import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.skladnik.Robot;
 import Moduls.Skladnik.ui.graphics.CellRenderers.BufferCellRenderer;
 import Moduls.Skladnik.ui.graphics.IGUI;
-import Moduls.Skladnik.ui.graphics.listeners.BufferListener;
 import Moduls.Skladnik.ui.graphics.listeners.SearchFieldListener;
 import VControl.Settings.AppSettings;
-import VControl.UI.components.MyCellRenderer;
 import VControl.UI.components.MyField;
 import VControl.UI.components.MyScrollbarUI;
 import VControl.UI.components.MyTreeCellRenderer;
 import com.sun.java.swing.plaf.motif.MotifTreeUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -45,6 +48,8 @@ public class MGUI implements IGUI {
   private final JList<Box> list;
   private final JList<Box> bufferList;
   private final JTextField hledatField;
+  private final SearchFieldListener listListener;
+  private typOperace kam = typOperace.NIC;
 
   public MGUI(ISklad sklad, Robot rob, XML xml, JPanel MyGui) {
     this.sklad = sklad;
@@ -67,14 +72,15 @@ public class MGUI implements IGUI {
     }
     tree.setSelectionRow(0);
     //nastavi filtrovani obsahu listu
-    SearchFieldListener listListener = new SearchFieldListener(list, tree, sklad.getKategorie());
+    listListener = new SearchFieldListener(list, tree, sklad.getKategorie());
     hledatField.getDocument().addDocumentListener(listListener);
 
     //nastavi aktualizovani listu pri zmene v bufferu
-    bufferList.getModel().addListDataListener(new BufferListener(list, list));
+//    bufferList.getModel().addListDataListener(new BufferListener(list, list));
     rob.setGui(this);
 
     //nastavení vzhledu komponent
+    //----------------------------------------------------------------------------
     tree.setBackground(AppSettings.getColour("BG_Color"));
     tree.setForeground(AppSettings.getColour("FG_Color"));
     tree.setCellRenderer(new MyTreeCellRenderer());
@@ -88,7 +94,7 @@ public class MGUI implements IGUI {
     JScrollBar sb = a.getVerticalScrollBar();
     sb.setPreferredSize(new Dimension(AppSettings.getInt("Border_Size"), Integer.MAX_VALUE));
     sb.setUI(new MyScrollbarUI());
-    
+
     list.setBackground(AppSettings.getColour("BG_Color"));
     list.setForeground(AppSettings.getColour("FG_Color"));
     list.setCellRenderer(new Moduls.Skladnik.ui.graphics.CellRenderers.MyCellRenderer(list));
@@ -104,10 +110,10 @@ public class MGUI implements IGUI {
     JScrollBar sb2 = b.getVerticalScrollBar();
     sb2.setPreferredSize(new Dimension(AppSettings.getInt("Border_Size"), Integer.MAX_VALUE));
     sb2.setUI(new MyScrollbarUI());
-    
+
     bufferList.setBackground(AppSettings.getColour("BG_Color"));
     bufferList.setForeground(AppSettings.getColour("FG_Color"));
-    bufferList.setCellRenderer(new BufferCellRenderer(list, this));
+    bufferList.setCellRenderer(new BufferCellRenderer(bufferList, this));
     bufferList.setFixedCellHeight(80);
     bufferList.setFixedCellWidth(230);
     bufferList.setVisibleRowCount(-1);
@@ -119,20 +125,110 @@ public class MGUI implements IGUI {
     JScrollBar sb3 = c.getVerticalScrollBar();
     sb3.setPreferredSize(new Dimension(AppSettings.getInt("Border_Size"), Integer.MAX_VALUE));
     sb3.setUI(new MyScrollbarUI());
-    
+
     //pridání komponent
+    //----------------------------------------------------------------------------
     MyGui.setLayout(new BorderLayout());
     MyGui.add(a, BorderLayout.LINE_START);
     MyGui.add(b, BorderLayout.CENTER);
     MyGui.add(c, BorderLayout.LINE_END);
     MyGui.add(hledatField, BorderLayout.PAGE_START);
 
+    //lsteners
+    //----------------------------------------------------------------------------
+    list.addMouseListener(new MouseListener() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        if (e.getClickCount() == 2) {
+          podej_vloz();
+        }
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+      }
+    });
+
+    hledatField.addKeyListener(new KeyListener() {
+
+      @Override
+      public void keyTyped(KeyEvent e) {
+
+      }
+
+      @Override
+      public void keyPressed(KeyEvent e) {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_ENTER) {
+          if (list.getModel().getSize() > 0) {
+            list.setSelectedIndex(0);
+          }
+          podej_vloz();
+          hledatField.setText("");
+        }
+      }
+
+      @Override
+      public void keyReleased(KeyEvent e) {
+      }
+    });
+
   }
 
   @Override
-  public void nacti() {
+  public synchronized void nacti() {
+    if (kam == typOperace.VLOZ) {
+//      list.setModel(sklad.getVyndane().getListModel());
+      listListener.setModel(sklad.getVyndane().getListModel());
+    } else {
+//      list.setModel(sklad.getModel());
+      listListener.setModel(sklad.getModel());
+    }
+    listListener.updateList();
     MyGui.revalidate();
     MyGui.repaint();
+    hledatField.requestFocus();
   }
 
+  private void podej_vloz() {
+    Object value = list.getSelectedValue();
+    if (value != null) {
+      Box box = (Box) value;
+      if (box.getStav() == typOperace.NIC) {
+        box.setStav(kam);
+        rob.addToBuffer(box);
+        nacti();
+        hledatField.setText("");
+        nacti();
+      }
+    }
+  }
+
+  public void Vkladani() {
+    kam = typOperace.VLOZ;
+    nacti();
+  }
+
+  public void Podavani() {
+    kam = typOperace.PODEJ;
+    nacti();
+  }
+
+  public void Editovani() {
+    kam = typOperace.NIC;
+    nacti();
+  }
 }

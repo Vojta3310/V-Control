@@ -21,7 +21,6 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -38,42 +37,6 @@ public class SkladnikModule extends Modul implements IModul {
 
   public SkladnikModule(VControl.Commander Commander) throws IOException {
     super(Commander);
-
-    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
-    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
-    final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/EditSong.png")));
-    b.Activate();
-    b.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        c.Deactivate();
-        d.Deactivate();
-        b.Activate();
-
-      }
-    });
-    c.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        b.Deactivate();
-        d.Deactivate();
-        c.Activate();
-
-      }
-    });
-    d.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        b.Deactivate();
-        c.Deactivate();
-        d.Activate();
-
-      }
-    });
-    super.getToolBar().addTool(b);
-    super.getToolBar().addTool(c);
-    super.getToolBar().addTool(d);
-
     xml = new XML(Settings.file);
     try {
       sklad = xml.read();
@@ -91,7 +54,46 @@ public class SkladnikModule extends Modul implements IModul {
     }
     rob = new Robot(sklad, rxtx, xml);
     rob.setDaemon(true);
-    MGUI gui = new MGUI(sklad, rob, xml,getMyGrafics());
+    final MGUI gui = new MGUI(sklad, rob, xml,getMyGrafics());
+
+    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_podat_32px.png")));
+    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_vlozit_32px.png")));
+    final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_pridat_32px.png")));
+    b.Activate();
+    b.addActionListener(new java.awt.event.ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        c.Deactivate();
+        d.Deactivate();
+        b.Activate();
+        gui.Podavani();
+        repaint();
+      }
+    });
+    c.addActionListener(new java.awt.event.ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        b.Deactivate();
+        d.Deactivate();
+        c.Activate();
+        gui.Vkladani();
+        repaint();
+      }
+    });
+    d.addActionListener(new java.awt.event.ActionListener() {
+      @Override
+      public void actionPerformed(java.awt.event.ActionEvent evt) {
+        b.Deactivate();
+        c.Deactivate();
+        d.Activate();
+        gui.Editovani();
+        repaint();
+      }
+    });
+    super.getToolBar().addTool(b);
+    super.getToolBar().addTool(c);
+    super.getToolBar().addTool(d);
+
   }
 
   public void StartRob() {
@@ -101,7 +103,7 @@ public class SkladnikModule extends Modul implements IModul {
   @Override
   public final Image GetIcon() {
     try {
-      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/modul.png"));
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/modul.png"));
     } catch (IOException ex) {
       Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
     }

@@ -24,7 +24,7 @@ import utilities.TextUtilities;
  */
 public class SearchFieldListener implements DocumentListener {
     private final JList list;
-    private final DefaultListModel<Box> listModel;
+    private DefaultListModel<Box> listModel;
     
     private final JTree tree;
     private final Kategorie kategorie;
@@ -61,7 +61,7 @@ public class SearchFieldListener implements DocumentListener {
         updateList();
     }
     
-    private void updateList(){
+    public void updateList(){
         DefaultListModel newModel = new DefaultListModel();
         for (int i = 0; i < listModel.getSize(); i++) {            
             Box box = listModel.getElementAt(i);
@@ -98,5 +98,9 @@ public class SearchFieldListener implements DocumentListener {
     public void changedUpdate(DocumentEvent e) {
         //do nothing
     }
+
+  public void setModel(DefaultListModel<Box> listModel) {
+    this.listModel = listModel;
+  }
 
 }
