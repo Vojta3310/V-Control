@@ -458,12 +458,20 @@ public class Sklad implements ISklad {
     boolean nalezeno = true;
     while (nalezeno) {
       nalezeno = false;
-      for (int i = 0; i < getModel().size(); i++) {
+      for (int i = 0; i < getModel().size() && !nalezeno; i++) {
         Box b = getModel().get(i);
         if (b.getID() == id) {
           nalezeno = true;
           id++;
-          break;
+//          break;
+        }
+      }
+      for (int i = 0; i < vyndane.getListModel().size() && !nalezeno; i++) {
+        Box b = vyndane.getListModel().get(i);
+        if (b.getID() == id) {
+          nalezeno = true;
+          id++;
+//          break;
         }
       }
     }

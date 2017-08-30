@@ -256,7 +256,7 @@ public class BoxEditor extends JPanel {
         if (!Obsah.getText().equals("")) {
           DefaultMutableTreeNode uzel = (DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent());
           XML.Tag t = (XML.Tag) uzel.getUserObject();
-          sklad.getVyndane().vlozBox(new Box(Obsah.getText(), t.getID(), Synonima.getText(), Integer.parseInt(ID.getText()), 0));
+          sklad.getVyndane().vlozBox(new Box(Obsah.getText(), t.getID(), Synonima.getText(), sklad.getFreeID(), 0));
           LoadBox(null);
           UpdateModel();
           try {
@@ -365,7 +365,6 @@ public class BoxEditor extends JPanel {
   private void saveBox() {
     infoBox.setObsah(Obsah.getText());
     infoBox.setPojmy(Synonima.getText());
-    infoBox.setID(Integer.parseInt(ID.getText()));
     DefaultMutableTreeNode uzel = (DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent());
     XML.Tag t = (XML.Tag) uzel.getUserObject();
     infoBox.setKategorie(t.getID());
