@@ -37,24 +37,23 @@ public class SkladnikModule extends Modul implements IModul {
 
   public SkladnikModule(VControl.Commander Commander) throws IOException {
     super(Commander);
-    xml = new XML(Settings.file);
+    xml = new XML(SgetString("File"));
     try {
       sklad = xml.read();
     } catch (ParserConfigurationException | SAXException ex) {
       Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
     }
 
-    
-    rxtx = new RXTX();
+    rxtx = new RXTX(SgetString("Serial_Port"));
     if (rxtx.connect() == -1) {
 //      JOptionPane.showMessageDialog(super.getGrafics(), "Skladník: \nSériový port nebyl nalezen!");
       System.out.println("---------------");
       System.out.println("-Using FakeIO!-");
       System.out.println("---------------");
     }
-    rob = new Robot(sklad, rxtx, xml);
+    rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"));
     rob.setDaemon(true);
-    final MGUI gui = new MGUI(sklad, rob, xml,getMyGrafics());
+    final MGUI gui = new MGUI(sklad, rob, xml, getMyGrafics());
 
     final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_podat_32px.png")));
     final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_vlozit_32px.png")));

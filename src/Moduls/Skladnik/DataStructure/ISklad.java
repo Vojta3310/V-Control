@@ -50,4 +50,6 @@ public interface ISklad {
     int getVYSKA();
     
     int getHLOUBKA();
+    
+    int getFreeID();
 }

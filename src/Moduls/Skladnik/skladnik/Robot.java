@@ -42,6 +42,8 @@ public class Robot extends Thread {
 
   private boolean pracuje;
   private boolean sleep = true;
+  private boolean buferVindej = Settings.bufer_videj;
+  private int SleepAfter = Settings.SleepAfter;
 
   public Robot(ISklad sklad, RXTX rxtx, XML xml) {
     this.sklad = sklad;
@@ -58,6 +60,12 @@ public class Robot extends Thread {
     this.buffer = new Buffer();
   }
 
+  public Robot(ISklad sklad, RXTX rxtx, XML xml, boolean bufVindej, int sleepafter) {
+    this(sklad, rxtx, xml);
+    buferVindej = bufVindej;
+    SleepAfter = sleepafter;
+  }
+
   @Override
   public void run() {
     while (true) {
@@ -71,7 +79,7 @@ public class Robot extends Thread {
         } catch (InterruptedException ex) {
           System.err.println("Vlákno robota se nepodařilo uspat!");
         }
-        if (s == Settings.SleepAfter) {
+        if (s == SleepAfter) {
           pracuje = true;
           sleep = true;
           if (rxtx.Ping()) {
@@ -287,7 +295,7 @@ public class Robot extends Thread {
       print("x=" + x + "; ", Color.GREEN);
       println("y=" + y, new Color(115, 164, 255));
 
-      if (Settings.bufer_videj && this.buffer.jeVeFronte(box)) {
+      if (buferVindej && this.buffer.jeVeFronte(box)) {
         println("Robot jede na domovské souradnice. ", Color.WHITE);
         this.posunNa(Settings.X_vydej, Settings.Y_vydej);
 

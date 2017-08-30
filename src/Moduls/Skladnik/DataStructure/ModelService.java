@@ -35,6 +35,15 @@ public class ModelService {
         return null;
     }
     
+    public boolean containBox(Box box){
+        for (int i = 0; i < model.getSize(); i++) {
+            if (model.getElementAt(i) == box){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public Box vyndejObsah(String obsah){
         for (int i = 0; i < model.getSize(); i++) {
             if (model.getElementAt(i).getObsah().equals(obsah)){

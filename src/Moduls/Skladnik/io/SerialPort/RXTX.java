@@ -10,18 +10,24 @@ public class RXTX {
 
   private ISerialManager port;
   private int d;
+  private final String Sport;
 
   public RXTX() {
+    Sport=Settings.port;
+    //port.connect("/dev/ttyUSB0");
+  }
+  public RXTX(String p) {
+    Sport=p;
     //port.connect("/dev/ttyUSB0");
   }
 
   public int connect() {
-//    port = new SerialManager();
-//    if (port.connect(Settings.port) == -1) {
+    port = new SerialManager();
+    if (port.connect(Sport) == -1) {
       port = new FakeIO();
       return -1;
-//    }
-//    return 0;
+    }
+    return 0;
   }
 
   public boolean Ping() {
