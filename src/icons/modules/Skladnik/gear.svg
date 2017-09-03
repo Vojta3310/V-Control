@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32px"
+   height="32px"
+   id="svg2987"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="gear.svg"
+   inkscape:export-filename="/home/bleha/Dokumenty/grafika/inkscape/skladník/gear_32px.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs2989" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.197802"
+     inkscape:cx="0.10402327"
+     inkscape:cy="16"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     inkscape:window-width="1920"
+     inkscape:window-height="1001"
+     inkscape:window-x="0"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata2992">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id="layer1"
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer">
+    <path
+       d="M 30.755061,22.43538 32,17.795256 28.462259,16.279761 c 0.0086,-1.163296 -0.159264,-2.307811 -0.479989,-3.40332 L 31.408517,10.242626 28.893422,6.0532836 24.807796,7.5881035 C 24.000734,6.7913459 23.080595,6.0938375 22.058129,5.526434 L 22.521829,1.2852199 17.719065,0 15.997654,3.9046506 C 14.798898,3.8848494 13.62308,4.0354703 12.501318,4.3376588 L 10.084485,1.3977428 5.808173,3.7697042 7.2473028,7.2534155 C 6.3948485,8.0549666 5.6568243,8.9834726 5.0673493,10.019682 L 1.2448394,9.5655735 0,14.205324 3.5376412,15.721191 c -0.00851,1.163296 0.1592631,2.307811 0.4792174,3.403114 l -3.42537471,2.633648 2.51499461,4.189716 4.0849531,-1.535401 c 0.8070627,0.796758 1.7283585,1.494576 2.7504399,2.061877 L 9.4778848,30.714883 14.280263,32 16.001962,28.095826 c 1.198755,0.0198 2.3737,-0.130654 3.496334,-0.433009 l 2.417791,2.940972 4.275054,-2.371899 -1.43893,-3.484457 c 0.852841,-0.801449 1.590766,-1.72958 2.179853,-2.765893 l 3.822997,0.45384 z M 14.138788,22.938149 C 10.17424,21.877236 7.7933131,17.910863 8.8213235,14.079275 9.8492337,10.248061 13.89685,8.0023664 17.861399,9.0632798 c 3.96532,1.0611192 6.345859,5.0273882 5.318049,8.8582302 -1.02791,3.831216 -5.07534,6.077758 -9.04066,5.016639 z"
+       id="path4"
+       inkscape:connector-curvature="0"
+       style="fill:#000000;fill-opacity:1"
+       inkscape:export-filename="/home/bleha/Dokumenty/grafika/inkscape/skladník/gear_blue_32px.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>

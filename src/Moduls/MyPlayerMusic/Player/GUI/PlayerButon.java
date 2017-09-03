@@ -25,9 +25,9 @@ public class PlayerButon extends JButton {
   private BufferedImage image;
   private BufferedImage image2;
   private ButonTipe tip;
-  MusicOrganiser player;
+  IMediaOrganiser player;
 
-  public PlayerButon(ButonTipe t, MusicOrganiser pl) {
+  public PlayerButon(ButonTipe t, IMediaOrganiser pl) {
     tip = t;
     player = pl;
     this.setBackground(AppSettings.getColour("BG_Color"));
@@ -96,7 +96,7 @@ public class PlayerButon extends JButton {
     g2d.setPaint(AppSettings.getColour("FG_Color"));
 
     if (image != null) {
-      if ((tip == ButonTipe.play_pause) && !player.getAplayer().getPaused()) {
+      if ((tip == ButonTipe.play_pause) && !player.getPaused()) {
         g2d.drawImage(
           image2,
           (getWidth() - image2.getWidth()) / 2,

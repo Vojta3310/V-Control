@@ -31,9 +31,8 @@ public class PlayerPanel extends JPanel {
   private final javax.swing.JLabel SizeLabel;
   private final javax.swing.JSlider Slider;
   private final VolumeControl Vcontrol;
-  private boolean resume = false;
 
-  public PlayerPanel(final MusicOrganiser m) {
+  public PlayerPanel(final IMediaOrganiser m) {
     StateLabel = new javax.swing.JLabel();
     SizeLabel = new javax.swing.JLabel();
     Slider = new javax.swing.JSlider();
@@ -56,39 +55,7 @@ public class PlayerPanel extends JPanel {
 
     Slider.setUI(new MySliderUI(Slider));
 
-    Slider.addMouseListener(new MouseListener() {
-
-      @Override
-      public void mouseClicked(MouseEvent e) {
-      }
-
-      @Override
-      public void mousePressed(MouseEvent e) {
-        resume = false;
-        if (!m.getAplayer().getPaused()) {
-          resume = true;
-          m.getAplayer().pause();
-        }
-      }
-
-      @Override
-      public void mouseReleased(MouseEvent e) {
-        m.getAplayer().play();
-        m.getAplayer().setPos(m.getPlaying().getStart() + (long) ((float) ((float) Slider.getValue() / (float) Slider.getMaximum()) * m.getPlaying().getLenght()));
-        if (!resume) {
-          m.getAplayer().pause();
-        }
-      }
-
-      @Override
-      public void mouseEntered(MouseEvent e) {
-      }
-
-      @Override
-      public void mouseExited(MouseEvent e) {
-      }
-    });
-
+    
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     this.setLayout(layout);
     layout.setHorizontalGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

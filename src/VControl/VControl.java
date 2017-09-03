@@ -5,7 +5,7 @@
  */
 package VControl;
 
-import Moduls.AnotherModule;
+import Moduls.MyPlayerVideo.MyPlayerVideo;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
 import Moduls.Skladnik.SkladnikModule;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class VControl {
     SkladnikModule b = new SkladnikModule(Commander);
     Commander.addIModule(a);
     Commander.addIModule(b);
-    Commander.addIModule(new AnotherModule(Commander));
+    Commander.addIModule(new MyPlayerVideo(Commander));
 
     Commander.RegisterGUI();
     a.Activate();

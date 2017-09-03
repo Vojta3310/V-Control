@@ -7,10 +7,12 @@ package Moduls.MyPlayerMusic.Player;
 
 import Moduls.Modul;
 import Moduls.MyPlayerMusic.Player.GUI.MPgui;
+import Moduls.MyPlayerMusic.Player.GUI.IMediaOrganiser;
 import VControl.utiliti;
 import ddf.minim.AudioPlayer;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
@@ -21,7 +23,7 @@ import org.farng.mp3.TagException;
  *
  * @author vojta3310
  */
-public class MusicOrganiser {
+public class MusicOrganiser implements IMediaOrganiser {
 
   private final MPgui gui;
   private final Songs Songs;
@@ -37,7 +39,8 @@ public class MusicOrganiser {
   private float volume;
   private final Modul modul;
   private boolean newSong;
-  private boolean ASAddFavoriti=false;
+  private boolean ASAddFavoriti = false;
+  private boolean resume = false;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     Songs = new Songs();
@@ -52,12 +55,45 @@ public class MusicOrganiser {
     NextSongs.addElement(new AddSongSign(Songs));
     gui.getSpanel().getRlist().setSelectedIndex(0);
     gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    gui.getSpanel().getRlist().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+    gui.getSpanel().getRlist().addListSelectionListener((javax.swing.event.ListSelectionEvent evt) -> {
+      clearRlist();
+    });
+
+    gui.getPpanel().getSlider().addMouseListener(new MouseListener() {
+
       @Override
-      public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-        clearRlist();
+      public void mouseClicked(MouseEvent e) {
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+        resume = false;
+        if (!getAplayer().getPaused()) {
+          resume = true;
+          getAplayer().pause();
+        }
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
+        getAplayer().play();
+        getAplayer().setPos(getPlaying().getStart()
+          + (long) ((float) ((float) gui.getPpanel().getSlider().getValue()
+          / (float) gui.getPpanel().getSlider().getMaximum()) * getPlaying().getLenght()));
+        if (!resume) {
+          getAplayer().pause();
+        }
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
       }
     });
+
     start();
   }
 
@@ -67,14 +103,11 @@ public class MusicOrganiser {
     player.setStatMaxVol(Songs.getStatMaxVol());
     player.setStatMinVol(Songs.getStatMinVol());
     playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
-    Timer tim = new Timer(10, new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        doTransform();
-        checkNextSong();
-        updateGUI();
-        updateVolume();
-      }
+    Timer tim = new Timer(10, (ActionEvent ae) -> {
+      doTransform();
+      checkNextSong();
+      updateGUI();
+      updateVolume();
     });
     tim.start();
   }
@@ -108,7 +141,7 @@ public class MusicOrganiser {
 //      gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 //    }
     playSong(ns);
-    ASAddFavoriti=true;
+    ASAddFavoriti = true;
   }
 
   private void UplayPrew() {
@@ -124,7 +157,7 @@ public class MusicOrganiser {
         } else {
           gui.getSpanel().getSlist().setSelectedIndex(gui.getSpanel().getSlist().getSelectedIndex() - 1);
         }
-        ASAddFavoriti=true;
+        ASAddFavoriti = true;
       }
       Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
       newSong = false;
@@ -144,7 +177,7 @@ public class MusicOrganiser {
         if (newSong) {
           PlayedSongs.addElement(Playing);
         }
-        ASAddFavoriti=true;
+        ASAddFavoriti = true;
       }
       Skladba ns = PlayedSongs.elementAt(gui.getSpanel().getSlist().getSelectedIndex());
       newSong = false;
@@ -246,6 +279,7 @@ public class MusicOrganiser {
     transformStart = player.getPos();
   }
 
+  @Override
   public void Repeat() {
     System.out.println(Playing.getRepead());
     if (Playing.getRepead() > 0 && Playing.getRepead() < 5) {
@@ -259,6 +293,7 @@ public class MusicOrganiser {
     }
   }
 
+  @Override
   public void Next() {
     afterTransform = 1; //0 nic; 1 další; 2 předchozí; 3 pause;
     transferFrom = volume;
@@ -266,6 +301,7 @@ public class MusicOrganiser {
     transformStart = player.getPos();
   }
 
+  @Override
   public void Prew() {
     afterTransform = 2; //0 nic; 1 další; 2 předchozí; 3 pause;
     transferFrom = volume;
@@ -299,6 +335,7 @@ public class MusicOrganiser {
     }
   }
 
+  @Override
   public void tooglePause() {
     if (player.getPaused()) {
       Play();
@@ -341,8 +378,8 @@ public class MusicOrganiser {
 
   private void checkNextSong() {
     if (player.finished()) {
-      if(ASAddFavoriti){
-        ASAddFavoriti=false;
+      if (ASAddFavoriti) {
+        ASAddFavoriti = false;
         Playing.editFavority(+1);
       }
       playNextSong();
@@ -406,5 +443,10 @@ public class MusicOrganiser {
 
   public Songs getSongs() {
     return Songs;
+  }
+
+  @Override
+  public boolean getPaused() {
+    return player.getPaused();
   }
 }
