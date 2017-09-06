@@ -8,13 +8,7 @@ package Moduls.MyPlayerVideo;
 import Moduls.IModul;
 import Moduls.Modul;
 import VControl.ICommand;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.util.Properties;
-import javax.swing.JPanel;
-
-import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
 /**
  *
@@ -22,35 +16,21 @@ import uk.co.caprica.vlcj.discovery.NativeDiscovery;
  */
 public class MyPlayerVideo extends Modul implements IModul {
 
-  private final EmbeddedMediaPlayerComponent mediaPlayerComponent;
+  private final VideoOrganiser VO;
 
   public MyPlayerVideo(VControl.Commander Commander) {
     super(Commander);
 
-    new NativeDiscovery().discover();
-
-    JPanel a = getMyGrafics();
-    mediaPlayerComponent = new EmbeddedMediaPlayerComponent();
-    mediaPlayerComponent.setPreferredSize(new Dimension(500, 500));
-    a.setLayout(new FlowLayout());
-    a.add(mediaPlayerComponent);
-//    a.add(new JLabel("a"));
+    VO = new VideoOrganiser(this);
 
   }
 
   @Override
   public void Activate() {
     super.Activate(); //To change body of generated methods, choose Tools | Templates.
-      mediaPlayerComponent.getMediaPlayer().playMedia("/home/vojta3310/Videa/0000-0120.avi");
-      mediaPlayerComponent.getMediaPlayer().setRepeat(true);
+    VO.reMakeVideo();
   }
-
-  @Override
-  public void Deactivate() {
-    mediaPlayerComponent.getMediaPlayer().stop();
-    super.Deactivate(); //To change body of generated methods, choose Tools | Templates.
-  }
-
+  
   @Override
   public boolean doCommand(ICommand co) {
     return false;
@@ -73,6 +53,10 @@ public class MyPlayerVideo extends Modul implements IModul {
 
   @Override
   public void getDefaultSettings(Properties p) {
+    p.setProperty("Modul_" + this.GetModulName() + "_VideoDir", "/home/vojta3310/Videa/");
+    p.setProperty("Modul_" + this.GetModulName() + "_SetingsFile", "/home/vojta3310/Videa/MPSet.cfg");
+    p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
+    p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
   }
 
 }

@@ -31,6 +31,7 @@ public class VolumeControl extends JPanel {
       @Override
       public void mouseClicked(MouseEvent e) {
         volume = (float) e.getX() / (float) getWidth();
+        repaint();
       }
 
       @Override

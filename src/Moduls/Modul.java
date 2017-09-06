@@ -98,15 +98,20 @@ public abstract class Modul implements IModul {
   }
 
   public String SgetString(String key) {
-    return Settings.p.getProperty("Modul_" + this.GetModulName() + "_" + key);
+    if (Settings.p.containsKey("Modul_" + this.GetModulName() + "_" + key)) {
+      return Settings.p.getProperty("Modul_" + this.GetModulName() + "_" + key);
+    }
+    Properties p = new Properties();
+    DefaultSettings(p);
+    return p.getProperty("Modul_" + this.GetModulName() + "_" + key);
   }
 
   public int SgetInt(String key) {
-    return Integer.parseInt(Settings.p.getProperty("Modul_" + this.GetModulName() + "_" + key));
+    return Integer.parseInt(SgetString(key));
   }
 
   public boolean SgetBool(String key) {
-    return Boolean.parseBoolean(Settings.p.getProperty("Modul_" + this.GetModulName() + "_" + key));
+    return Boolean.parseBoolean(SgetString(key));
   }
 
   public void Sset(String key, String value) {

@@ -6,13 +6,10 @@
 package Moduls.MyPlayerMusic.Player.GUI;
 
 import VControl.UI.components.VolumeControl;
-import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MySliderUI;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
@@ -51,7 +48,7 @@ public class PlayerPanel extends JPanel {
     SizeLabel.setFont(font);
 
     StateLabel.setText("00:00");
-    SizeLabel.setText("00:22");
+    SizeLabel.setText("00:00");
 
     Slider.setUI(new MySliderUI(Slider));
 
