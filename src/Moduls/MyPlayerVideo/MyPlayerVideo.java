@@ -5,9 +5,8 @@
  */
 package Moduls.MyPlayerVideo;
 
-import Moduls.IModul;
 import Moduls.Modul;
-import VControl.ICommand;
+import VControl.Command;
 import VControl.UI.ToolButton;
 import java.io.IOException;
 import java.util.Properties;
@@ -19,55 +18,20 @@ import javax.imageio.ImageIO;
  *
  * @author vojta3310
  */
-public class MyPlayerVideo extends Modul implements IModul {
+public class MyPlayerVideo extends Modul {
 
   private final VideoOrganiser VO;
+  private int paused;
 
-  public MyPlayerVideo(VControl.Commander Commander) throws IOException {
-    super(Commander);
-
+  public MyPlayerVideo(VControl.Commander Com) throws IOException {
+    super(Com);
     VO = new VideoOrganiser(this);
-
-    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
-    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
-    b.Activate();
-    b.addActionListener((java.awt.event.ActionEvent evt) -> {
-      c.Deactivate();
-      b.Activate();
-      try {
-        VO.showFilm();
-      } catch (IOException ex) {
-        Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      super.getGrafics().revalidate();
-      super.getGrafics().repaint();
-    });
-    c.addActionListener((java.awt.event.ActionEvent evt) -> {
-      b.Deactivate();
-      c.Activate();
-      try {
-        VO.showSerial();
-      } catch (IOException ex) {
-        Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
-      }
-      super.getGrafics().revalidate();
-      super.getGrafics().repaint();
-    });
-
-    super.getToolBar().addTool(b);
-    super.getToolBar().addTool(c);
-
   }
 
   @Override
   public void Activate() {
     super.Activate(); //To change body of generated methods, choose Tools | Templates.
     VO.reMakeVideo();
-  }
-
-  @Override
-  public boolean doCommand(ICommand co) {
-    return false;
   }
 
   @Override
@@ -81,8 +45,44 @@ public class MyPlayerVideo extends Modul implements IModul {
   }
 
   @Override
-  public void Execute(ICommand co) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+  public void Execute(Command co) {
+    switch (co.GetCommand()) {
+      case "Play":
+        paused--;
+        if (paused <= 0) {
+          VO.Play();
+        }
+        break;
+      case "Pause":
+        paused++;
+        if (paused > 0) {
+          VO.Pause();
+        }
+        break;
+      case "Next":
+        VO.Next();
+        break;
+      case "Prew":
+        VO.Prew();
+        break;
+      case "Repeat":
+        VO.Repeat();
+        break;
+      case "ToglePause":
+        VO.tooglePause();
+        break;
+      case "VUp":
+        VO.Vup();
+        break;
+      case "VDown":
+        VO.Vdown();
+        break;
+      case "VSet":
+        if (co.GetParms() != null) {
+          VO.setVolume((float) co.GetParms());
+        }
+        break;
+    }
   }
 
   @Override
@@ -91,6 +91,43 @@ public class MyPlayerVideo extends Modul implements IModul {
     p.setProperty("Modul_" + this.GetModulName() + "_SetingsFile", "/home/vojta3310/Videa/MPSet.cfg");
     p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
     p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
+  }
+
+  
+  
+  @Override
+  public void StartModule() {
+    try {
+      final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
+      final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
+      b.Activate();
+      b.addActionListener((java.awt.event.ActionEvent evt) -> {
+        c.Deactivate();
+        b.Activate();
+        try {
+          VO.showFilm();
+        } catch (IOException ex) {
+          Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        super.getGrafics().revalidate();
+        super.getGrafics().repaint();
+      });
+      c.addActionListener((java.awt.event.ActionEvent evt) -> {
+        b.Deactivate();
+        c.Activate();
+        try {
+          VO.showSerial();
+        } catch (IOException ex) {
+          Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        super.getGrafics().revalidate();
+        super.getGrafics().repaint();
+      });
+
+      super.getToolBar().addTool(b);
+      super.getToolBar().addTool(c);
+    } catch (Exception e) {
+    }
   }
 
 }

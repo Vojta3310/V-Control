@@ -50,10 +50,10 @@ public class Commander {
     gui.repaint();
   }
 
-  public boolean Execute(ICommand co) {
-    for (IModul a : moduls) {
+  public boolean Execute(Command co) {
+    moduls.stream().forEach((a) -> {
       a.doCommand(co);
-    }
+    });
     this.setings.doCommand(co);
     return true;
   }
@@ -73,16 +73,26 @@ public class Commander {
   }
 
   public void getDefaultSettings(Properties p) {
-    for (IModul a : moduls) {
+    moduls.stream().forEach((a) -> {
       a.DefaultSettings(p);
-    }
+    });
     AppSettings.DefaultSettings(p);
+  }
+
+  public IModul getActive() {
+    return active;
   }
 
   public ArrayList getIModuls() {
     return moduls;
   }
 
+    public void StartModules() {
+    for (IModul a : moduls) {
+      a.start();
+    }
+  }  
+  
   public void RegisterGUI() {
     for (IModul a : moduls) {
       if (a.HaveGUI()) {

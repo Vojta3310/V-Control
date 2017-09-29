@@ -5,7 +5,7 @@
  */
 package Moduls.Skladnik;
 
-import VControl.ICommand;
+import VControl.Command;
 import Moduls.IModul;
 import Moduls.Modul;
 import Moduls.Skladnik.DataStructure.ISklad;
@@ -13,7 +13,6 @@ import Moduls.Skladnik.io.SerialPort.RXTX;
 import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.skladnik.Robot;
 import Moduls.Skladnik.ui.ModulUI.MGUI;
-import Moduls.Skladnik.utilities.Settings;
 import VControl.UI.ToolButton;
 import java.awt.Image;
 import java.io.IOException;
@@ -28,75 +27,15 @@ import org.xml.sax.SAXException;
  *
  * @author vojta3310
  */
-public class SkladnikModule extends Modul implements IModul {
+public class SkladnikModule extends Modul {
 
-  private final RXTX rxtx;
-  private final Robot rob;
+  private RXTX rxtx;
+  private Robot rob;
   private ISklad sklad;
   private XML xml;
 
-  public SkladnikModule(VControl.Commander Commander) throws IOException {
+  public SkladnikModule(VControl.Commander Commander) {
     super(Commander);
-    xml = new XML(SgetString("File"));
-    try {
-      sklad = xml.read();
-    } catch (ParserConfigurationException | SAXException ex) {
-      Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    rxtx = new RXTX(SgetString("Serial_Port"));
-    if (rxtx.connect() == -1) {
-//      JOptionPane.showMessageDialog(super.getGrafics(), "Skladník: \nSériový port nebyl nalezen!");
-      System.out.println("---------------");
-      System.out.println("-Using FakeIO!-");
-      System.out.println("---------------");
-    }
-    rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"));
-    rob.setDaemon(true);
-    final MGUI gui = new MGUI(sklad, rob, xml, getMyGrafics());
-
-    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_podat_32px.png")));
-    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_vlozit_32px.png")));
-    final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_pridat_32px.png")));
-    b.Activate();
-    b.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        c.Deactivate();
-        d.Deactivate();
-        b.Activate();
-        gui.Podavani();
-        repaint();
-      }
-    });
-    c.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        b.Deactivate();
-        d.Deactivate();
-        c.Activate();
-        gui.Vkladani();
-        repaint();
-      }
-    });
-    d.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent evt) {
-        b.Deactivate();
-        c.Deactivate();
-        d.Activate();
-        gui.Editovani();
-        repaint();
-      }
-    });
-    super.getToolBar().addTool(b);
-    super.getToolBar().addTool(c);
-    super.getToolBar().addTool(d);
-
-  }
-
-  public void StartRob() {
-    rob.start();
   }
 
   @Override
@@ -120,7 +59,7 @@ public class SkladnikModule extends Modul implements IModul {
   }
 
   @Override
-  public void Execute(ICommand co) {
+  public void Execute(Command co) {
     throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
   }
 
@@ -130,6 +69,70 @@ public class SkladnikModule extends Modul implements IModul {
     p.setProperty("Modul_" + this.GetModulName() + "_Serial_Port", "/dev/ttyUSB0");
     p.setProperty("Modul_" + this.GetModulName() + "_Sleep_Dylay", "10");
     p.setProperty("Modul_" + this.GetModulName() + "_Favour_Moving_Item", "true");
+  }
+
+  @Override
+  public void StartModule() {
+    try {
+      xml = new XML(SgetString("File"));
+      try {
+        sklad = xml.read();
+      } catch (ParserConfigurationException | SAXException ex) {
+        Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
+      }
+
+      rxtx = new RXTX(SgetString("Serial_Port"));
+      if (rxtx.connect() == -1) {
+        System.out.println("---------------");
+        System.out.println("-Using FakeIO!-");
+        System.out.println("---------------");
+      }
+      rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"));
+      rob.setDaemon(true);
+      final MGUI gui = new MGUI(sklad, rob, xml, getMyGrafics());
+
+      final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_podat_32px.png")));
+      final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_vlozit_32px.png")));
+      final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_pridat_32px.png")));
+      b.Activate();
+      b.addActionListener(new java.awt.event.ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          c.Deactivate();
+          d.Deactivate();
+          b.Activate();
+          gui.Podavani();
+          repaint();
+        }
+      });
+      c.addActionListener(new java.awt.event.ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          b.Deactivate();
+          d.Deactivate();
+          c.Activate();
+          gui.Vkladani();
+          repaint();
+        }
+      });
+      d.addActionListener(new java.awt.event.ActionListener() {
+        @Override
+        public void actionPerformed(java.awt.event.ActionEvent evt) {
+          b.Deactivate();
+          c.Deactivate();
+          d.Activate();
+          gui.Editovani();
+          repaint();
+        }
+      });
+      super.getToolBar().addTool(b);
+      super.getToolBar().addTool(c);
+      super.getToolBar().addTool(d);
+
+      rob.start();
+
+    } catch (Exception e) {
+    }
   }
 
 }

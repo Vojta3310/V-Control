@@ -6,6 +6,7 @@
 package Moduls.MyPlayerVideo;
 
 import Moduls.MyPlayerMusic.Player.GUI.IMediaOrganiser;
+import VControl.Command;
 import VControl.Settings.AppSettings;
 import VControl.utiliti;
 import java.awt.Dimension;
@@ -67,9 +68,9 @@ public class VideoOrganiser implements IMediaOrganiser {
     PlayerComp.getVideoSurface().setFocusable(true);
     gui = new GUI(this, m.getMyGrafics(), PlayerComp);
 
-    sfl=new SearchFieldListener(gui.getList());
+    sfl = new SearchFieldListener(gui.getList());
     gui.getSearchField().getDocument().addDocumentListener(sfl);
-    
+
     try {
       loadFilms();
     } catch (IOException ex) {
@@ -88,6 +89,7 @@ public class VideoOrganiser implements IMediaOrganiser {
         } else {
           if (e.getClickCount() == 2) {
             play();
+            modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
           }
         }
       }
@@ -111,6 +113,7 @@ public class VideoOrganiser implements IMediaOrganiser {
 
     gui.getPlayButton().addActionListener((ActionEvent e) -> {
       play();
+      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
     });
 
     gui.getPpanel().getSlider().addMouseListener(new MouseListener() {
@@ -202,9 +205,13 @@ public class VideoOrganiser implements IMediaOrganiser {
     Timer t = new Timer(100, (ActionEvent e) -> {
       updateVolume();
       updateGUI();
-      
-      if(PlayerComp.getMediaPlayer().getPosition()>=1 && serial){
-        Next();
+
+      if (PlayerComp.getMediaPlayer().getPosition() >= 1) {
+        if (serial) {
+          Next();
+        } else {
+          modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+        }
       }
     });
     t.start();
@@ -241,11 +248,31 @@ public class VideoOrganiser implements IMediaOrganiser {
     if (MediaLoaded) {
       if (getPaused()) {
         PlayerComp.getMediaPlayer().play();
+        modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
       } else {
         PlayerComp.getMediaPlayer().pause();
+        modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
       }
     } else {
       play();
+      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+    }
+  }
+
+  public void Play() {
+    if (MediaLoaded) {
+      PlayerComp.getMediaPlayer().play();
+      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+    } else {
+      play();
+      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+    }
+  }
+
+  public void Pause() {
+    if (MediaLoaded) {
+      PlayerComp.getMediaPlayer().pause();
+      modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
     }
   }
 
@@ -371,8 +398,9 @@ public class VideoOrganiser implements IMediaOrganiser {
     for (String file : files) {
       File fil = new File(path + File.separator + file);
       if (!fil.isDirectory() && isVideo(fil)) {
-        if(fil.getName().equals(gui.getEpizode().getSelectedItem()))
-        return fil.getPath();
+        if (fil.getName().equals(gui.getEpizode().getSelectedItem())) {
+          return fil.getPath();
+        }
       }
       if (fil.isDirectory()) {
         String a = FindEpizode(path + File.separator + file);
@@ -473,5 +501,17 @@ public class VideoOrganiser implements IMediaOrganiser {
     serial = false;
     gui.hideSerial();
     loadFilms();
+  }
+
+  public void setVolume(float volume) {
+    gui.getPpanel().getVcontrol().setVolume(volume);
+  }
+
+  public void Vup() {
+    gui.getPpanel().getVcontrol().setVolume(gui.getPpanel().getVcontrol().getVolume() + 0.1F);
+  }
+
+  public void Vdown() {
+    gui.getPpanel().getVcontrol().setVolume(gui.getPpanel().getVcontrol().getVolume() - 0.1F);
   }
 }

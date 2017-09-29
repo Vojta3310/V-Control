@@ -6,7 +6,8 @@
 package Moduls;
 
 import VControl.Commander;
-import VControl.ICommand;
+import VControl.Command;
+import VControl.CommandStats;
 import VControl.Settings.AppSettings;
 import VControl.Settings.Settings;
 import VControl.UI.SidebarModule;
@@ -16,7 +17,9 @@ import VControl.UI.components.MyScrollbarUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,24 +28,30 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.Timer;
 
 /**
  *
  * @author vojta3310
  */
-public abstract class Modul implements IModul {
+public abstract class Modul extends Thread implements IModul {
 
   private final Commander Commander;
   private final JPanel FullGrafics;
   private JPanel MyGrafics;
   private final ToolBox ToolBar;
   private SidebarModule sidebarButton;
+  private final ArrayList<Command> Commands = new ArrayList<>();
 
   public Modul(Commander Commander) {
     this.Commander = Commander;
     this.FullGrafics = new JPanel();
     this.MyGrafics = new JPanel();
     this.ToolBar = new ToolBox();
+  }
+
+  @Override
+  public void run() {
     JScrollPane a = new JScrollPane(this.ToolBar);
     a.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     a.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
@@ -51,10 +60,6 @@ public abstract class Modul implements IModul {
     a.setSize(new Dimension(AppSettings.getInt("Window_Width")
       - (AppSettings.getInt("Icon_Size") + 20 + AppSettings.getInt("Border_Size")),
       AppSettings.getInt("Icon_Size") + 20 + AppSettings.getInt("Border_Size")));
-//    a.setLayout(null);            //nejdriv si nastav layout na null (pak na to ale nezapomen)
-//        a.getHorizontalScrollBar().setSize(100, 15); //potom nastav i velikost (jak nastavis rozlozeni na null, vsechno delas rucne
-//        a.getHorizontalScrollBar().setLocation(0, 0);
-
     a.setLayout(new MyScrollPanelLayout());
     JScrollBar sb = a.getHorizontalScrollBar();
     sb.setPreferredSize(new Dimension(Integer.MAX_VALUE, AppSettings.getInt("Border_Size")));
@@ -63,6 +68,16 @@ public abstract class Modul implements IModul {
     this.FullGrafics.add(MyGrafics, BorderLayout.CENTER);
     this.FullGrafics.add(a, BorderLayout.PAGE_END);
     this.MyGrafics.setBackground(AppSettings.getColour("BG_Color"));
+    Timer tim = new Timer(10, (ActionEvent ae) -> {
+      if (!Commands.isEmpty()) {
+        Commands.get(0).setStats(CommandStats.InProgress);
+        this.Execute(Commands.get(0));
+        Commands.get(0).setStats(CommandStats.Done);
+        Commands.remove(0);
+      }
+    });
+    tim.start();
+    this.StartModule();
   }
 
   @Override
@@ -154,11 +169,10 @@ public abstract class Modul implements IModul {
   }
 
   @Override
-  public boolean doCommand(ICommand co) {
-    if (co.GetFor().equals(this.GetModulName())) {
-      this.Execute(co);
+  public synchronized void doCommand(Command co) {
+    if (co.GetFor().equals(this.GetModulName()) || co.GetFor().equals("all")) {
+      Commands.add(co);
     }
-    return true;
   }
 
 }

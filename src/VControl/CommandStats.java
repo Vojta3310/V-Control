@@ -9,13 +9,8 @@ package VControl;
  *
  * @author vojta3310
  */
-public interface ICommand {
+public enum CommandStats {
 
-  String GetFor();
-
-  String GetFrom();
-
-  String GetCommand();
-
-  String GetParms();
+  Set, InProgress, Done;
+  
 }

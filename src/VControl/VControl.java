@@ -5,6 +5,7 @@
  */
 package VControl;
 
+import Moduls.KeyLoger;
 import Moduls.MyPlayerVideo.MyPlayerVideo;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
 import Moduls.Skladnik.SkladnikModule;
@@ -29,14 +30,13 @@ public class VControl {
   public static void main(String[] args) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     Commander Commander = new Commander();
     MyPlayerMusic a = new MyPlayerMusic(Commander);
-    SkladnikModule b = new SkladnikModule(Commander);
     Commander.addIModule(a);
-    Commander.addIModule(b);
+    Commander.addIModule(new SkladnikModule(Commander));
     Commander.addIModule(new MyPlayerVideo(Commander));
-
+    Commander.addIModule(new KeyLoger(Commander));
+    Commander.StartModules();
     Commander.RegisterGUI();
     a.Activate();
-    b.StartRob();
   }
 
 }

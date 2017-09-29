@@ -6,7 +6,7 @@
 package VControl.Settings;
 
 import VControl.Commander;
-import VControl.ICommand;
+import VControl.Command;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -82,7 +82,7 @@ public class Settings {
     commander.getDefaultSettings(p);
   }
 
-  public void doCommand(ICommand co) {
+  public void doCommand(Command co) {
     if (co.GetFor().equals("Settings")) {
       if (co.GetCommand().equals("Save")) {
         this.save();

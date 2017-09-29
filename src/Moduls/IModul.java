@@ -5,7 +5,7 @@
  */
 package Moduls;
 
-import VControl.ICommand;
+import VControl.Command;
 import VControl.UI.SidebarModule;
 import java.awt.Image;
 import java.util.Properties;
@@ -17,7 +17,7 @@ import javax.swing.JPanel;
  */
 public interface IModul {
 
-  public boolean doCommand(ICommand co);
+  public void doCommand(Command co);
 
   public String GetModulName();
 
@@ -39,5 +39,9 @@ public interface IModul {
 
   void getDefaultSettings(Properties p);
 
-  void Execute(ICommand co);
+  void Execute(Command co);
+
+  void start();
+
+  void StartModule();
 }
