@@ -21,6 +21,8 @@ import javax.swing.plaf.basic.ComboPopup;
  */
 public class MyComboUI extends javax.swing.plaf.basic.BasicComboBoxUI {
 
+  MyComboPopup cp;
+
   @Override
   public void paintCurrentValue(Graphics g, Rectangle bounds, boolean hasFocus) {
     super.paintCurrentValue(g, bounds, false);
@@ -40,7 +42,12 @@ public class MyComboUI extends javax.swing.plaf.basic.BasicComboBoxUI {
 
   @Override
   protected ComboPopup createPopup() {
-    return new MyComboPopup(comboBox);
+    cp = new MyComboPopup(comboBox);
+    return cp;
+  }
+
+  public MyComboPopup getCp() {
+    return cp;
   }
 
   @Override

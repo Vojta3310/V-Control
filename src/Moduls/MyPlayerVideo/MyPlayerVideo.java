@@ -8,7 +8,12 @@ package Moduls.MyPlayerVideo;
 import Moduls.IModul;
 import Moduls.Modul;
 import VControl.ICommand;
+import VControl.UI.ToolButton;
+import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -18,10 +23,39 @@ public class MyPlayerVideo extends Modul implements IModul {
 
   private final VideoOrganiser VO;
 
-  public MyPlayerVideo(VControl.Commander Commander) {
+  public MyPlayerVideo(VControl.Commander Commander) throws IOException {
     super(Commander);
 
     VO = new VideoOrganiser(this);
+
+    final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
+    final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
+    b.Activate();
+    b.addActionListener((java.awt.event.ActionEvent evt) -> {
+      c.Deactivate();
+      b.Activate();
+      try {
+        VO.showFilm();
+      } catch (IOException ex) {
+        Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      super.getGrafics().revalidate();
+      super.getGrafics().repaint();
+    });
+    c.addActionListener((java.awt.event.ActionEvent evt) -> {
+      b.Deactivate();
+      c.Activate();
+      try {
+        VO.showSerial();
+      } catch (IOException ex) {
+        Logger.getLogger(MyPlayerVideo.class.getName()).log(Level.SEVERE, null, ex);
+      }
+      super.getGrafics().revalidate();
+      super.getGrafics().repaint();
+    });
+
+    super.getToolBar().addTool(b);
+    super.getToolBar().addTool(c);
 
   }
 
@@ -30,7 +64,7 @@ public class MyPlayerVideo extends Modul implements IModul {
     super.Activate(); //To change body of generated methods, choose Tools | Templates.
     VO.reMakeVideo();
   }
-  
+
   @Override
   public boolean doCommand(ICommand co) {
     return false;

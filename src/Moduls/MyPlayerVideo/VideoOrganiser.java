@@ -6,7 +6,6 @@
 package Moduls.MyPlayerVideo;
 
 import Moduls.MyPlayerMusic.Player.GUI.IMediaOrganiser;
-import Moduls.MyPlayerMusic.Player.Skladba;
 import VControl.Settings.AppSettings;
 import VControl.utiliti;
 import java.awt.Dimension;
@@ -15,11 +14,19 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.Timer;
@@ -40,6 +47,8 @@ public class VideoOrganiser implements IMediaOrganiser {
   private boolean FullScreen = false;
   private boolean resume = false;
   private JFrame f;
+  private boolean serial = false;
+  private final SearchFieldListener sfl;
 
   public VideoOrganiser(MyPlayerVideo m) {
     modul = m;
@@ -57,18 +66,29 @@ public class VideoOrganiser implements IMediaOrganiser {
     PlayerComp.getMediaPlayer().setEnableMouseInputHandling(true);
     PlayerComp.getVideoSurface().setFocusable(true);
     gui = new GUI(this, m.getMyGrafics(), PlayerComp);
+
+    sfl=new SearchFieldListener(gui.getList());
+    gui.getSearchField().getDocument().addDocumentListener(sfl);
+    
     try {
       loadFilms();
     } catch (IOException ex) {
       Logger.getLogger(VideoOrganiser.class.getName()).log(Level.SEVERE, null, ex);
     }
-
     gui.getList().addMouseListener(new MouseListener() {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2) {
-          play();
+        if (serial) {
+          try {
+            loadEpizodes();
+          } catch (IOException ex) {
+            Logger.getLogger(VideoOrganiser.class.getName()).log(Level.SEVERE, null, ex);
+          }
+        } else {
+          if (e.getClickCount() == 2) {
+            play();
+          }
         }
       }
 
@@ -87,6 +107,10 @@ public class VideoOrganiser implements IMediaOrganiser {
       @Override
       public void mouseExited(MouseEvent e) {
       }
+    });
+
+    gui.getPlayButton().addActionListener((ActionEvent e) -> {
+      play();
     });
 
     gui.getPpanel().getSlider().addMouseListener(new MouseListener() {
@@ -178,6 +202,10 @@ public class VideoOrganiser implements IMediaOrganiser {
     Timer t = new Timer(100, (ActionEvent e) -> {
       updateVolume();
       updateGUI();
+      
+      if(PlayerComp.getMediaPlayer().getPosition()>=1 && serial){
+        Next();
+      }
     });
     t.start();
   }
@@ -232,19 +260,79 @@ public class VideoOrganiser implements IMediaOrganiser {
 
   private void play() {
     if (gui.getList().getSelectedValue() != null) {
-      PlayerComp.getMediaPlayer().playMedia(modul.SgetString("VideoDir")
-        + File.separator + (String) gui.getList().getSelectedValue());
+      String path;
+      if (serial) {
+        try {
+          path = FindEpizode(modul.SgetString("VideoDir")
+            + (String) gui.getList().getSelectedValue());
+//          + File.separator + gui.getEpizode().getSelectedItem();
+        } catch (IOException ex) {
+          Logger.getLogger(VideoOrganiser.class.getName()).log(Level.SEVERE, null, ex);
+          path = modul.SgetString("VideoDir")
+            + (String) gui.getList().getSelectedValue()
+            + File.separator + gui.getEpizode().getSelectedItem();
+        }
+
+        try {
+          File fout = new File(modul.SgetString("VideoDir")
+            + (String) gui.getList().getSelectedValue() + File.separator + "LastWatched");
+          FileOutputStream fos;
+
+          fos = new FileOutputStream(fout);
+          BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+          bw.write((String) gui.getEpizode().getSelectedItem());
+          bw.newLine();
+
+          bw.close();
+        } catch (IOException ex) {
+          Logger.getLogger(VideoOrganiser.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+      } else {
+        path = modul.SgetString("VideoDir")
+          + File.separator + (String) gui.getList().getSelectedValue();
+      }
+
+      PlayerComp.getMediaPlayer().playMedia(path);
       MediaLoaded = true;
     }
   }
 
   @Override
-  public void Next() {
-    if (gui.getList().getModel().getSize() > 0) {
-      if (gui.getList().getSelectedIndex() < gui.getList().getModel().getSize()-1) {
-        gui.getList().setSelectedIndex(gui.getList().getSelectedIndex() + 1);
+  public final void Next() {
+    if (serial) {
+      if (gui.getEpizode().getModel().getSize() > 0) {
+        if (gui.getEpizode().getSelectedIndex() < gui.getEpizode().getModel().getSize() - 1) {
+          gui.getEpizode().setSelectedIndex(gui.getEpizode().getSelectedIndex() + 1);
+        }
+        play();
       }
-      play();
+    } else {
+      if (gui.getList().getModel().getSize() > 0) {
+        if (gui.getList().getSelectedIndex() < gui.getList().getModel().getSize() - 1) {
+          gui.getList().setSelectedIndex(gui.getList().getSelectedIndex() + 1);
+        }
+        play();
+      }
+    }
+  }
+
+  @Override
+  public void Prew() {
+    if (serial) {
+      if (gui.getEpizode().getModel().getSize() > 0) {
+        if (gui.getEpizode().getSelectedIndex() > 0) {
+          gui.getEpizode().setSelectedIndex(gui.getEpizode().getSelectedIndex() - 1);
+        }
+        play();
+      }
+    } else {
+      if (gui.getList().getModel().getSize() > 0) {
+        if (gui.getList().getSelectedIndex() > 0) {
+          gui.getList().setSelectedIndex(gui.getList().getSelectedIndex() - 1);
+        }
+        play();
+      }
     }
   }
 
@@ -252,6 +340,7 @@ public class VideoOrganiser implements IMediaOrganiser {
     if (FullScreen) {
       f.remove(PlayerComp);
       gui.showVideo();
+      f.setVisible(false);
     } else {
       gui.hideVideo();
       f.add(PlayerComp);
@@ -264,22 +353,35 @@ public class VideoOrganiser implements IMediaOrganiser {
   }
 
   @Override
-  public void Prew() {
-    if (gui.getList().getModel().getSize() > 0) {
-      if (gui.getList().getSelectedIndex() > 0) {
-        gui.getList().setSelectedIndex(gui.getList().getSelectedIndex() - 1);
-      }
-      play();
-    }
-  }
-
-  @Override
   public void Repeat() {
     PlayerComp.getMediaPlayer().setRepeat(!PlayerComp.getMediaPlayer().getRepeat());
   }
 
   private boolean isVideo(File f) throws IOException {
+    if (Files.probeContentType(f.toPath()) == null) {
+      return false;
+    }
     return Files.probeContentType(f.toPath()).startsWith("video");
+  }
+
+  private String FindEpizode(String path) throws IOException {
+
+    File fi = new File(path);
+    String[] files = fi.list();
+    for (String file : files) {
+      File fil = new File(path + File.separator + file);
+      if (!fil.isDirectory() && isVideo(fil)) {
+        if(fil.getName().equals(gui.getEpizode().getSelectedItem()))
+        return fil.getPath();
+      }
+      if (fil.isDirectory()) {
+        String a = FindEpizode(path + File.separator + file);
+        if (a != null) {
+          return a;
+        }
+      }
+    }
+    return null;
   }
 
   private void loadFilms() throws IOException {
@@ -290,11 +392,70 @@ public class VideoOrganiser implements IMediaOrganiser {
     for (String file : files) {
       File fil = new File(path + File.separator + file);
       if (!fil.isDirectory() && isVideo(fil)) {
-        System.out.println(Files.probeContentType(fil.toPath()));
         v.addElement(file);
       }
     }
     gui.getList().setModel(v);
+    sfl.setModel(v);
+  }
+
+  private void loadSerials() throws IOException {
+    String path = modul.SgetString("VideoDir");
+    File fi = new File(path);
+    String[] files = fi.list();
+    DefaultListModel v = new DefaultListModel<>();
+    for (String file : files) {
+      File fil = new File(path + File.separator + file);
+      if (fil.isDirectory()) {
+        v.addElement(file);
+      }
+    }
+    gui.getList().setModel(v);
+    sfl.setModel(v);
+  }
+
+  private ArrayList loadDirs(String path) throws IOException {
+    ArrayList ar = new ArrayList();
+    File fi = new File(path);
+    String[] files = fi.list();
+    for (String file : files) {
+      File fil = new File(path + File.separator + file);
+      if (!fil.isDirectory() && isVideo(fil)) {
+        ar.add(file);
+      } else if (fil.isDirectory()) {
+        ar.addAll(loadDirs(path + File.separator + file));
+      }
+    }
+    return ar;
+  }
+
+  private void loadEpizodes() throws IOException {
+    if (gui.getList().getSelectedIndex() >= 0 && gui.getList().getSelectedIndex() <= gui.getList().getMaxSelectionIndex()) {
+      String path = modul.SgetString("VideoDir") + File.separator + gui.getList().getSelectedValue();
+      ArrayList ar = loadDirs(path);
+
+      ar.sort(new Comparator<String>() {
+        @Override
+        public int compare(String s1, String s2) {
+          return s1.compareToIgnoreCase(s2);
+        }
+      });
+
+      DefaultComboBoxModel model = new DefaultComboBoxModel(ar.toArray());
+      gui.getEpizode().setModel(model);
+
+      String line;
+      try (BufferedReader br = new BufferedReader(new FileReader(modul.SgetString("VideoDir")
+        + (String) gui.getList().getSelectedValue() + File.separator + "LastWatched"))) {
+        line = br.readLine();
+      }
+
+      if (line != null) {
+        if (gui.getEpizode().getModel().getSize() > 0) {
+          gui.getEpizode().setSelectedItem(line);
+        }
+      }
+    }
   }
 
   @Override
@@ -302,4 +463,15 @@ public class VideoOrganiser implements IMediaOrganiser {
     return !PlayerComp.getMediaPlayer().isPlaying();
   }
 
+  public void showSerial() throws IOException {
+    serial = true;
+    gui.showSerial();
+    loadSerials();
+  }
+
+  public void showFilm() throws IOException {
+    serial = false;
+    gui.hideSerial();
+    loadFilms();
+  }
 }

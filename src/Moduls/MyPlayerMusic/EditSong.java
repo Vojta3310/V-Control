@@ -15,7 +15,6 @@ import VControl.UI.components.AutoCompletion;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,35 +66,27 @@ public class EditSong {
     save.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
     combo.setFont(new Font(AppSettings.getString("Font_Name"), 1, (int) (AppSettings.getInt("Font_Size") * 1.5)));
 
-    save.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        try {
-          if (song != null) {
-            save();
-            ma = new MusicAnalizer();
-            sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
-            song = null;
-          }
-        } catch (IOException | UnsupportedAudioFileException | TagException ex) {
-          Logger.getLogger(EditSong.class.getName()).log(Level.SEVERE, null, ex);
+    save.addActionListener((ActionEvent ae) -> {
+      try {
+        if (song != null) {
+          save();
+          ma = new MusicAnalizer();
+          sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
+          song = null;
         }
+      } catch (IOException | UnsupportedAudioFileException | TagException ex) {
+        Logger.getLogger(EditSong.class.getName()).log(Level.SEVERE, null, ex);
       }
     });
 
-    combo.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        if ((combo.getSelectedIndex() >= 0) && (combo.getSelectedIndex()) < combo.getItemCount() - 1) {
-          try {
-            loads(combo.getItemAt(combo.getSelectedIndex()));
-          } catch (IOException ex) {
-            Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
-          } catch (UnsupportedAudioFileException ex) {
-            Logger.getLogger(EditSong.class.getName()).log(Level.SEVERE, null, ex);
-          }
+    combo.addActionListener((ActionEvent e) -> {
+      if ((combo.getSelectedIndex() >= 0) && (combo.getSelectedIndex()) < combo.getItemCount() - 1) {
+        try {
+          loads(combo.getItemAt(combo.getSelectedIndex()));
+        } catch (IOException ex) {
+          Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedAudioFileException ex) {
+          Logger.getLogger(EditSong.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
     });
@@ -107,7 +98,7 @@ public class EditSong {
     gui.add(sep);
   }
 
-  public void loads(Skladba s) throws UnsupportedAudioFileException, IOException {
+  public final void loads(Skladba s) throws UnsupportedAudioFileException, IOException {
     song = s;
     ma.setFile(new File(s.getPath()));
     ma.initAudioStream();

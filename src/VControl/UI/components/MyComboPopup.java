@@ -41,9 +41,13 @@ public class MyComboPopup extends BasicComboPopup {
   @Override
   protected JScrollPane createScroller() {
     JScrollPane sc = new JScrollPane(list, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+      JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     sc.getVerticalScrollBar().setUI(new MyScrollbarUI());
+    sc.getHorizontalScrollBar().setUI(new MyScrollbarUI());
     sc.getVerticalScrollBar().setPreferredSize(new Dimension(AppSettings.getInt("Border_Size") + 4, Integer.MAX_VALUE));
+    sc.getHorizontalScrollBar().setPreferredSize(new Dimension(Integer.MAX_VALUE, AppSettings.getInt("Border_Size") + 4));
+    sc.setBackground(AppSettings.getColour("FG_Color"));
+    
     return sc;
   }
 
