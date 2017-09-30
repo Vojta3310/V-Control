@@ -94,7 +94,7 @@ public abstract class Modul extends Thread implements IModul {
   @Override
   public Image GetIcon() {
     try {
-      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/video/console.png"));
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/none.png"));
     } catch (IOException ex) {
       Logger.getLogger(Modul.class.getName()).log(Level.SEVERE, null, ex);
     }

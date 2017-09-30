@@ -56,7 +56,7 @@ public class SongPanel extends JPanel {
     JScrollBar sbt = c.getVerticalScrollBar();
     sbt.setPreferredSize(new Dimension(AppSettings.getInt("Border_Size"), Integer.MAX_VALUE));
     sbt.setUI(new MyScrollbarUI());
-    slabel = new JLabel("Tonight we go to war-TryhardNinja");
+    slabel = new JLabel("*-*");
     slabel.setForeground(AppSettings.getColour("BG_Color"));
     slabel.setIconTextGap(AppSettings.getInt("Border_Size"));
     slabel.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));

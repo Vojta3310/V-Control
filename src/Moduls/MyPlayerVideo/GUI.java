@@ -90,6 +90,7 @@ public class GUI extends JPanel {
 //    List.setPreferredSize(new Dimension(200, 350));
     JScrollPane b = new JScrollPane(List);
     b.setMaximumSize(new Dimension(350, 500));
+    b.setPreferredSize(new Dimension(360, 500));
     b.setViewportBorder(null);
     b.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     b.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -155,6 +156,7 @@ public class GUI extends JPanel {
     searchPanel.add(searchField);
     searchPanel.add(new Box.Filler(new Dimension(200, 15), new Dimension(200, 20), new Dimension(200, 25)));
 
+//    searchPanel.setPreferredSize(null);
     searchPanel.setBackground(AppSettings.getColour("BG_Color"));
     serialPanel.setMaximumSize(new Dimension(330, 500));
 

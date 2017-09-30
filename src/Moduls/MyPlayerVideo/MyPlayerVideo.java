@@ -8,6 +8,7 @@ package Moduls.MyPlayerVideo;
 import Moduls.Modul;
 import VControl.Command;
 import VControl.UI.ToolButton;
+import java.awt.Image;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -92,14 +93,22 @@ public class MyPlayerVideo extends Modul {
     p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
     p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
   }
-
   
+  @Override
+  public Image GetIcon() {
+    try {
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerVideo/film.png"));
+    } catch (IOException ex) {
+      Logger.getLogger(Modul.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
+  }  
   
   @Override
   public void StartModule() {
     try {
-      final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/PlayFile.png")));
-      final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerMusic/addFromFile.png")));
+      final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerVideo/film.png")));
+      final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/MyPlayerVideo/serial.png")));
       b.Activate();
       b.addActionListener((java.awt.event.ActionEvent evt) -> {
         c.Deactivate();

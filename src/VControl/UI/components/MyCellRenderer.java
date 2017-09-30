@@ -83,7 +83,7 @@ public class MyCellRenderer extends JLabel implements ListCellRenderer {
     public Dimension getPreferredSize() {
       final Dimension ps = super.getPreferredSize();
       ps.height = (int) (AppSettings.getInt("Font_Size") + 2 * GAP);
-      ps.width = 350;
+      ps.width = 200;
       return ps;
     }
   }

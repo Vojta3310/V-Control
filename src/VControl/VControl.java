@@ -30,10 +30,10 @@ public class VControl {
   public static void main(String[] args) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     Commander Commander = new Commander();
     MyPlayerMusic a = new MyPlayerMusic(Commander);
-    Commander.addIModule(a);
-    Commander.addIModule(new SkladnikModule(Commander));
-    Commander.addIModule(new MyPlayerVideo(Commander));
     Commander.addIModule(new KeyLoger(Commander));
+    Commander.addIModule(a);
+    Commander.addIModule(new MyPlayerVideo(Commander));
+    Commander.addIModule(new SkladnikModule(Commander));
     Commander.StartModules();
     Commander.RegisterGUI();
     a.Activate();

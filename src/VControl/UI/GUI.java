@@ -18,7 +18,7 @@ import javax.swing.JFrame;
 public class GUI extends JFrame {
 
   public GUI() throws HeadlessException {
-    super("V-Control v1.0");
+    super("V-Control v0.0.2");
     this.setSize(AppSettings.getInt("Window_Width"), AppSettings.getInt("Window_Height"));
     this.setUndecorated(AppSettings.getBool("Window_Undecorated"));
     this.setDefaultCloseOperation(EXIT_ON_CLOSE);
