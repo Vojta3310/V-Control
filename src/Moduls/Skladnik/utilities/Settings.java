@@ -33,7 +33,7 @@ public class Settings {
     //spící režim (vypnutí motoru > nutná reference) po Xs
     public static int SleepAfter=10;
     //soubor skladu
-    public static String file="home/vojta3310/Sklad.xml";
+    public static String file="/home/vojta3310/Sklad.xml";
     //oznaceni comu  (COM1;/dev/ttyUSB0)
     public static String port="/dev/ttyUSB0";
     //ctít pořadí (true > když přerovnávám box který je v buferu hned ho vindám)

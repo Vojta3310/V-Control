@@ -28,9 +28,24 @@ import org.farng.mp3.MP3File;
 import org.farng.mp3.TagConstant;
 import org.farng.mp3.TagException;
 import org.farng.mp3.TagOptionSingleton;
-import org.farng.mp3.id3.AbstractID3v2Frame;
+import org.farng.mp3.id3.AbstractID3;
+import org.farng.mp3.id3.AbstractID3v2;
 import org.farng.mp3.id3.AbstractID3v2FrameBody;
-import org.farng.mp3.id3.FrameBodyTDAT;
+import org.farng.mp3.id3.FrameBodyTALB;
+import org.farng.mp3.id3.FrameBodyTCOM;
+import org.farng.mp3.id3.FrameBodyTCOP;
+import org.farng.mp3.id3.FrameBodyTENC;
+import org.farng.mp3.id3.FrameBodyTEXT;
+import org.farng.mp3.id3.FrameBodyTIT2;
+import org.farng.mp3.id3.FrameBodyTMED;
+import org.farng.mp3.id3.FrameBodyTOPE;
+import org.farng.mp3.id3.FrameBodyTPE1;
+import org.farng.mp3.id3.FrameBodyTPUB;
+import org.farng.mp3.id3.FrameBodyTRCK;
+import org.farng.mp3.id3.FrameBodyTSRC;
+import org.farng.mp3.id3.ID3v2_2;
+import org.farng.mp3.id3.ID3v2_3;
+import org.farng.mp3.id3.ID3v2_4;
 import org.farng.mp3.id3.ID3v2_4Frame;
 
 /**
@@ -49,18 +64,18 @@ public class addFromFile {
     gui = new JPanel();
     gui.setLayout(new BorderLayout());
     ma = new MusicAnalizer();
-    sep = new SongEditPanel(new String[]{"", "", "", "", "", "", "", "",}, ma);
+    sep = new SongEditPanel(new String[]{"", "", "", "", "", "", "", "", ""}, ma);
     MyButton add = new MyButton("Přidat ...");
     final JFileChooser fc = new JFileChooser();
     FileFilter ff = new FileFilter() {
       @Override
       public boolean accept(File file) {
-        return file.getName().endsWith(".mp3") || file.getName().endsWith(".wav") || file.isDirectory();
+        return file.getName().endsWith(".mp3") || file.isDirectory();
       }
 
       @Override
       public String getDescription() {
-        return "Known Audio Files (mp3, wav)";
+        return "Known Audio Files (mp3)";
       }
     };
     fc.addChoosableFileFilter(ff);
@@ -100,7 +115,7 @@ public class addFromFile {
             select.setText("Vybrat soubor ...");
             select.requestFocus();
             ma = new MusicAnalizer();
-            sep.load(new String[]{"", "", "", "", "", "", "", "",}, ma);
+            sep.load(new String[]{"", "", "", "", "", "", "", "", ""}, ma);
           }
         } catch (IOException | UnsupportedAudioFileException | TagException ex) {
           Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
@@ -117,11 +132,10 @@ public class addFromFile {
 //  public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
 //    save();
 //  }
-
   private void load(File f) throws UnsupportedAudioFileException, IOException {
     ma.setFile(f);
     ma.initAudioStream();
-    SongInfo i =new SongInfo();
+    SongInfo i = new SongInfo();
     i.load(f);
     sep.load(i.getSet(), ma);
   }
@@ -133,28 +147,66 @@ public class addFromFile {
       directory.mkdir();
     }
 
-    Path f = new File(directory.toString()+File.separator+set[1] + "-" + set[0] + ".mp3").toPath();
+    Path f = new File(directory.toString() + File.separator + set[1] + "-" + set[0] + ".mp3").toPath();
 
     Files.copy(ma.getFile().toPath(), f, StandardCopyOption.REPLACE_EXISTING);
 
     MP3File mp3file = new MP3File(f.toString());
     TagOptionSingleton.getInstance().setDefaultSaveMode(TagConstant.MP3_FILE_SAVE_OVERWRITE);
 
-    mp3file.getID3v2Tag().clearFrameMap();
-
-    String s = "MyPlayer%@%";
-    for (String seti : set) {
-      s += seti + "%@%";
+    if (mp3file.hasID3v2Tag()) {
+      mp3file.getID3v2Tag().clearFrameMap();
+    } else {
+      mp3file.setID3v2Tag(new ID3v2_2());
+      mp3file.setID3v2Tag(new ID3v2_3());
+      mp3file.setID3v2Tag(new ID3v2_4());
+      mp3file.save();
     }
-    s += "0.0%@%" + Float.toString(ma.getAverangeVolume());
 
-    AbstractID3v2Frame frame;
-    AbstractID3v2FrameBody frameBody;
-    frameBody = new FrameBodyTDAT((byte) 0, s);
-    frame = new ID3v2_4Frame(frameBody);
-    mp3file.getID3v2Tag().setFrame(frame);
+//    String s = "MyPlayer%@%";
+//    for (String seti : set) {
+//      s += seti + "%@%";
+//    }
+//    s += "0.0%@%" + Float.toString(ma.getAverangeVolume());
+//
+//    AbstractID3v2Frame frame;
+//    AbstractID3v2FrameBody frameBody;
+//    frameBody = new FrameBodyTDAT((byte) 0, s);
+//    frame = new ID3v2_4Frame(frameBody);
+//    mp3file.getID3v2Tag().setFrame(frame);
+    for (int i = 0; i < set.length; i++) {
+      if (set[i].equals("")) {
+        set[i] = " ";
+      }
+    }
+
+    AbstractID3v2FrameBody frameBody = new FrameBodyTMED((byte) 0, "MyPlayer");
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTIT2((byte) 0, set[0]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTPE1((byte) 0, set[1]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTALB((byte) 0, set[2]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTOPE((byte) 0, set[3]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTPUB((byte) 0, set[4]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTCOP((byte) 0, set[5]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTSRC((byte) 0, set[6]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTRCK((byte) 0, set[7]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTEXT((byte) 0, set[8]);
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTCOM((byte) 0, Float.toString(ma.getAverangeVolume()));
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+    frameBody = new FrameBodyTENC((byte) 0, "0.0");
+    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
+
     mp3file.save();
-    
+
     MP.reloadSongs();
   }
 

@@ -86,7 +86,7 @@ public class SerialManager implements ISerialManager {
     } catch (TooManyListenersException ex) {
       Logger.getLogger(SerialManager.class.getName()).log(Level.SEVERE, null, ex);
     }
-    System.out.println("Serial port successfully connected!");
+    Logger.getLogger(this.getClass().getName()).log(Level.FINER,"Serial port successfully connected!");
     return 0;
   }
 

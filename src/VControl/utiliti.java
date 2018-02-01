@@ -45,6 +45,17 @@ public class utiliti {
     return bimage;
   }
 
+  public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+    Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+    BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+
+    Graphics2D g2d = dimg.createGraphics();
+    g2d.drawImage(tmp, 0, 0, null);
+    g2d.dispose();
+
+    return dimg;
+  }
+
   public static String MilToTime(long m) {
     String min = Long.toString(m / 60000);
     String s = Double.toString((double) Math.round(((double) m / 60000 - Math.floor(m / 60000)) * 6000) / 100);

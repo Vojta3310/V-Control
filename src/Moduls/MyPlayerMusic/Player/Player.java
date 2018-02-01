@@ -5,10 +5,14 @@
  */
 package Moduls.MyPlayerMusic.Player;
 
+import Moduls.Modul;
 import ddf.minim.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,12 +28,15 @@ public class Player {
   private Skladba s;
   private float statMinVol;
   private float statMaxVol;
-  private final float Strenght = 0.4F;
+  private final float Strenght;
+  private final String command;
 
-  public Player() {
+  public Player(Modul mod) {
     this.volume = 0.5f;
     minim = new Minim(this);
-
+    minim.debugOff();
+    command = mod.SgetString("Volume_Command");
+    Strenght = Float.parseFloat(mod.SgetString("Loudness_Controll_Strenght"));
   }
 
   public AudioPlayer PrepareSong(Skladba s) {
@@ -84,12 +91,22 @@ public class Player {
   }
 
   private void setV() {
-    float v;
-    v = ((1 / s.getVolume()) - 1 / statMaxVol) / (1 / statMinVol - 1 / statMaxVol) * Strenght + (1 - Strenght);
-
-//    System.out.println(v * volume * 100);
-    if (Aplayer != null) {
-      Aplayer.setGain((float)(v * volume * 100)-50);
+    float v = ((1 / s.getVolume()) - 1 / statMaxVol) / (1 / statMinVol - 1 / statMaxVol) * Strenght + (1 - Strenght);
+    switch (command) {
+      case "V":
+        Aplayer.setVolume(volume * v);
+        break;
+      case "G":
+        Aplayer.setGain((float) (v * volume * 100) - 50);
+        break;
+      default:
+        String vol = Integer.toString((int) ((float)v * (float)volume * (float)100));
+        try {
+          Runtime.getRuntime().exec(command.replace("%v%", vol));
+        } catch (IOException ex) {
+          Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
     }
   }
 

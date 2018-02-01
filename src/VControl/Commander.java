@@ -27,6 +27,7 @@ public class Commander {
 
   private final ArrayList<IModul> moduls;
   private final Sidebar sidebar;
+  private boolean sidebarHidden;
   private IModul active;
   private final GUI gui;
   private final Settings setings;
@@ -50,15 +51,25 @@ public class Commander {
     gui.repaint();
   }
 
-  public boolean Execute(Command co) {
+  public synchronized boolean Execute(Command co) {
     moduls.stream().forEach((a) -> {
       a.doCommand(co);
     });
     this.setings.doCommand(co);
+    if (co.GetFor().equals("app")) {
+      co.setStats(CommandStats.InProgress);
+      if (co.GetCommand().equals("HideSidebar")) {
+        hideSidebar();
+      } else if (co.GetCommand().equals("ShowSidebar")) {
+        showSidebar();
+      }
+      co.setStats(CommandStats.Done);
+    }
+
     return true;
   }
 
-  public void Activate(IModul c) {
+  public synchronized void Activate(IModul c) {
     if (this.active != null) {
       active.Deactivate();
       gui.remove(active.getGrafics());
@@ -79,20 +90,20 @@ public class Commander {
     AppSettings.DefaultSettings(p);
   }
 
-  public IModul getActive() {
+  public synchronized IModul getActive() {
     return active;
   }
 
-  public ArrayList getIModuls() {
+  public synchronized ArrayList getIModuls() {
     return moduls;
   }
 
-    public void StartModules() {
+  public void StartModules() {
     for (IModul a : moduls) {
       a.start();
     }
-  }  
-  
+  }
+
   public void RegisterGUI() {
     for (IModul a : moduls) {
       if (a.HaveGUI()) {
@@ -114,4 +125,23 @@ public class Commander {
       this.moduls.add(d);
     }
   }
+
+  private void hideSidebar() {
+    if (!sidebarHidden) {
+      gui.remove(scSidebar);
+      sidebarHidden = true;
+    }
+    gui.repaint();
+    gui.revalidate();
+  }
+
+  private void showSidebar() {
+    if (sidebarHidden) {
+      gui.add(scSidebar, BorderLayout.LINE_START);
+      sidebarHidden = false;
+    }
+    gui.repaint();
+    gui.revalidate();
+  }
+
 }

@@ -6,6 +6,8 @@
 package Moduls.MyPlayerMusic.Player;
 
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -33,7 +35,7 @@ public class RandomSong implements ISkladba {
       }
       //v Pripustne máme všechny přijatelné skladby
       if (Pripustne.isEmpty()) {
-        System.out.println("Není co hrát: neexistuje skladba která by odpovídala všem podmínkám");
+        Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Není co hrát: neexistuje skladba která by odpovídala všem podmínkám");
         Pripustne = songs.getSongs();
       } else if (Pripustne.size() == 1) {
         choosedOne = true;
@@ -46,11 +48,11 @@ public class RandomSong implements ISkladba {
         int sum = 0;
 
         for (Skladba s : Pripustne) {
-          int o = (int) (s.getOblibenost() * songs.getCount() / (s.getPlayed() * 3 + 1)) + 1;
+          int o = (int) (s.getOblibenost() * 100 / (s.getPlayed() * 3 + 1)) + 1;
           b.add(o);
           sum += o;
         }
-        int n = (int) (Math.random() * (sum - 1)) + 1;
+        int n = (int) (Math.random() * (sum - 1));
         for (int i = 0; i < b.size(); i++) {
           n -= b.get(i);
           if (n <= 0) {

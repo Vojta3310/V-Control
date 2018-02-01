@@ -16,7 +16,7 @@ import org.farng.mp3.TagException;
  */
 public class Songs {
 
-  private ArrayList<Skladba> Songs;
+  private ArrayList<Skladba> Songs=new ArrayList<>();
   private float statMinVol = 1;
   private float statMaxVol = 0;
 //  private model

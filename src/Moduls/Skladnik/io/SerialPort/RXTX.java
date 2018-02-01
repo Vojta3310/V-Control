@@ -61,7 +61,7 @@ public class RXTX {
     }
     X = (int) ((X * Settings.X_boxu + roztec) * Settings.krokXY);
     Y = (int) (Y * Settings.Y_boxu * Settings.krokXY);
-    System.out.println("vkrocixch x:" + X + " y: " + Y);
+//    System.out.println("vkrocixch x:" + X + " y: " + Y);
 
     while ((X > 0) || (Y > 0)) {
       if (X > Short.MAX_VALUE) {
@@ -78,10 +78,10 @@ public class RXTX {
         jeduY = Y;
         Y = 0;
       }
-      System.out.println("vkrocixch po castech x:" + jeduX + " y: " + jeduY);
+//      System.out.println("vkrocixch po castech x:" + jeduX + " y: " + jeduY);
       x = toascii(jeduX);
       y = toascii(jeduY);
-      System.out.println("po castech x:" + x + " y: " + y);
+//      System.out.println("po castech x:" + x + " y: " + y);
       if (jeduX == 0) {
         port.send("Y" + zapY + y);
       } else if (jeduY == 0) {
@@ -175,15 +175,15 @@ public class RXTX {
 
   public void refAll() {
     port.send("KZ");
-    System.out.println("Z zreferováno");
+//    System.out.println("Z zreferováno");
     port.send("KX");
-    System.out.println("X zreferováno");
+//    System.out.println("X zreferováno");
     port.send("KY");
-    System.out.println("Y zreferováno");
+//    System.out.println("Y zreferováno");
     d = Settings.chyceno;
     pust();
     port.send("KD");
-    System.out.println("Y zreferováno");
+//    System.out.println("Y zreferováno");
     d = Settings.zavreno;
     port.send("X+" + toascii((int) (Settings.X_odsazeni_refBox * Settings.krokXY)) + "Y+" + toascii((int) (Settings.Y_odsazeni_refBox * Settings.krokXY)));
     port.send("Z+" + toascii((int) (Settings.Z_odsazeni_refBox * Settings.krokZ)));
@@ -201,7 +201,7 @@ public class RXTX {
     if (osa.equals("Z")) {
       port.send("Z+" + toascii((int) (Settings.X_odsazeni_refBox * Settings.krokZ)));
     }
-    System.out.println(osa + " zreferováno");
+//    System.out.println(osa + " zreferováno");
   }
 
   private String toascii(int cislo) { //cislo je pocet kroku o kolik ma robot popojet

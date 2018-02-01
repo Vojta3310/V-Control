@@ -25,6 +25,8 @@ public class AppSettings {
     p.setProperty("@_Icon_Chanhe_Color", "true");
     p.setProperty("@_Font_Name", "Arial");
     p.setProperty("@_Font_Size", "20");
+    p.setProperty("@_Bebugg_log", "true");
+    p.setProperty("@_Change_Cursor", "true");
 
   }
 

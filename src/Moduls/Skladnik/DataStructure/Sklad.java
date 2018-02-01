@@ -4,6 +4,9 @@ import Moduls.Skladnik.AbstractList.AbstractList;
 import Moduls.Skladnik.AbstractList.IAbstractList;
 import Moduls.Skladnik.AbstractList.IIterator;
 import Moduls.Skladnik.utilities.Settings;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -124,14 +127,14 @@ public class Sklad implements ISklad {
           hloubka.vlozPrvni(box);
           sklad.vlozBox(box);
         } else {
-          System.out.println("Není místo!");
+          Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Není místo!");
         }
       } else {
-        System.err.println("Nelze do skladu vložit nulový box!");
+        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Nelze do skladu vložit nulový box!");
         System.exit(0);
       }
     } else {
-      System.err.println("Nelze do skladu vložit box z důvodu: Nulový iterátor!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Nelze do skladu vložit box z důvodu: Nulový iterátor!");
       System.exit(0);
     }
   }
@@ -144,7 +147,7 @@ public class Sklad implements ISklad {
         sl.getNext();
       }
     } else {
-      System.err.println("Argument funkce setSloupec není ve vymezené hodnotě! - " + sloupec);
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Argument funkce setSloupec není ve vymezené hodnotě! - " + sloupec);
       System.exit(0);
     }
     return sl;
@@ -160,7 +163,7 @@ public class Sklad implements ISklad {
           ra.getNext();
         }
       } else {
-        System.err.println("Argument funkce setRadek není ve vymezené hodnotě!");
+        Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Argument funkce setRadek není ve vymezené hodnotě!");
         System.exit(0);
       }
     }
@@ -176,7 +179,7 @@ public class Sklad implements ISklad {
         hl.getNext();
       }
     } else {
-      System.err.println("Argument funkce setHloubka není ve vymezené hodnotě!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Argument funkce setHloubka není ve vymezené hodnotě!");
       System.exit(0);
     }
     return hl;
@@ -195,7 +198,7 @@ public class Sklad implements ISklad {
     if (hl != null) {
       return hl.zpristupniAktualni();
     } else {
-      System.err.print("Nullový iterátor!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Nullový iterátor!");
       System.exit(0);
     }
     return null;
@@ -208,7 +211,7 @@ public class Sklad implements ISklad {
       hl.prepisAktualni(box);
       sklad.vlozBox(box);
     } else {
-      System.err.print("Nullový iterátor!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, "Nullový iterátor!");
       System.exit(0);
     }
   }
@@ -235,7 +238,7 @@ public class Sklad implements ISklad {
       }
     }
     if (souradnice[0] * souradnice[1] * souradnice[2] == 0) {
-      System.err.println("Box s obsahem " + box.getObsah() + " nenalezen!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Box s obsahem " + box.getObsah() + " nenalezen!");
       System.exit(0);
     }
     return souradnice;
@@ -261,7 +264,7 @@ public class Sklad implements ISklad {
       }
       return zaplneno;
     } else {
-      System.err.print("Nullový iterátor!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Nullový iterátor!");
       System.exit(0);
     }
     return 0;
@@ -283,7 +286,7 @@ public class Sklad implements ISklad {
         }
       }
     }
-    System.out.println("Počet pozic: " + pozice.getPocet());
+    Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Po\u010det pozic: {0}", pozice.getPocet());
     return pozice;
   }
 
@@ -300,7 +303,7 @@ public class Sklad implements ISklad {
     if (nejmensi != null) {
       return nejmensi;
     } else {
-      System.err.println("Ve skladu není žádné volné místo!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Ve skladu není žádné volné místo!");
       System.exit(0);
     }
     return null;
@@ -320,7 +323,7 @@ public class Sklad implements ISklad {
         pridejSloupec(kolik - SIRKA);
       }
     } else {
-      System.err.println("Vyska skladu musi byt vetsi nez 0!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Vyska skladu musi byt vetsi nez 0!");
     }
   }
 
@@ -333,7 +336,7 @@ public class Sklad implements ISklad {
         pridejRadek(kolik - VYSKA);
       }
     } else {
-      System.err.println("Vyska skladu musi byt vetsi nez 0!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Vyska skladu musi byt vetsi nez 0!");
     }
   }
 
@@ -346,7 +349,7 @@ public class Sklad implements ISklad {
         pridejHloubku(kolik - HLOUBKA);
       }
     } else {
-      System.err.println("Vyska skladu musi byt vetsi nez 0!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Vyska skladu musi byt vetsi nez 0!");
     }
   }
 
@@ -452,31 +455,73 @@ public class Sklad implements ISklad {
     return HLOUBKA;
   }
 
+  public boolean isFreeID(int id) {
+    for (int i = 0; i < getModel().size(); i++) {
+      Box b = getModel().get(i);
+      if (b.getID() == id) {
+        return false;
+      }
+    }
+    for (int i = 0; i < vyndane.getListModel().size(); i++) {
+      Box b = vyndane.getListModel().get(i);
+      if (b.getID() == id) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   @Override
   public int getFreeID() {
     int id = 0;
     boolean nalezeno = true;
     while (nalezeno) {
-      nalezeno = false;
-      for (int i = 0; i < getModel().size() && !nalezeno; i++) {
-        Box b = getModel().get(i);
-        if (b.getID() == id) {
-          nalezeno = true;
-          id++;
-//          break;
-        }
-      }
-      for (int i = 0; i < vyndane.getListModel().size() && !nalezeno; i++) {
-        Box b = vyndane.getListModel().get(i);
-        if (b.getID() == id) {
-          nalezeno = true;
-          id++;
-//          break;
+      nalezeno = !isFreeID(id);
+      id++;
+    }
+
+    return id - 1;
+  }
+
+  @Override
+  public Box getBoxByID(int id) {
+    IIterator<AbstractList> sl = sloupce.vytvorIterator();
+    IIterator<AbstractList> ra;
+    IIterator<Box> hl;
+    while (sl.hasNext()) {
+      radek = sl.getNext();
+      ra = radek.vytvorIterator();
+      while (ra.hasNext()) {
+        hloubka = ra.getNext();
+        hl = hloubka.vytvorIterator();
+        while (hl.hasNext()) {
+          Box b = hl.getNext();
+          if ((b != null) && (b.getID() == id)) {
+            return b;
+          }
         }
       }
     }
-
-    return id;
+    return null;
   }
 
+  @Override
+  public ArrayList<Box> getList() {
+    ArrayList<Box> r = new ArrayList<>();
+    IIterator<AbstractList> sl = sloupce.vytvorIterator();
+    IIterator<AbstractList> ra;
+    IIterator<Box> hl;
+    while (sl.hasNext()) {
+      radek = sl.getNext();
+      ra = radek.vytvorIterator();
+      while (ra.hasNext()) {
+        hloubka = ra.getNext();
+        hl = hloubka.vytvorIterator();
+        while (hl.hasNext()) {
+          r.add(hl.getNext());
+        }
+      }
+    }
+    return r;
+  }
 }

@@ -13,6 +13,8 @@ import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
+import org.jnativehook.mouse.NativeMouseEvent;
+import org.jnativehook.mouse.NativeMouseListener;
 
 /**
  *
@@ -48,12 +50,38 @@ public class KeyLoger extends Modul {
 
   @Override
   public void StartModule() {
+// Get the logger for "org.jnativehook" and set the level to warning.
+    Logger logger = Logger.getLogger(GlobalScreen.class.getPackage().getName());
+    logger.setLevel(Level.WARNING);
+//      Logger.getLogger(KeyLoger.class.getName()).log(Level.SEVERE, "text");
 
+// Don't forget to disable the parent handlers.
+    logger.setUseParentHandlers(false);
     try {
       GlobalScreen.registerNativeHook();
     } catch (NativeHookException ex) {
       Logger.getLogger(KeyLoger.class.getName()).log(Level.SEVERE, null, ex);
     }
+    GlobalScreen.addNativeMouseListener(new NativeMouseListener() {
+
+      @Override
+      public void nativeMouseClicked(NativeMouseEvent nme) {
+//        System.out.println("clik");
+      }
+
+      @Override
+      public void nativeMousePressed(NativeMouseEvent nme) {
+        Command c = new Command("MouseClick", "all", GetModulName());
+        getCommander().Execute(c);
+//        System.out.println("clik");
+      }
+
+      @Override
+      public void nativeMouseReleased(NativeMouseEvent nme) {
+//        System.out.println("clik");
+      }
+    });
+
     GlobalScreen.addNativeKeyListener(new NativeKeyListener() {
 
       @Override
@@ -70,6 +98,9 @@ public class KeyLoger extends Modul {
 
       @Override
       public void nativeKeyPressed(NativeKeyEvent e) {
+        Command c = new Command("KeyPress", (Object) e.getRawCode(), "all", GetModulName());
+        getCommander().Execute(c);
+
         if (e.getRawCode() == 165) {
           special = true;
         }
@@ -109,7 +140,7 @@ public class KeyLoger extends Modul {
               getCommander().Execute(new Command("Repeat", "MyPlayerMusic", GetModulName()));
               break;
             default:
-              getCommander().Execute(new Command("KeyPressed", e, getCommander().getActive().GetModulName(), GetModulName()));
+              getCommander().Execute(new Command("OtherKeyPressed", e, getCommander().getActive().GetModulName(), GetModulName()));
               break;
           }
         }

@@ -6,9 +6,19 @@
 package VControl.UI;
 
 import VControl.Settings.AppSettings;
+import VControl.utiliti;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.HeadlessException;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 /**
@@ -25,6 +35,21 @@ public class GUI extends JFrame {
     this.setVisible(true);
     Container pane = this.getContentPane();
     pane.setLayout(new BorderLayout());
+    if (AppSettings.getBool("Change_Cursor")) {
+      Toolkit toolkit = Toolkit.getDefaultToolkit();
+      try {
+        BufferedImage image = utiliti.toBufferedImage(ImageIO.read(getClass().getResourceAsStream("/icons/app/Cursor.png")));
+        if (AppSettings.getBool("Icon_Chanhe_Color")) {
+          utiliti.changeColor(image, AppSettings.getColour("BG_Color"),
+            AppSettings.getColour("FG_Color"));
+        }
+        Cursor c = toolkit.createCustomCursor(image, new Point(0, 0), "img");
+
+        setCursor(c);
+      } catch (IOException ex) {
+        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+      }
+    }
   }
 
 }

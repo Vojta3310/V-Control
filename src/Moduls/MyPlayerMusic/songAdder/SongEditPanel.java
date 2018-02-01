@@ -8,12 +8,18 @@ package Moduls.MyPlayerMusic.songAdder;
 import VControl.UI.components.MyField;
 import VControl.UI.components.MyComboUI;
 import VControl.Settings.AppSettings;
+import VControl.UI.components.MyButton;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 /**
@@ -29,7 +35,10 @@ public class SongEditPanel extends JPanel {
   private final JLabel specialtags;
   private final JLabel langue;
   private final JLabel autor;
+  private final MyButton editLyric;
+  private final JFrame lyricFrame;
 
+  private final JTextArea lyric;
   private final JTextField ftitle;
   private final JTextField falbum;
   private final JTextField ftags;
@@ -45,7 +54,7 @@ public class SongEditPanel extends JPanel {
   }
 
   public SongEditPanel() throws IOException {
-    settings = new String[]{"", "", "", "", "", "", "", "",};
+    settings = new String[]{"", "", "", "", "", "", "", "", "", ""};
     ma = new MusicAnalizer();
 
     this.setBackground(AppSettings.getColour("BG_Color"));
@@ -58,6 +67,13 @@ public class SongEditPanel extends JPanel {
     tags = new JLabel("Tagy:");
     specialtags = new JLabel("STagy:");
     WE = new WaveEdit(ma);
+    editLyric = new MyButton("Upravit text skladby");
+    lyric = new JTextArea();
+    lyricFrame = new JFrame("Text skladby");
+    JScrollPane sp = new JScrollPane(lyric);
+    lyricFrame.add(sp);
+    lyricFrame.setSize(600, 700);
+    lyricFrame.setLocationRelativeTo(editLyric);
 
     ftitle = new MyField();
     fautor = new MyField();
@@ -88,6 +104,7 @@ public class SongEditPanel extends JPanel {
     langue.setFont(f);
     tags.setFont(f);
     specialtags.setFont(f);
+    lyric.setFont(f);
 
     title.setForeground(AppSettings.getColour("FG_Color"));
     autor.setForeground(AppSettings.getColour("FG_Color"));
@@ -130,6 +147,14 @@ public class SongEditPanel extends JPanel {
     flangue.setFont(f);
 //    ftags.setFont(f);
 //    fspecialtags.setFont(f);
+
+    editLyric.addActionListener(new ActionListener() {
+
+      @Override
+      public void actionPerformed(ActionEvent e) {
+        lyricFrame.setVisible(true);
+      }
+    });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
     int labelWidth = AppSettings.getInt("Icon_Size") / 2;
@@ -176,6 +201,7 @@ public class SongEditPanel extends JPanel {
             )
           )
         )
+        .addComponent(editLyric, (fieldWidth + labelWidth) * 2 + 48, (fieldWidth + labelWidth) * 2 + 48, (fieldWidth + labelWidth) * 2 + 48)
       )
     );
     layout.setVerticalGroup(
@@ -212,6 +238,8 @@ public class SongEditPanel extends JPanel {
             )
           )
         )
+        .addGap(rowHeight / 4)
+        .addComponent(editLyric, rowHeight + 8, rowHeight + 8, rowHeight + 8)
         .addComponent(WE, 10, javax.swing.GroupLayout.DEFAULT_SIZE, Integer.MAX_VALUE)
       )
     );
@@ -229,7 +257,7 @@ public class SongEditPanel extends JPanel {
     if (!"".equals(settings[6])) {
       WE.setStart(Long.parseLong(settings[6]));
       if (!"".equals(settings[7])) {
-        WE.setEnd(WE.getStart()+Long.parseLong(settings[7]));
+        WE.setEnd(WE.getStart() + Long.parseLong(settings[7]));
       } else {
         WE.setEnd(0L);
       }
@@ -237,6 +265,7 @@ public class SongEditPanel extends JPanel {
       WE.setStart(0L);
     }
     WE.setMa(ma);
+    lyric.setText(settings[8]);
   }
 
   public String[] getSet() {
@@ -245,10 +274,12 @@ public class SongEditPanel extends JPanel {
       fautor.getText(),
       falbum.getText(),
       flangue.getSelectedItem().toString(),
-      ftags.getText(),
-      fspecialtags.getText(),
+      ftags.getText()+" ",
+      fspecialtags.getText()+" ",
       Long.toString(WE.getStart()),
-      Long.toString(WE.getEnd())};
+      Long.toString(WE.getEnd()),
+      lyric.getText()+" "
+    };
     return set;
   }
 

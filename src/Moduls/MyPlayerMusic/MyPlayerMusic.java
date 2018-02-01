@@ -12,6 +12,7 @@ import Moduls.MyPlayerMusic.songAdder.addFromFile;
 import VControl.UI.ToolButton;
 import java.awt.Image;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,7 +30,7 @@ public class MyPlayerMusic extends Modul {
   private final MusicOrganiser Player;
   private final addFromFile addSong;
   private final EditSong edit;
-  private int paused = 0;
+  private ArrayList<String> paused = new ArrayList<>();
 
   public MyPlayerMusic(VControl.Commander Commander) throws LineUnavailableException, IOException, TagException, UnsupportedAudioFileException {
     super(Commander);
@@ -66,14 +67,14 @@ public class MyPlayerMusic extends Modul {
   public void Execute(Command co) {
     switch (co.GetCommand()) {
       case "Play":
-        paused--;
-        if (paused <= 0) {
+        paused.remove(co.GetFrom());
+        if (paused.isEmpty()) {
           Player.Play();
         }
         break;
       case "Pause":
-        paused++;
-        if (paused > 0) {
+        paused.add(co.GetFrom());
+        if (!paused.isEmpty()) {
           Player.Pause();
         }
         break;
@@ -100,6 +101,21 @@ public class MyPlayerMusic extends Modul {
           Player.setVolume((float) co.GetParms());
         }
         break;
+      case "Pget":
+          co.setResults(!Player.getPaused());
+        break;
+      case "Sget":
+          co.setResults(Player.getPlaying());
+        break;
+      case "Posget":
+          co.setResults((float) (Player.getAplayer().getPos() - Player.getPlaying().getStart()) / Player.getPlaying().getLenght());
+        break;
+      case "APget":
+          co.setResults(Player.getAp());
+        break;
+        
+        
+        
     }
   }
 
@@ -109,6 +125,8 @@ public class MyPlayerMusic extends Modul {
     p.setProperty("Modul_" + this.GetModulName() + "_Transfet_Lenght", "1000");
     p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
     p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
+    p.setProperty("Modul_" + this.GetModulName() + "_Volume_Command", "G");
+    p.setProperty("Modul_" + this.GetModulName() + "_Loudness_Controll_Strenght", "0.35");
   }
 
   @Override

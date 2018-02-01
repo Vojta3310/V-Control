@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
@@ -41,12 +42,13 @@ public class MusicOrganiser implements IMediaOrganiser {
   private boolean newSong;
   private boolean ASAddFavoriti = false;
   private boolean resume = false;
+  private AudioPlayer ap;
 
   public MusicOrganiser(Modul mod) throws IOException, TagException {
     Songs = new Songs();
     modul = mod;
     gui = new MPgui(this);
-    player = new Player();
+    player = new Player(mod);
     NextSongs = new DefaultListModel<>();
     PlayedSongs = new DefaultListModel<>();
     gui.getSpanel().getRlist().setModel(NextSongs);
@@ -102,14 +104,17 @@ public class MusicOrganiser implements IMediaOrganiser {
     Songs.load(modul.SgetString("MusicDir"));
     player.setStatMaxVol(Songs.getStatMaxVol());
     player.setStatMinVol(Songs.getStatMinVol());
-    playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
-    Timer tim = new Timer(10, (ActionEvent ae) -> {
-      doTransform();
-      checkNextSong();
-      updateGUI();
-      updateVolume();
-    });
-    tim.start();
+    if (Songs.getCount() > 0) {
+      playSong(NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex()).getSkladba());
+      Timer tim = new Timer(10, (ActionEvent ae) -> {
+        doTransform();
+        checkNextSong();
+        updateGUI();
+        updateVolume();
+      });
+      tim.start();
+      Pause();
+    }
   }
 
   private void updateVolume() {
@@ -227,7 +232,7 @@ public class MusicOrganiser implements IMediaOrganiser {
 
   private void playSong(Skladba ns) {
     Playing = ns;
-    AudioPlayer ap = player.PrepareSong(Playing);
+    ap = player.PrepareSong(Playing);
     gui.getIpanel().setupEqualizer(ap);
     gui.getPpanel().getVcontrol().setAp(ap);
     gui.getSpanel().getSlabel().setText(Playing.getLabel());
@@ -281,7 +286,7 @@ public class MusicOrganiser implements IMediaOrganiser {
 
   @Override
   public void Repeat() {
-    System.out.println(Playing.getRepead());
+//    System.out.println(Playing.getRepead());
     if (Playing.getRepead() > 0 && Playing.getRepead() < 5) {
       Playing.setRepead(Playing.getRepead() + 1);
     } else if (Playing.getRepead() == 0) {
@@ -429,6 +434,27 @@ public class MusicOrganiser implements IMediaOrganiser {
     }
   }
 
+  public void playSongByTerm(ArrayList<Term> terms) {
+    RandomSong rs = new RandomSong(Songs);
+    rs.setPodm(terms);
+    playSong(rs.getSkladba());
+  }
+
+  public void setDefault(String Tag, String STag) {
+    for (int i = 0; i < NextSongs.size(); i++) {
+      RandomSong rs = NextSongs.get(i);
+      for (int j = 0; j < rs.getPodm().size(); j++) {
+        Term t = rs.getPodm().get(j);
+        if (t.getType().equals("Tagy") && t.getValue().equals("")) {
+          t.setValue(Tag);
+        }
+        if (t.getType().equals("STag") && t.getValue().equals("")) {
+          t.setValue(STag);
+        }
+      }
+    }
+  }
+
   public Skladba getPlaying() {
     return Playing;
   }
@@ -443,6 +469,10 @@ public class MusicOrganiser implements IMediaOrganiser {
 
   public Songs getSongs() {
     return Songs;
+  }
+
+  public AudioPlayer getAp() {
+    return ap;
   }
 
   @Override

@@ -70,9 +70,9 @@ public class BoxEditor extends JPanel {
     setBackground(AppSettings.getColour("BG_Color"));
     list.setBackground(AppSettings.getColour("BG_Color"));
     list.setForeground(AppSettings.getColour("FG_Color"));
-    list.setCellRenderer(new Moduls.Skladnik.ui.graphics.CellRenderers.MyCellRenderer(list));
-    list.setFixedCellHeight(80);
-    list.setFixedCellWidth(230);
+    list.setCellRenderer(new Moduls.Skladnik.ui.graphics.CellRenderers.ModulCellRenderer(list));
+    list.setFixedCellHeight(60);
+    list.setFixedCellWidth(200);
     list.setVisibleRowCount(-1);
 //    list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
     JScrollPane b = new JScrollPane(list);

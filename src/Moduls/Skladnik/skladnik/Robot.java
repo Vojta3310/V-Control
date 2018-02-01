@@ -41,7 +41,8 @@ public class Robot extends Thread {
   private final XML xml;
 
   private boolean pracuje;
-  private boolean sleep = true;
+  private boolean sleep = false;
+  private boolean reffered = false;
   private boolean buferVindej = Settings.bufer_videj;
   private int SleepAfter = Settings.SleepAfter;
 
@@ -79,10 +80,11 @@ public class Robot extends Thread {
         } catch (InterruptedException ex) {
           System.err.println("Vlákno robota se nepodařilo uspat!");
         }
-        if (s == SleepAfter) {
+        if (s >= SleepAfter && !sleep) {
           pracuje = true;
-          sleep = true;
+          reffered = false;
           if (rxtx.Ping()) {
+            sleep = true;
             posunNa(1, 1);
             rxtx.DisableMot();
           }
@@ -94,11 +96,18 @@ public class Robot extends Thread {
       if (sleep) {
         rxtx.EnableMot();
         reference();
+        reffered = true;
         sleep = false;
       }
+      if (!reffered) {
+        rxtx.EnableMot();
+        reference();
+        reffered = true;
+      }
+
       if (buffer.Zpristupni().getStav() == typOperace.PODEJ) {
         podej(buffer.Odeber());
-        System.out.println("+++++++++++++++++++++++++++++");
+//        System.out.println("+++++++++++++++++++++++++++++");
       } else if (buffer.Zpristupni().getStav() == typOperace.VLOZ) {
         vloz(buffer.Odeber());
       } else {
@@ -365,7 +374,7 @@ public class Robot extends Thread {
       doc.insertString(doc.getLength(), text, style);
 
     } catch (BadLocationException ex) {
-      System.out.println("nepodarilo se vypsat text!");
+      Logger.getLogger(this.getClass().getName()).log(Level.WARNING,"nepodarilo se vypsat text!");
     }
 
   }

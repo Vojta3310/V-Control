@@ -6,9 +6,10 @@
 package Moduls.Skladnik;
 
 import VControl.Command;
-import Moduls.IModul;
 import Moduls.Modul;
+import Moduls.Skladnik.DataStructure.Box;
 import Moduls.Skladnik.DataStructure.ISklad;
+import Moduls.Skladnik.Enums.typOperace;
 import Moduls.Skladnik.io.SerialPort.RXTX;
 import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.skladnik.Robot;
@@ -60,7 +61,32 @@ public class SkladnikModule extends Modul {
 
   @Override
   public void Execute(Command co) {
-    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    switch (co.GetCommand()) {
+      case "Bring":
+        Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Bring id: {0}", co.GetParms().toString());
+        if (co.GetParms() != null) {
+          Box b = sklad.getBoxByID((int) co.GetParms());
+          if (b != null) {
+            Logger.getLogger(this.getClass().getName()).log(Level.FINE,"ID finded bringing...");
+            b.setStav(typOperace.PODEJ);
+            rob.addToBuffer(b);
+          }
+        }
+        break;
+      case "PutIn":  //contains error
+        if (co.GetParms() != null) {
+          Box b = sklad.getBoxByID((int) co.GetParms());
+          if (b != null) {
+            b.setStav(typOperace.VLOZ);
+            rob.addToBuffer(b);
+          }
+        }
+        break;
+      case "List":
+        co.setResults(sklad.getList());
+        break;
+    }
+
   }
 
   @Override
@@ -83,9 +109,7 @@ public class SkladnikModule extends Modul {
 
       rxtx = new RXTX(SgetString("Serial_Port"));
       if (rxtx.connect() == -1) {
-        System.out.println("---------------");
-        System.out.println("-Using FakeIO!-");
-        System.out.println("---------------");
+        Logger.getLogger(this.getClass().getName()).log(Level.WARNING,"Using FakeIO!");
       }
       rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"));
       rob.setDaemon(true);
@@ -105,32 +129,27 @@ public class SkladnikModule extends Modul {
           repaint();
         }
       });
-      c.addActionListener(new java.awt.event.ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-          b.Deactivate();
-          d.Deactivate();
-          c.Activate();
-          gui.Vkladani();
-          repaint();
-        }
+      c.addActionListener((java.awt.event.ActionEvent evt) -> {
+        b.Deactivate();
+        d.Deactivate();
+        c.Activate();
+        gui.Vkladani();
+        repaint();
       });
-      d.addActionListener(new java.awt.event.ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-          b.Deactivate();
-          c.Deactivate();
-          d.Activate();
-          gui.Editovani();
-          repaint();
-        }
+      d.addActionListener((java.awt.event.ActionEvent evt) -> {
+        b.Deactivate();
+        c.Deactivate();
+        d.Activate();
+        gui.Editovani();
+        repaint();
       });
       super.getToolBar().addTool(b);
       super.getToolBar().addTool(c);
       super.getToolBar().addTool(d);
 
       rob.start();
-
+      this.getMyGrafics().revalidate();
+      this.getMyGrafics().repaint();
     } catch (Exception e) {
     }
   }

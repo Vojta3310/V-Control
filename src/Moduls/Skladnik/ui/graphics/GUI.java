@@ -846,7 +846,7 @@ public class GUI extends javax.swing.JFrame implements IGUI{
     }//GEN-LAST:event_listMouseClicked
 
     private void addCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addCategoryActionPerformed
-        sklad.getKategorie().addKategorie(tree);
+//        sklad.getKategorie().addKategorie(tree);
     }//GEN-LAST:event_addCategoryActionPerformed
 
     private void removeCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeCategoryActionPerformed
@@ -857,11 +857,11 @@ public class GUI extends javax.swing.JFrame implements IGUI{
     }//GEN-LAST:event_removeCategoryActionPerformed
 
     private void editCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCategoryActionPerformed
-        sklad.getKategorie().editKategorie(tree);
+//        sklad.getKategorie().editKategorie(tree);
     }//GEN-LAST:event_editCategoryActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        sklad.getKategorie().addKategorie(tree);
+//        sklad.getKategorie().addKategorie(tree);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     private void OdstranitActionPerformed(java.awt.event.ActionEvent evt) {

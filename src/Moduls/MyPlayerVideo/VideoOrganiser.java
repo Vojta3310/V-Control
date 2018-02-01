@@ -61,10 +61,11 @@ public class VideoOrganiser implements IMediaOrganiser {
     f = new JFrame();
     f.setPreferredSize(new Dimension(500, 500));
 //    f.show();
+    f.setUndecorated(true);
 
     PlayerComp.getMediaPlayer().setFullScreenStrategy(new DefaultFullScreenStrategy(f));
-    PlayerComp.getMediaPlayer().setEnableKeyInputHandling(true);
-    PlayerComp.getMediaPlayer().setEnableMouseInputHandling(true);
+    PlayerComp.getMediaPlayer().setEnableKeyInputHandling(false);
+    PlayerComp.getMediaPlayer().setEnableMouseInputHandling(false);
     PlayerComp.getVideoSurface().setFocusable(true);
     gui = new GUI(this, m.getMyGrafics(), PlayerComp);
 
@@ -89,7 +90,11 @@ public class VideoOrganiser implements IMediaOrganiser {
         } else {
           if (e.getClickCount() == 2) {
             play();
+            Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Food box id: " + modul.SgetInt("FoodBoxID"));
             modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+            modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
+            modul.getCommander().Execute(new Command("Bring", (Object) modul.SgetInt("FoodBoxID"), "Skladnik", modul.GetModulName()));
+            toogleFullScreen();
           }
         }
       }
@@ -114,6 +119,9 @@ public class VideoOrganiser implements IMediaOrganiser {
     gui.getPlayButton().addActionListener((ActionEvent e) -> {
       play();
       modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+      modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
+      modul.getCommander().Execute(new Command("Bring", (Object) modul.SgetInt("FoodBoxID"), "Skladnik", modul.GetModulName()));
+      toogleFullScreen();
     });
 
     gui.getPpanel().getSlider().addMouseListener(new MouseListener() {
@@ -139,6 +147,36 @@ public class VideoOrganiser implements IMediaOrganiser {
         if (!resume) {
           PlayerComp.getMediaPlayer().pause();
         }
+      }
+
+      @Override
+      public void mouseEntered(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseExited(MouseEvent e) {
+      }
+    });
+
+    PlayerComp.addMouseListener(new MouseListener() {
+
+      @Override
+      public void mouseClicked(MouseEvent e) {
+        PlayerComp.getVideoSurface().requestFocusInWindow();
+        if (e.getClickCount() == 2) {
+          toogleFullScreen();
+        }
+        if (e.getClickCount() == 1) {
+          tooglePause();
+        }
+      }
+
+      @Override
+      public void mousePressed(MouseEvent e) {
+      }
+
+      @Override
+      public void mouseReleased(MouseEvent e) {
       }
 
       @Override
@@ -188,7 +226,6 @@ public class VideoOrganiser implements IMediaOrganiser {
 
       @Override
       public void keyPressed(KeyEvent e) {
-        System.out.println(e.getKeyCode());
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE && FullScreen) {
           toogleFullScreen();
         }
@@ -203,14 +240,17 @@ public class VideoOrganiser implements IMediaOrganiser {
     });
 
     Timer t = new Timer(100, (ActionEvent e) -> {
-      updateVolume();
-      updateGUI();
+      if (!getPaused()) {
+        updateVolume();
+        updateGUI();
+      }
 
       if (PlayerComp.getMediaPlayer().getPosition() >= 1) {
         if (serial) {
           Next();
         } else {
           modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//          modul.getCommander().Execute(new Command("Enable", "ScreenSaver", modul.GetModulName()));
         }
       }
     });
@@ -234,9 +274,20 @@ public class VideoOrganiser implements IMediaOrganiser {
   }
 
   private void updateVolume() {
-//    System.out.println(gui.getPpanel().getVcontrol().getVolume());
-    PlayerComp.getMediaPlayer().setVolume((int) (200 * gui.getPpanel().getVcontrol().getVolume()));
-//System.out.println(gui.getPpanel().getVcontrol().re
+    String command = modul.SgetString("Volume_Command");
+    switch (command) {
+      case "V":
+        PlayerComp.getMediaPlayer().setVolume((int) (200 * gui.getPpanel().getVcontrol().getVolume()));
+        break;
+      default:
+        String vol = Integer.toString(((int)((float)gui.getPpanel().getVcontrol().getVolume() * 100)));
+        try {
+          Runtime.getRuntime().exec(command.replace("%v%", vol));
+        } catch (IOException ex) {
+          Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
+        }
+        break;
+    }
   }
 
   public EmbeddedMediaPlayerComponent getPlayerComp() {
@@ -252,6 +303,7 @@ public class VideoOrganiser implements IMediaOrganiser {
       } else {
         PlayerComp.getMediaPlayer().pause();
         modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//        modul.getCommander().Execute(new Command("Enaable", "ScreenSaver", modul.GetModulName()));
       }
     } else {
       play();
@@ -273,6 +325,7 @@ public class VideoOrganiser implements IMediaOrganiser {
     if (MediaLoaded) {
       PlayerComp.getMediaPlayer().pause();
       modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Enaable", "ScreenSaver", modul.GetModulName()));
     }
   }
 
@@ -283,6 +336,7 @@ public class VideoOrganiser implements IMediaOrganiser {
     }
     play();
     PlayerComp.getMediaPlayer().setPosition(p);
+    modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
   }
 
   private void play() {
@@ -290,18 +344,18 @@ public class VideoOrganiser implements IMediaOrganiser {
       String path;
       if (serial) {
         try {
-          path = FindEpizode(modul.SgetString("VideoDir")
+          path = FindEpizode(modul.SgetString("VideoDir") + File.separator
             + (String) gui.getList().getSelectedValue());
-//          + File.separator + gui.getEpizode().getSelectedItem();
+//           + gui.getEpizode().getSelectedItem();
         } catch (IOException ex) {
           Logger.getLogger(VideoOrganiser.class.getName()).log(Level.SEVERE, null, ex);
-          path = modul.SgetString("VideoDir")
+          path = modul.SgetString("VideoDir") + File.separator
             + (String) gui.getList().getSelectedValue()
             + File.separator + gui.getEpizode().getSelectedItem();
         }
 
         try {
-          File fout = new File(modul.SgetString("VideoDir")
+          File fout = new File(modul.SgetString("VideoDir") + File.separator
             + (String) gui.getList().getSelectedValue() + File.separator + "LastWatched");
           FileOutputStream fos;
 
@@ -395,6 +449,9 @@ public class VideoOrganiser implements IMediaOrganiser {
 
     File fi = new File(path);
     String[] files = fi.list();
+    if (files == null) {
+      return null;
+    }
     for (String file : files) {
       File fil = new File(path + File.separator + file);
       if (!fil.isDirectory() && isVideo(fil)) {
@@ -473,7 +530,7 @@ public class VideoOrganiser implements IMediaOrganiser {
       gui.getEpizode().setModel(model);
 
       String line;
-      try (BufferedReader br = new BufferedReader(new FileReader(modul.SgetString("VideoDir")
+      try (BufferedReader br = new BufferedReader(new FileReader(modul.SgetString("VideoDir") + File.separator
         + (String) gui.getList().getSelectedValue() + File.separator + "LastWatched"))) {
         line = br.readLine();
       }

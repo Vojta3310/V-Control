@@ -89,11 +89,11 @@ public class MyPlayerVideo extends Modul {
   @Override
   public void getDefaultSettings(Properties p) {
     p.setProperty("Modul_" + this.GetModulName() + "_VideoDir", "/home/vojta3310/Videa/");
-    p.setProperty("Modul_" + this.GetModulName() + "_SetingsFile", "/home/vojta3310/Videa/MPSet.cfg");
     p.setProperty("Modul_" + this.GetModulName() + "_Volume_Step", "0.1");
     p.setProperty("Modul_" + this.GetModulName() + "_Default_Volume", "0.5");
+    p.setProperty("Modul_" + this.GetModulName() + "_FoodBoxID", "-1");
   }
-  
+
   @Override
   public Image GetIcon() {
     try {
@@ -102,8 +102,8 @@ public class MyPlayerVideo extends Modul {
       Logger.getLogger(Modul.class.getName()).log(Level.SEVERE, null, ex);
     }
     return null;
-  }  
-  
+  }
+
   @Override
   public void StartModule() {
     try {
@@ -137,6 +137,13 @@ public class MyPlayerVideo extends Modul {
       super.getToolBar().addTool(c);
     } catch (Exception e) {
     }
+  }
+
+  @Override
+  public void Deactivate() {
+    super.Deactivate(); //To change body of generated methods, choose Tools | Templates.
+    getCommander().Execute(new Command("Play", "MyPlayerMusic", GetModulName()));
+    getCommander().Execute(new Command("Enable", "ScreenSaver", GetModulName()));
   }
 
 }

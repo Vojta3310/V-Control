@@ -30,18 +30,10 @@ public class Kategorie {
         return root;
     }
     
-    public void addKategorie(JTree tree){
-        JTextField nazev = new JTextField();
-        JTextField synonyma = new JTextField();
-        final JComponent[] inputs = new JComponent[] {
-            new JLabel("Název:"),
-            nazev,
-            new JLabel("Synonyma:"),
-            synonyma
-        };
-        JOptionPane.showMessageDialog(null, inputs, "Nová kategorie", JOptionPane.PLAIN_MESSAGE);
-        if (!nazev.getText().equals("")){
-            Tag k = new Tag(nazev.getText(), synonyma.getText(), zvysMaxID());
+    public void addKategorie(JTree tree, String name, String syn){
+        
+        if (!name.equals("")){
+            Tag k = new Tag(name, syn, zvysMaxID());
             DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(k);
             DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) selectedNode.getParent();        
@@ -70,22 +62,13 @@ public class Kategorie {
         tree.setSelectionRow(0);
     }
     
-    public void editKategorie(JTree tree){
+    public void editKategorie(JTree tree, String name, String syn){
         if(tree.getSelectionPath()!=null){
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
             if(node.getUserObject().getClass()==Tag.class){
                 Tag k = (Tag) node.getUserObject();
-                JTextField nazev = new JTextField(k.getNazev());
-                JTextField synonyma = new JTextField(k.getSynonyma());
-                final JComponent[] inputs = new JComponent[] {
-                    new JLabel("Název:"),
-                    nazev,
-                    new JLabel("Synonyma:"),
-                    synonyma
-                };
-                JOptionPane.showMessageDialog(null, inputs, "Upravit kategorii", JOptionPane.PLAIN_MESSAGE);
-                k.setNazev(nazev.getText());
-                k.setSynonyma(synonyma.getText());
+                k.setNazev(name);
+                k.setSynonyma(syn);
             }
         }
     }

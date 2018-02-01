@@ -2,6 +2,7 @@ package Moduls.Skladnik.DataStructure;
 
 //import AbstractList.IAbstractList;
 
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -52,4 +53,8 @@ public interface ISklad {
     int getHLOUBKA();
     
     int getFreeID();
+    
+    Box getBoxByID(int id);
+    
+    ArrayList<Box> getList();
 }

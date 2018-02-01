@@ -1,5 +1,8 @@
 package Moduls.Skladnik.io.SerialPort;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Ondřej Bleha
@@ -14,7 +17,7 @@ public class FakeIO implements ISerialManager {
 
   @Override
   public boolean Ping() {
-    System.out.println("Pig");
+    Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Like Ping");
     return true;
   }
 
@@ -24,9 +27,9 @@ public class FakeIO implements ISerialManager {
       cekej(100);
     }
     locked = true;
-    System.out.println("Odesláno: " + text);
+    Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Jakoby odesláno: " + text);
     cekej(500);
-    System.out.println("Jakoby přijato OK");
+    Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Jakoby přijato OK");
     locked = false;
   }
 
@@ -34,7 +37,7 @@ public class FakeIO implements ISerialManager {
     try {
       Thread.sleep(cas); //reprezentuje odesílání příkazu (spí 0.1 sekundy)
     } catch (InterruptedException ex) {
-      System.err.println("Nepovedlo se uspat vlákno!");
+      Logger.getLogger(this.getClass().getName()).log(Level.SEVERE,"Nepovedlo se uspat vlákno!");
     }
   }
 
