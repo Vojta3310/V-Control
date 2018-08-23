@@ -25,7 +25,7 @@ public class Songs {
     loadDir(path);
   }
 
-  private void loadDir(String path) throws IOException, TagException {
+  private void loadDir(String path) {
     File f = new File(path);
     String[] files = f.list();
     Songs = new ArrayList<>();

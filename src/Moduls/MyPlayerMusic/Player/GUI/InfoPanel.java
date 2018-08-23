@@ -12,6 +12,7 @@ import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -144,11 +145,18 @@ public class InfoPanel extends JPanel {
 
   public void ShowSong(Skladba s) {
     sk = s;
-    if (s.getTitle().length() > 25) {
-      Title.setText(s.getTitle().substring(0, 22) + "...");
-    } else {
-      Title.setText(s.getTitle());
+    int w = Title.getWidth();
+    String txt = s.getTitle();
+    if (Title.getGraphics() != null) {
+      final FontMetrics fm = Title.getGraphics().getFontMetrics();
+      while (fm.stringWidth(txt) > w) {
+        txt = txt.substring(0, txt.length() - 5) + " ...";
+      }
+      System.out.println(txt);
+    } else if (txt.length() > 19) {
+      txt = txt.substring(0, 20) + " ...";
     }
+    Title.setText(txt);
 
     Autor.setText(s.getAutor());
     Album.setText(s.getAlbum());

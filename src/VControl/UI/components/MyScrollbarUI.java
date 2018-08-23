@@ -15,7 +15,6 @@ import java.awt.RenderingHints;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.plaf.metal.MetalScrollBarUI;
 
 /**
  *
@@ -23,7 +22,7 @@ import javax.swing.plaf.metal.MetalScrollBarUI;
  */
 public class MyScrollbarUI extends BasicScrollBarUI {
 
-  private JButton b = new JButton() {
+  private final JButton b = new JButton() {
     @Override
     public Dimension getPreferredSize() {
       return new Dimension(0, 0);

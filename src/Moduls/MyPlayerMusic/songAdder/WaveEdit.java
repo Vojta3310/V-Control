@@ -15,14 +15,12 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -73,7 +71,7 @@ public class WaveEdit extends JPanel {
 
         g.setColor(Color.BLACK);
         g.fillRect(toPixels(Lstart), 0, toPixels(Lend) - toPixels(Lstart), getHeight());
-        
+
         g.setColor(Color.DARK_GRAY);
         int v = (int) (getHeight() * 0.6 * ma.getAverangeVolume() + getHeight() / 2);
         int v2 = getHeight() - v;
@@ -89,7 +87,6 @@ public class WaveEdit extends JPanel {
         g.fillRect(toPixels(Lend), 0, 1, getHeight());
       }
     };
-
     wave.addMouseListener(new MouseListener() {
 
       @Override
@@ -128,38 +125,30 @@ public class WaveEdit extends JPanel {
       }
     });
 
-    zoomIN.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        Dimension a = new Dimension(wave.getSize().width * 2, wave.getSize().height);
-        wave.setPreferredSize(a);
-        ma.setSize(a);
-        try {
-          ma.createWaveForm();
-        } catch (IOException | UnsupportedAudioFileException ex) {
-          Logger.getLogger(WaveEdit.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        wave.repaint();
-        wave.revalidate();
+    zoomIN.addActionListener((ActionEvent ae) -> {
+      Dimension a = new Dimension(wave.getSize().width * 2, wave.getSize().height);
+      wave.setPreferredSize(a);
+      ma.setSize(a);
+      try {
+        ma.createWaveForm();
+      } catch (IOException | UnsupportedAudioFileException ex) {
+        Logger.getLogger(WaveEdit.class.getName()).log(Level.SEVERE, null, ex);
       }
+      wave.repaint();
+      wave.revalidate();
     });
 
-    zoomOUT.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        Dimension a = new Dimension(wave.getSize().width / 2, wave.getSize().height);
-        wave.setPreferredSize(a);
-        ma.setSize(a);
-        try {
-          ma.createWaveForm();
-        } catch (IOException | UnsupportedAudioFileException ex) {
-          Logger.getLogger(WaveEdit.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        wave.repaint();
-        wave.revalidate();
+    zoomOUT.addActionListener((ActionEvent ae) -> {
+      Dimension a = new Dimension(wave.getSize().width / 2, wave.getSize().height);
+      wave.setPreferredSize(a);
+      ma.setSize(a);
+      try {
+        ma.createWaveForm();
+      } catch (IOException | UnsupportedAudioFileException ex) {
+        Logger.getLogger(WaveEdit.class.getName()).log(Level.SEVERE, null, ex);
       }
+      wave.repaint();
+      wave.revalidate();
     });
 
     ma.setSize(wave.getSize());
@@ -187,7 +176,7 @@ public class WaveEdit extends JPanel {
             .addComponent(zoomIN)
             .addComponent(zoomOUT)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(end, 80,80,80)))
+            .addComponent(end, 80, 80, 80)))
       )
     );
     layout.setVerticalGroup(
@@ -202,6 +191,10 @@ public class WaveEdit extends JPanel {
         .addComponent(jScrollPane1, 10, javax.swing.GroupLayout.DEFAULT_SIZE, Integer.MAX_VALUE)
       )
     );
+
+    wave.repaint();
+    wave.revalidate();
+    ma.setSize(wave.getSize());
   }
 
   private int toPixels(long len) {
@@ -216,13 +209,17 @@ public class WaveEdit extends JPanel {
     return ma;
   }
 
-  public void setMa(MusicAnalizer m) throws IOException, UnsupportedAudioFileException {
-    this.ma = m;
-    ma.setSize(wave.getSize());
-    ma.createWaveForm();
-    this.setEnd(ma.getLenght());
-    wave.repaint();
-    wave.revalidate();
+  public void setMa(MusicAnalizer m) {
+    try {
+      this.ma = m;
+      ma.setSize(wave.getSize());
+      ma.createWaveForm();
+      this.setEnd(ma.getLenght());
+      wave.repaint();
+      wave.revalidate();
+    } catch (IOException | UnsupportedAudioFileException ex) {
+      Logger.getLogger(WaveEdit.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 
   public long getStart() {

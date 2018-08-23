@@ -6,6 +6,8 @@
 package Moduls;
 
 import VControl.Command;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +25,7 @@ import org.jnativehook.mouse.NativeMouseListener;
 public class KeyLoger extends Modul {
 
   private boolean special = false;
+  private boolean special2 = false;
 
   public KeyLoger(VControl.Commander Commander) {
     super(Commander);
@@ -94,37 +97,80 @@ public class KeyLoger extends Modul {
         if (e.getRawCode() == 165) {
           special = false;
         }
+        if (e.getRawCode() == 65507) {
+          special = false;
+        }
       }
 
       @Override
       public void nativeKeyPressed(NativeKeyEvent e) {
         Command c = new Command("KeyPress", (Object) e.getRawCode(), "all", GetModulName());
         getCommander().Execute(c);
-
-        if (e.getRawCode() == 165) {
+//        System.out.println("Pres some key:" + e.getRawCode() + " " + e.getKeyCode());
+        if (e.getRawCode() == 65506) {
           special = true;
-        }
-        if (special) {
+        } else if (e.getRawCode() == 65507) {
+          special2 = true;
+        } else if (special) {
           switch (e.getRawCode()) {
-            case 65:
+            case 198:
               getCommander().Execute(new Command("VUp", "MyPlayerMusic", GetModulName()));
+              special = false;
               break;
-            case 66:
+            case 2769:
               getCommander().Execute(new Command("VDown", "MyPlayerMusic", GetModulName()));
+              special = false;
               break;
-            case 67:
+            case 169:
               getCommander().Execute(new Command("Next", "MyPlayerMusic", GetModulName()));
+              special = false;
               break;
-            case 68:
+            case 208:
               getCommander().Execute(new Command("Prew", "MyPlayerMusic", GetModulName()));
+              special = false;
               break;
             case 69:
               getCommander().Execute(new Command("ToglePause", "MyPlayerMusic", GetModulName()));
+              special = false;
               break;
-            case 70:
+            case 170:
               getCommander().Execute(new Command("Repeat", "MyPlayerMusic", GetModulName()));
+              special = false;
+              break;
+            case 957:
+              int h = LocalDateTime.now().getHour();
+              int m = LocalDateTime.now().getMinute();
+              getCommander().Execute(new Command("Say", "je " + h + " hodin " + m + " minut.", "Speaker", GetModulName()));
+              special = false;
+              break;
+            case 673:
+              String d = LocalDateTime.now().format(DateTimeFormatter.ofPattern("cccc  d.  MMMM  yyyy"));
+              getCommander().Execute(new Command("Say", "Dnes je: " + d, "Speaker", GetModulName()));
+              special = false;
+              break;
+//            case 73:
+//              getCommander().Execute(new Command("SSong", "MyPlayerMusic", GetModulName()));
+//              break;
+//            default:
+//              getCommander().Execute(new Command("Say", "Tlačítko bez funkce!", "Speaker", GetModulName()));
+//              break;
+          }
+        } else if (special2) {
+          switch (e.getRawCode()) {
+            case 105:
+              getCommander().Execute(new Command("SSong", "MyPlayerMusic", GetModulName()));
+              break;
+            case 104:
+              int h = LocalDateTime.now().getHour();
+              int m = LocalDateTime.now().getMinute();
+              getCommander().Execute(new Command("Say", "je " + h + " hodin " + m + " minut.", "Speaker", GetModulName()));
+              break;
+            case 100:
+              String d = LocalDateTime.now().format(DateTimeFormatter.ofPattern("cccc  d.  MMMM  yyyy"));
+              getCommander().Execute(new Command("Say", "Dnes je: " + d, "Speaker", GetModulName()));
               break;
           }
+          special2 = false;
         } else {
           switch (e.getRawCode()) {
             case 65303:
@@ -139,14 +185,19 @@ public class KeyLoger extends Modul {
             case 65301:
               getCommander().Execute(new Command("Repeat", "MyPlayerMusic", GetModulName()));
               break;
+            case 65297:
+              getCommander().Execute(new Command("VDown", "MyPlayerMusic", GetModulName()));
+              break;
+            case 65299:
+              getCommander().Execute(new Command("VUp", "MyPlayerMusic", GetModulName()));
+              break;
             default:
+//              System.out.println("Pres other key:"+e.getRawCode());
               getCommander().Execute(new Command("OtherKeyPressed", e, getCommander().getActive().GetModulName(), GetModulName()));
               break;
           }
         }
       }
     });
-
   }
-
 }

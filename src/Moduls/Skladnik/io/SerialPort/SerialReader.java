@@ -44,7 +44,7 @@ public class SerialReader implements SerialPortEventListener{
                 //System.out.println(data);
                 if ((buffer[len-1]==0)&&(buffer[len]==0)){
                     String prijato = new String(buffer, 1, len-2);
-                    //System.out.println("Přijato: " + prijato);
+                    System.out.println("Přijato: " + prijato);
                     len = 0;
                     if (prijato.equals("OK")){
                         this.lock = false;

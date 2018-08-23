@@ -76,7 +76,7 @@ public class Command {
   public Object vaitForDone() {
     while (!isDone()) {
       try {
-        Thread.sleep(100);
+        Thread.sleep(106);
       } catch (InterruptedException ex) {
         Logger.getLogger(Command.class.getName()).log(Level.SEVERE, null, ex);
       }

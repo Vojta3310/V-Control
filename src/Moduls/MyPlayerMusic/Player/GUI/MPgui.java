@@ -24,7 +24,9 @@ public class MPgui extends JPanel {
   private final PlayerPanel ppanel;
   private final NextSongFilter RSpanel;
   private final JPanel a;
-  private boolean i = true;
+  private final Karaoke karaoke;
+
+  private boolean karaokeb = false;
 
   public MPgui(final MusicOrganiser o) {
     ipanel = new InfoPanel();
@@ -32,6 +34,7 @@ public class MPgui extends JPanel {
     RSpanel = new NextSongFilter(this, o);
     ppanel = new PlayerPanel(o);
     a = new JPanel();
+    karaoke = new Karaoke();
     a.setLayout(new BorderLayout());
     a.add(ipanel, BorderLayout.CENTER);
     a.add(ppanel, BorderLayout.PAGE_END);
@@ -70,8 +73,8 @@ public class MPgui extends JPanel {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2 && 
-          spanel.getRlist().getSelectedIndex() < spanel.getRlist().getModel().getSize()) {
+        if (e.getClickCount() == 2
+          && spanel.getRlist().getSelectedIndex() < spanel.getRlist().getModel().getSize()) {
           showRS();
         } else {
           showInfo();
@@ -94,26 +97,51 @@ public class MPgui extends JPanel {
       public void mouseExited(MouseEvent e) {
       }
     });
-
   }
 
   public void showInfo() {
-    if (!i) {
-      i = true;
-      a.remove(RSpanel);
+//    System.out.println("i" +sh);
+//    if (sh != 0) {
+//      sh = 0;
+//      if (sh == 1) {
+//        a.remove(RSpanel);
+//      }
+//      if (sh == 2) {
+//        a.remove(karaoke);
+//      }
+//      a.add(ipanel, BorderLayout.CENTER);
+//    }
+    a.remove(RSpanel);
+    a.remove(ipanel);
+    a.remove(karaoke);
+    if (karaokeb) {
+      a.add(karaoke, BorderLayout.CENTER);
+    } else {
       a.add(ipanel, BorderLayout.CENTER);
     }
   }
 
   public void showRS() {
-    if (i) {
-      i = false;
-      a.remove(ipanel);
-      a.add(RSpanel, BorderLayout.CENTER);
-      RSpanel.setRS((RandomSong) spanel.getRlist().getSelectedValue());
-      RSpanel.revalidate();
-      RSpanel.repaint();
-    }
+    a.remove(RSpanel);
+    a.remove(ipanel);
+    a.remove(karaoke);
+
+    a.add(RSpanel, BorderLayout.CENTER);
+
+//    System.out.println("r" +sh);
+//    if (sh != 1) {
+//      sh = 1;
+//      if (sh == 0) {
+//        a.remove(ipanel);
+//      }
+//      if (sh == 2) {
+//        a.remove(karaoke);
+//      }
+//      a.add(RSpanel, BorderLayout.CENTER);
+    RSpanel.setRS((RandomSong) spanel.getRlist().getSelectedValue());
+    RSpanel.revalidate();
+    RSpanel.repaint();
+//    }
   }
 
   public InfoPanel getIpanel() {
@@ -128,4 +156,12 @@ public class MPgui extends JPanel {
     return ppanel;
   }
 
+  public Karaoke getKaraoke() {
+    return karaoke;
+  }
+
+  public void setKaraoke(boolean b) {
+    karaokeb = b;
+    showInfo();
+  }
 }

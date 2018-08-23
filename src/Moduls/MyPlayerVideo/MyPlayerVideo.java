@@ -31,6 +31,8 @@ public class MyPlayerVideo extends Modul {
 
   @Override
   public void Activate() {
+    getCommander().Execute(new Command("Pause", "MyPlayerMusic", GetModulName()));
+    getCommander().Execute(new Command("Disable", "ScreenSaver", GetModulName()));
     super.Activate(); //To change body of generated methods, choose Tools | Templates.
     VO.reMakeVideo();
   }
@@ -141,9 +143,10 @@ public class MyPlayerVideo extends Modul {
 
   @Override
   public void Deactivate() {
-    super.Deactivate(); //To change body of generated methods, choose Tools | Templates.
     getCommander().Execute(new Command("Play", "MyPlayerMusic", GetModulName()));
     getCommander().Execute(new Command("Enable", "ScreenSaver", GetModulName()));
+    VO.Pause();
+    super.Deactivate(); //To change body of generated methods, choose Tools | Templates.
   }
 
 }

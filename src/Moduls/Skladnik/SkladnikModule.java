@@ -14,6 +14,8 @@ import Moduls.Skladnik.io.SerialPort.RXTX;
 import Moduls.Skladnik.io.xml.XML;
 import Moduls.Skladnik.skladnik.Robot;
 import Moduls.Skladnik.ui.ModulUI.MGUI;
+import Moduls.Skladnik.ui.graphics.QRCframe;
+import VControl.Settings.AppSettings;
 import VControl.UI.ToolButton;
 import java.awt.Image;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JLabel;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -66,7 +69,7 @@ public class SkladnikModule extends Modul {
         Logger.getLogger(this.getClass().getName()).log(Level.FINE, "Bring id: {0}", co.GetParms().toString());
         if (co.GetParms() != null) {
           Box b = sklad.getBoxByID((int) co.GetParms());
-          if (b != null) {
+          if (b != null && rob != null) {
             Logger.getLogger(this.getClass().getName()).log(Level.FINE,"ID finded bringing...");
             b.setStav(typOperace.PODEJ);
             rob.addToBuffer(b);
@@ -74,7 +77,7 @@ public class SkladnikModule extends Modul {
         }
         break;
       case "PutIn":  //contains error
-        if (co.GetParms() != null) {
+        if (co.GetParms() != null && rob != null) {
           Box b = sklad.getBoxByID((int) co.GetParms());
           if (b != null) {
             b.setStav(typOperace.VLOZ);
@@ -100,34 +103,46 @@ public class SkladnikModule extends Modul {
   @Override
   public void StartModule() {
     try {
+      getMyGrafics().setBackground(AppSettings.getColour("BG_Color"));
+      JLabel nc= new JLabel("Loading XML ...");
+      nc.setForeground(AppSettings.getColour("FG_Color"));
+      getMyGrafics().add(nc);
       xml = new XML(SgetString("File"));
       try {
         sklad = xml.read();
       } catch (ParserConfigurationException | SAXException ex) {
         Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
       }
-
+      nc.setText("Connecting ...");
       rxtx = new RXTX(SgetString("Serial_Port"));
-      if (rxtx.connect() == -1) {
-        Logger.getLogger(this.getClass().getName()).log(Level.WARNING,"Using FakeIO!");
+      while (rxtx.connect() == -1) {
+        nc.setText("!STORAGE NOT CONECTED!");
+        Thread.sleep(3333);
       }
-      rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"));
+      nc.setText("Connected.");
+      rob = new Robot(sklad, rxtx, xml, SgetBool("Favour_Moving_Item"), SgetInt("Sleep_Dylay"), this);
       rob.setDaemon(true);
+      getMyGrafics().remove(nc);
       final MGUI gui = new MGUI(sklad, rob, xml, getMyGrafics());
-
+      final QRCframe qrf=new QRCframe();
+      
       final ToolButton b = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_podat_32px.png")));
       final ToolButton c = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_vlozit_32px.png")));
       final ToolButton d = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_pridat_32px.png")));
+      final ToolButton a = new ToolButton(ImageIO.read(getClass().getResourceAsStream("/icons/modules/Skladnik/dark/icon_QR.png")));
       b.Activate();
-      b.addActionListener(new java.awt.event.ActionListener() {
-        @Override
-        public void actionPerformed(java.awt.event.ActionEvent evt) {
-          c.Deactivate();
-          d.Deactivate();
-          b.Activate();
-          gui.Podavani();
-          repaint();
-        }
+      a.addActionListener((java.awt.event.ActionEvent evt) -> {
+        qrf.UpdateModel(sklad);
+        qrf.revalidate();
+        qrf.repaint();
+        qrf.setVisible(true);
+      });
+      b.addActionListener((java.awt.event.ActionEvent evt) -> {
+        c.Deactivate();
+        d.Deactivate();
+        b.Activate();
+        gui.Podavani();
+        repaint();
       });
       c.addActionListener((java.awt.event.ActionEvent evt) -> {
         b.Deactivate();
@@ -146,11 +161,12 @@ public class SkladnikModule extends Modul {
       super.getToolBar().addTool(b);
       super.getToolBar().addTool(c);
       super.getToolBar().addTool(d);
+      super.getToolBar().addTool(a);
 
       rob.start();
       this.getMyGrafics().revalidate();
       this.getMyGrafics().repaint();
-    } catch (Exception e) {
+    } catch (IOException | InterruptedException e) {
     }
   }
 

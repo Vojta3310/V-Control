@@ -91,8 +91,8 @@ public class VideoOrganiser implements IMediaOrganiser {
           if (e.getClickCount() == 2) {
             play();
             Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "Food box id: " + modul.SgetInt("FoodBoxID"));
-            modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
-            modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
+//            modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//            modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
             modul.getCommander().Execute(new Command("Bring", (Object) modul.SgetInt("FoodBoxID"), "Skladnik", modul.GetModulName()));
             toogleFullScreen();
           }
@@ -118,8 +118,8 @@ public class VideoOrganiser implements IMediaOrganiser {
 
     gui.getPlayButton().addActionListener((ActionEvent e) -> {
       play();
-      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
-      modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Disable", "ScreenSaver", modul.GetModulName()));
       modul.getCommander().Execute(new Command("Bring", (Object) modul.SgetInt("FoodBoxID"), "Skladnik", modul.GetModulName()));
       toogleFullScreen();
     });
@@ -239,7 +239,7 @@ public class VideoOrganiser implements IMediaOrganiser {
       }
     });
 
-    Timer t = new Timer(100, (ActionEvent e) -> {
+    Timer t = new Timer(102, (ActionEvent e) -> {
       if (!getPaused()) {
         updateVolume();
         updateGUI();
@@ -249,7 +249,7 @@ public class VideoOrganiser implements IMediaOrganiser {
         if (serial) {
           Next();
         } else {
-          modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//          modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
 //          modul.getCommander().Execute(new Command("Enable", "ScreenSaver", modul.GetModulName()));
         }
       }
@@ -299,32 +299,32 @@ public class VideoOrganiser implements IMediaOrganiser {
     if (MediaLoaded) {
       if (getPaused()) {
         PlayerComp.getMediaPlayer().play();
-        modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//        modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
       } else {
         PlayerComp.getMediaPlayer().pause();
-        modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//        modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
 //        modul.getCommander().Execute(new Command("Enaable", "ScreenSaver", modul.GetModulName()));
       }
     } else {
       play();
-      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
     }
   }
 
   public void Play() {
     if (MediaLoaded) {
       PlayerComp.getMediaPlayer().play();
-      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
     } else {
       play();
-      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
     }
   }
 
   public void Pause() {
     if (MediaLoaded) {
       PlayerComp.getMediaPlayer().pause();
-      modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
+//      modul.getCommander().Execute(new Command("Play", "MyPlayerMusic", modul.GetModulName()));
 //      modul.getCommander().Execute(new Command("Enaable", "ScreenSaver", modul.GetModulName()));
     }
   }
@@ -336,7 +336,7 @@ public class VideoOrganiser implements IMediaOrganiser {
     }
     play();
     PlayerComp.getMediaPlayer().setPosition(p);
-    modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
+//    modul.getCommander().Execute(new Command("Pause", "MyPlayerMusic", modul.GetModulName()));
   }
 
   private void play() {

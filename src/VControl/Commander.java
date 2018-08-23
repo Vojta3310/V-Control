@@ -52,6 +52,10 @@ public class Commander {
   }
 
   public synchronized boolean Execute(Command co) {
+    gui.update();
+    if (co == null) {
+      return false;
+    }
     moduls.stream().forEach((a) -> {
       a.doCommand(co);
     });
@@ -65,7 +69,6 @@ public class Commander {
       }
       co.setStats(CommandStats.Done);
     }
-
     return true;
   }
 
@@ -105,14 +108,16 @@ public class Commander {
   }
 
   public void RegisterGUI() {
+    int GUImoduls = 0;
     for (IModul a : moduls) {
       if (a.HaveGUI()) {
+        GUImoduls++;
         this.sidebar.addModule(a);
-        this.sidebar.setPreferredSize(new Dimension(
-          AppSettings.getInt("Icon_Size") + 20,
-          (AppSettings.getInt("Icon_Size") + 10) * this.moduls.size() + 10));
       }
     }
+    this.sidebar.setPreferredSize(new Dimension(
+      AppSettings.getInt("Icon_Size") + 20,
+      (AppSettings.getInt("Icon_Size") + 10) * GUImoduls + 10));
   }
 
   public void addIModule(IModul d) {

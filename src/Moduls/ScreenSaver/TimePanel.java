@@ -66,7 +66,7 @@ public class TimePanel extends JPanel {
         .addComponent(Date)
         .addContainerGap(18, Short.MAX_VALUE))
     );
-    Timer tim = new Timer(100, (ActionEvent ae) -> {
+    Timer tim = new Timer(103, (ActionEvent ae) -> {
       updateTime();
     }
     );

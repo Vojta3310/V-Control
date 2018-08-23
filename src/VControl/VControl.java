@@ -8,8 +8,11 @@ package VControl;
 import Moduls.KeyLoger;
 import Moduls.MyPlayerVideo.MyPlayerVideo;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
+import Moduls.ResolutionUpdater;
 import Moduls.ScreenSaver.ScSaverModule;
 import Moduls.Skladnik.SkladnikModule;
+import Moduls.Speaker;
+import Moduls.Weader.WeaderModule;
 import VControl.Settings.AppSettings;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -85,6 +88,10 @@ public class VControl {
     }
 
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO, "Creating modules.");
+    Commander.addIModule(new Speaker(Commander));
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "SpeakerModule added.");
+    Commander.addIModule(new ResolutionUpdater(Commander));
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "ResolutionUpdaterModule added.");
     MyPlayerMusic a = new MyPlayerMusic(Commander);
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "MyPlayerMusicModule created.");
     Commander.addIModule(new KeyLoger(Commander));
@@ -93,9 +100,11 @@ public class VControl {
     Commander.addIModule(a);
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "MyPlayerMusicModule added.");
     Commander.addIModule(new MyPlayerVideo(Commander));
-    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "MyPlayerVideoModule added.");
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "MyPlayerVideoModule added.");    
     Commander.addIModule(new SkladnikModule(Commander));
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "Skladnik added.");
+    Commander.addIModule(new WeaderModule(Commander));
+    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "WeaderModule added.");
     Commander.addIModule(new ScSaverModule(Commander));
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.FINEST, "ScreenSaver added.");
     Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log(Level.INFO, "Modules prepareded.");

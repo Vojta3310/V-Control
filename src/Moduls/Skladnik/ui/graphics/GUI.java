@@ -101,7 +101,14 @@ public class GUI extends javax.swing.JFrame implements IGUI{
         
         this.setLocationRelativeTo(null);
         this.setIconImage(Toolkit.getDefaultToolkit().getImage(GUI.class.getResource("/ui/graphics/icons/logo_16px.png")));
-        rob.setGui(this);
+        
+
+
+//---------------------------------------
+//uncomend to use this GUI ---------------    
+//        rob.setGui(this);
+        
+        
         this.setVisible(true);
     }
     

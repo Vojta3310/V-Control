@@ -34,6 +34,22 @@ public class RXTX {
     return port.Ping();
   }
 
+  public void setRled(boolean s) {
+    if (s) {
+      port.send("RE");
+    } else {
+      port.send("RD");
+    }
+  }
+
+  public void setGled(boolean s) {
+    if (s) {
+      port.send("GE");
+    } else {
+      port.send("GD");
+    }
+  }
+
   public void DisableMot() {
     port.send("MD");
   }

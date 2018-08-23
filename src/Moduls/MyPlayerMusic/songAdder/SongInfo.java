@@ -5,6 +5,7 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import Moduls.MyPlayerMusic.Player.Skladba;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -32,9 +33,9 @@ public class SongInfo {
 
   public void load(File f) {
     googleIt(f.getName());
+    String s = "";
     if (Autor.equals("") && Album.equals("") && Title.equals("") && Lyric.equals("")) {
       try {
-        String s = "";
         MP3File mp3file = new MP3File(f.getPath());
         if (mp3file.hasID3v2Tag()) {
           if (mp3file.getID3v2Tag().hasFrame("TPE1")) {
@@ -50,6 +51,76 @@ public class SongInfo {
       } catch (IOException | TagException ex) {
         Logger.getLogger(SongInfo.class.getName()).log(Level.SEVERE, null, ex);
       }
+    }
+    if (Autor.equals("") || Album.equals("") || Title.equals("") || Lyric.equals("")) {
+//      if (Autor.equals("")) {
+//        s += f.getName();
+//      } else if (!Autor.equals("") && !Title.equals("")) {
+//        s = Autor + " - " + Title;
+//        s += f.getName();
+//      }
+      karaokeIt(f.getName());
+    }
+  }
+
+  private void karaokeIt(String s) {
+    System.out.println(s);
+    try {
+      Document doc = Jsoup.connect("http://www.karaoketexty.cz/search?q=" + URLEncoder.encode(s.replace(".mp3", ""))).get();
+      Element a = doc.select("ul.title").first().select("a").first();
+      System.out.println(a.absUrl("href"));
+      String[] t = a.text().split(" - ");
+      if (Autor.equals("")) {
+        Autor = t[0];
+        Title = t[1];
+        System.out.println(Autor);
+      }
+      if (!Title.equals(t[1]) && Autor.equals(t[0])) {
+        Title = t[1];
+      }
+      doc = Jsoup.connect(a.absUrl("href")).get();
+      if (Album.equals("")) {
+        Element n = doc.select("div.navigation_lyrics").first().select("a").last();
+        if (!n.text().equals(Autor)) {
+          Album = n.text();
+        }
+      }
+      Element tx = doc.select("div[class*=_lyrics]:has(p.text)").first();
+
+      System.out.println(tx.text());
+      if (Lyric.equals("")) {
+        Lyric = " " + tx.html().replace("<br>", "\n").replace("<p>", "").replace("</p>", "");
+        Lyric = (String) Lyric.subSequence(Lyric.indexOf(">") + 1, Lyric.lastIndexOf("<"));
+        Lyric = (String) Lyric.subSequence(0, Lyric.indexOf("<"));
+      }
+    } catch (IOException ex) {
+      Logger.getLogger(SongInfo.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
+
+  public static void findLiric(Skladba s) {
+    try {
+      Document doc = Jsoup.connect("http://www.karaoketexty.cz/search?q="
+        + URLEncoder.encode(s.getAutor() + " - " + s.getTitle())).get();
+      Element a = doc.select("ul.title").first().select("a").first();
+      doc = Jsoup.connect(a.absUrl("href")).get();
+      if (s.getAlbum().equals("")) {
+        Element n = doc.select("div.navigation_lyrics").first().select("a").last();
+        if (!n.text().equals(s.getAutor())) {
+          s.setAlbum(n.text());
+        }
+      }
+      Element tx = doc.select("div[class*=_lyrics]:has(p.text)").first();
+
+      System.out.println(tx.text());
+      String Lyric;
+      Lyric = " " + tx.html().replace("<br>", "\n").replace("<p>", "").replace("</p>", "");
+      Lyric = (String) Lyric.subSequence(Lyric.indexOf(">") + 1, Lyric.lastIndexOf("<"));
+      Lyric = (String) Lyric.subSequence(0, Lyric.indexOf("<"));
+      s.setLyric(Lyric);
+      
+    } catch (IOException ex) {
+      Logger.getLogger(SongInfo.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
@@ -110,8 +181,15 @@ public class SongInfo {
 
   }
 
-  public String[] getSet() {
-    return new String[]{getTitle(), getAutor(), getAlbum(), getLangue(), getTags(), "", "", "", getLyric()};
+  public void setInfo(Skladba s) {
+    File f = new File(s.getPath());
+    load(f);
+    s.setAlbum(Album);
+    s.setAutor(Autor);
+    s.setLangue(Langue);
+    s.setLyric(Lyric);
+    s.setTags(Tags);
+    s.setTitle(Title);
   }
 
   public String getAutor() {

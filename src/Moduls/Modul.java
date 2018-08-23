@@ -7,7 +7,6 @@ package Moduls;
 
 import VControl.Commander;
 import VControl.Command;
-import VControl.CommandStats;
 import VControl.Settings.AppSettings;
 import VControl.Settings.Settings;
 import VControl.UI.SidebarModule;
@@ -17,7 +16,6 @@ import VControl.UI.components.MyScrollbarUI;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -28,7 +26,6 @@ import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.Timer;
 
 /**
  *
@@ -68,15 +65,16 @@ public abstract class Modul extends Thread implements IModul {
     this.FullGrafics.add(MyGrafics, BorderLayout.CENTER);
     this.FullGrafics.add(a, BorderLayout.PAGE_END);
     this.MyGrafics.setBackground(AppSettings.getColour("BG_Color"));
-    Timer tim = new Timer(10, (ActionEvent ae) -> {
-      if (!Commands.isEmpty()) {
-        Commands.get(0).setStats(CommandStats.InProgress);
-        this.Execute(Commands.get(0));
-        Commands.get(0).setStats(CommandStats.Done);
-        Commands.remove(0);
-      }
-    });
-    tim.start();
+    new ModulTimer(this).start();
+//    Timer tim = new Timer(10, (ActionEvent ae) -> {
+//      if (!Commands.isEmpty()) {
+//        Commands.get(0).setStats(CommandStats.InProgress);
+//        this.Execute(Commands.get(0));
+//        Commands.get(0).setStats(CommandStats.Done);
+//        Commands.remove(0);
+//      }
+//    });
+//    tim.start();
     this.StartModule();
   }
 
@@ -153,6 +151,10 @@ public abstract class Modul extends Thread implements IModul {
 
   public ToolBox getToolBar() {
     return ToolBar;
+  }
+
+  public ArrayList<Command> getCommands() {
+    return Commands;
   }
 
   public void setMyGrafics(JPanel MyGrafic) {

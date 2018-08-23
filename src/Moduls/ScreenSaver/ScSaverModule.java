@@ -7,11 +7,17 @@ package Moduls.ScreenSaver;
 
 import Moduls.IModul;
 import Moduls.Modul;
+import Moduls.Skladnik.SkladnikModule;
 import VControl.Command;
 import VControl.Settings.AppSettings;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
 /**
@@ -24,7 +30,7 @@ public class ScSaverModule extends Modul {
   private IModul last = this;
   private boolean Shown = false;
   private boolean Enabled = true;
-  
+
   public ScSaverModule(VControl.Commander Commander) {
     super(Commander);
   }
@@ -32,6 +38,16 @@ public class ScSaverModule extends Modul {
   @Override
   public String GetModulName() {
     return "ScreenSaver";
+  }
+
+  @Override
+  public Image GetIcon() {
+    try {
+      return ImageIO.read(getClass().getResourceAsStream("/icons/modules/Saver.png"));
+    } catch (IOException ex) {
+      Logger.getLogger(SkladnikModule.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return null;
   }
 
   @Override
@@ -49,8 +65,12 @@ public class ScSaverModule extends Modul {
 
   @Override
   public void Execute(Command co) {
-    if (co.GetCommand().equals("Enable")) Enabled=true;
-    if (co.GetCommand().equals("Disable")) Enabled=false;
+    if (co.GetCommand().equals("Enable")) {
+      Enabled = true;
+    }
+    if (co.GetCommand().equals("Disable")) {
+      Enabled = false;
+    }
     if (Shown) {
       getCommander().Execute(new Command("ShowSidebar", "app", GetModulName()));
       if (last != this) {
@@ -76,7 +96,7 @@ public class ScSaverModule extends Modul {
 
   @Override
   public synchronized void Activate() {
-    if (!Shown&&Enabled) {
+    if (!Shown && Enabled) {
       last = getCommander().getActive();
       Shown = true;
       getCommander().Execute(new Command("HideSidebar", "app", GetModulName()));

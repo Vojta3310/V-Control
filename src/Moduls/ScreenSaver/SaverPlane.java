@@ -7,8 +7,6 @@ package Moduls.ScreenSaver;
 
 import Moduls.Modul;
 import VControl.Command;
-import VControl.Settings.AppSettings;
-import VControl.utiliti;
 import ddf.minim.AudioPlayer;
 import ddf.minim.analysis.FFT;
 import java.awt.Color;
@@ -20,15 +18,8 @@ import java.awt.RenderingHints;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import org.farng.mp3.TagException;
 
 /**
  *
@@ -37,7 +28,7 @@ import org.farng.mp3.TagException;
 public class SaverPlane extends JPanel {
 
   private BufferedImage image;
-  private ArrayList<String> Imges = new ArrayList<>();
+  private final RandomImage RI;
   private final Modul m;
   private int imgTime = 0;
   private int imgDark = 255;
@@ -55,6 +46,8 @@ public class SaverPlane extends JPanel {
 
   public SaverPlane(Modul m) {
     this.m = m;
+    RI = new RandomImage(m.SgetString("ImageDir"));
+    RI.start();
     changeImg();
 //    setLayout(new FlowLayout());
 //    add(new TimePanel());
@@ -92,7 +85,7 @@ public class SaverPlane extends JPanel {
         .addContainerGap(377, Short.MAX_VALUE))
     );
 
-    Timer tim = new Timer(10, (ActionEvent ae) -> {
+    Timer tim = new Timer(57, (ActionEvent ae) -> {
       imgTime++;
 
       if (imgTime > m.SgetInt("Image_Delay(s)") * 100 - m.SgetInt("Transfet_Lenght") * 50) {
@@ -136,35 +129,8 @@ public class SaverPlane extends JPanel {
 
   }
 
-  private void changeImg() {
-    try {
-//      image = ImageIO.read(new File("/home/vojta3310/Obrázky/Walpapapers/1cfdd2ae9f28d352d2853628cdb70659-TreyRatcliff.jpg"));
-      if (Imges.isEmpty()) {
-        loadDir(m.SgetString("ImageDir"));
-      }
-      int i = (int) Math.round(Math.random() * (Imges.size() - 1));
-      image = ImageIO.read(new File(Imges.get(i)));
-      Imges.remove(i);
-
-    } catch (IOException | TagException ex) {
-      Logger.getLogger(SaverPlane.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    image = utiliti.resize(image, AppSettings.getInt("Window_Width"), AppSettings.getInt("Window_Height"));
-
-  }
-
-  private void loadDir(String path) throws IOException, TagException {
-    File f = new File(path);
-    String[] files = f.list();
-    Imges = new ArrayList<>();
-    for (String file : files) {
-      File fil = new File(path + File.separator + file);
-      if (fil.isDirectory()) {
-        loadDir(fil.getPath());
-      } else {
-        Imges.add(fil.getPath());
-      }
-    }
+private void changeImg() {
+    image=RI.getImage();
   }
 
   public final void setupEqualizer(AudioPlayer ap) {
@@ -175,8 +141,7 @@ public class SaverPlane extends JPanel {
     fft = new FFT(in.bufferSize(), in.sampleRate());
 
     // Use logarithmically-spaced averaging
-    fft.logAverages(400, 50);
-
+    fft.linAverages(250);
     avgSize = fft.avgSize();
     fftSmooth = new float[avgSize];
 
@@ -208,7 +173,9 @@ public class SaverPlane extends JPanel {
       int weight = Math.round(getWidth() / (avgSize - 1)) + 1;
       int gap = Math.abs(getWidth() - weight * (avgSize - 1)) / 2;
       float maxHeight = (float) (getHeight() / 5);
-
+      float maxValA=0;
+      float minValA=Float.MAX_VALUE;
+      
       for (int i = 0; i < avgSize; i++) {
         // Get spectrum value (using dB conversion or not, as desired)
         float fftCurr;
@@ -216,17 +183,18 @@ public class SaverPlane extends JPanel {
         fftCurr = fft.getAvg(i);
 
         // Smooth using exponential moving average
-        fftSmooth[i] = (smoothing) * fftSmooth[i] + ((1 - smoothing) * fftCurr);
+        fftSmooth[i] = (smoothing) * fftSmooth[i] + ((1 - smoothing) * (float)Math.atan(0.2*fftCurr/(avgSize-i)+0.0001));
 
         // Find max and min values ever displayed across whole spectrum
-        if (fftSmooth[i] > maxVal) {
-          maxVal = fftSmooth[i];
+        if (fftSmooth[i] > maxValA) {
+          maxValA = fftSmooth[i];
         }
-        if (fftSmooth[i] < minVal) {
-          minVal = fftSmooth[i];
+        if (fftSmooth[i] < minValA) {
+          minValA = fftSmooth[i];
         }
       }
-
+      maxVal=0.99f*maxVal+0.01f*maxValA;
+      minVal=0.99f*minVal+0.01f*minValA;
       // Calculate the total range of smoothed spectrum; this will be used to scale all values to range 0...1
       float range = maxVal - minVal;
       float scaleFactor = range + 0.00001F; // avoid div. by zero

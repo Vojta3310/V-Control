@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.0"
+   width="128"
+   height="128"
+   viewBox="0 0 102.4 102.4"
+   preserveAspectRatio="xMidYMid meet"
+   id="svg2"
+   inkscape:version="0.91 r"
+   sodipodi:docname="2094866.svg"
+   inkscape:export-filename="/home/vojta3310/NetBeansProjects/V-Control/src/icons/modules/MyPlayerMusic/karaoke.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <metadata
+     id="metadata16">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs14" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="986"
+     id="namedview12"
+     showgrid="false"
+     units="px"
+     inkscape:zoom="4.7100952"
+     inkscape:cx="57.788211"
+     inkscape:cy="54.747281"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg2" />
+  <g
+     transform="matrix(0.008002,0,0,-0.008002,-0.01034912,87.50115)"
+     id="g4"
+     style="fill:#000000;stroke:none">
+    <path
+       d="M 1801,9059 C 1363,9013 917,8797 595,8475 290,8171 88,7772 21,7345 -7,7164 -5,6880 26,6695 120,6136 437,5647 907,5334 c 178,-119 362,-204 565,-263 145,-41 249,-60 421,-73 l 149,-11 1020,1020 1021,1021 -12,154 c -10,130 -21,209 -45,313 -117,524 -478,1018 -943,1292 -383,225 -827,319 -1282,272 z"
+       id="path6"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 3729,6087 c -256,-248 -613,-594 -793,-767 -179,-173 -326,-319 -326,-325 0,-5 104,-102 231,-215 127,-113 365,-324 529,-470 163,-146 452,-402 640,-570 189,-168 495,-440 680,-605 185,-165 491,-437 680,-605 188,-168 477,-424 640,-570 164,-146 470,-418 680,-605 210,-187 514,-457 674,-600 160,-143 318,-283 351,-311 l 60,-52 240,256 c 132,140 327,347 433,459 105,112 192,208 192,213 0,5 -19,31 -42,58 -24,27 -137,161 -253,297 -115,136 -307,361 -425,500 -118,139 -309,364 -425,500 -115,136 -293,345 -395,465 -102,119 -282,331 -400,470 -118,140 -309,365 -425,500 -245,288 -563,663 -825,971 -249,293 -624,734 -850,999 -102,120 -231,272 -288,339 -56,66 -106,121 -110,121 -4,0 -217,-204 -473,-453 z"
+       id="path8"
+       inkscape:connector-curvature="0" />
+    <path
+       d="m 11274,1054 c -108,-14 -295,-67 -407,-114 -125,-52 -252,-130 -403,-246 -207,-160 -294,-211 -452,-264 -206,-69 -428,-86 -633,-50 -255,46 -478,155 -650,318 l -69,64 -130,-123 -130,-124 85,-82 C 8798,130 9287,-34 9743,9 c 343,33 610,140 889,358 160,124 216,162 313,210 301,151 670,174 993,61 200,-69 351,-166 504,-322 l 83,-84 135,109 c 74,60 136,113 138,118 5,15 -199,214 -292,283 -349,261 -790,372 -1232,312 z"
+       id="path10"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>

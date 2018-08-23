@@ -62,7 +62,7 @@ public class SongPanel extends JPanel {
         .addComponent(Autor)
         .addContainerGap(18, Short.MAX_VALUE))
     );
-    Timer tim = new Timer(100, (ActionEvent ae) -> {
+    Timer tim = new Timer(101, (ActionEvent ae) -> {
       update();
     }
     );

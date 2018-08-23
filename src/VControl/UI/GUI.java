@@ -11,7 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.HeadlessException;
-import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
@@ -26,6 +25,13 @@ import javax.swing.JFrame;
  * @author vojta3310
  */
 public class GUI extends JFrame {
+
+  public void update() {
+    this.setSize(AppSettings.getInt("Window_Width"), AppSettings.getInt("Window_Height"));
+    //this.setVisible(true);
+    repaint();
+    revalidate();
+  }
 
   public GUI() throws HeadlessException {
     super("V-Control v0.0.2");

@@ -7,16 +7,13 @@ package Moduls.MyPlayerMusic.songAdder;
 
 import VControl.UI.components.MyButton;
 import Moduls.MyPlayerMusic.MyPlayerMusic;
+import Moduls.MyPlayerMusic.Player.Skladba;
 import VControl.Settings.AppSettings;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -24,29 +21,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 import javax.swing.filechooser.FileFilter;
-import org.farng.mp3.MP3File;
-import org.farng.mp3.TagConstant;
 import org.farng.mp3.TagException;
-import org.farng.mp3.TagOptionSingleton;
-import org.farng.mp3.id3.AbstractID3;
-import org.farng.mp3.id3.AbstractID3v2;
-import org.farng.mp3.id3.AbstractID3v2FrameBody;
-import org.farng.mp3.id3.FrameBodyTALB;
-import org.farng.mp3.id3.FrameBodyTCOM;
-import org.farng.mp3.id3.FrameBodyTCOP;
-import org.farng.mp3.id3.FrameBodyTENC;
-import org.farng.mp3.id3.FrameBodyTEXT;
-import org.farng.mp3.id3.FrameBodyTIT2;
-import org.farng.mp3.id3.FrameBodyTMED;
-import org.farng.mp3.id3.FrameBodyTOPE;
-import org.farng.mp3.id3.FrameBodyTPE1;
-import org.farng.mp3.id3.FrameBodyTPUB;
-import org.farng.mp3.id3.FrameBodyTRCK;
-import org.farng.mp3.id3.FrameBodyTSRC;
-import org.farng.mp3.id3.ID3v2_2;
-import org.farng.mp3.id3.ID3v2_3;
-import org.farng.mp3.id3.ID3v2_4;
-import org.farng.mp3.id3.ID3v2_4Frame;
 
 /**
  *
@@ -55,16 +30,16 @@ import org.farng.mp3.id3.ID3v2_4Frame;
 public class addFromFile {
 
   private final JPanel gui;
-  private MusicAnalizer ma;
   private SongEditPanel sep;
   private MyPlayerMusic MP;
+  private Skladba song;
+  private final MyButton select;
 
   public addFromFile(MyPlayerMusic mod) throws IOException, UnsupportedAudioFileException {
     MP = mod;
     gui = new JPanel();
     gui.setLayout(new BorderLayout());
-    ma = new MusicAnalizer();
-    sep = new SongEditPanel(new String[]{"", "", "", "", "", "", "", "", ""}, ma);
+    sep = new SongEditPanel();
     MyButton add = new MyButton("Přidat ...");
     final JFileChooser fc = new JFileChooser();
     FileFilter ff = new FileFilter() {
@@ -75,26 +50,22 @@ public class addFromFile {
 
       @Override
       public String getDescription() {
-        return "Known Audio Files (mp3)";
+        return "Mp3 Files (.mp3)";
       }
     };
     fc.addChoosableFileFilter(ff);
     fc.setFileFilter(ff);
     fc.setFileSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    final MyButton select = new MyButton("Vybrat soubor ...");
-    select.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        int returnVal = fc.showOpenDialog(gui);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          File file = fc.getSelectedFile();
-          select.setText(file.getName());
-          try {
-            load(file);
-          } catch (UnsupportedAudioFileException | IOException ex) {
-            Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
-          }
+    select = new MyButton("Vybrat soubor ...");
+    select.addActionListener((ActionEvent e) -> {
+      int returnVal = fc.showOpenDialog(gui);
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        File file = fc.getSelectedFile();
+        try {
+          load(file);
+        } catch (UnsupportedAudioFileException | IOException ex) {
+          Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
         }
       }
     });
@@ -104,22 +75,17 @@ public class addFromFile {
     add.setForeground(AppSettings.getColour("FG_Color"));
     add.setBackground(AppSettings.getColour("BG_Color"));
     add.setFont(new Font(AppSettings.getString("Font_Name"), 1, AppSettings.getInt("Font_Size") + 4));
-    add.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent ae) {
-        try {
-          if (fc.getSelectedFile() != null) {
-            save();
-            fc.setSelectedFile(null);
-            select.setText("Vybrat soubor ...");
-            select.requestFocus();
-            ma = new MusicAnalizer();
-            sep.load(new String[]{"", "", "", "", "", "", "", "", ""}, ma);
-          }
-        } catch (IOException | UnsupportedAudioFileException | TagException ex) {
-          Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
+    add.addActionListener((ActionEvent ae) -> {
+      try {
+        if (song != null) {
+          save();
+          fc.setSelectedFile(null);
+          select.setText("Vybrat soubor ...");
+          select.requestFocus();
+          sep.clear();
         }
+      } catch (IOException | UnsupportedAudioFileException | TagException ex) {
+        Logger.getLogger(addFromFile.class.getName()).log(Level.SEVERE, null, ex);
       }
     });
 
@@ -132,81 +98,32 @@ public class addFromFile {
 //  public final void add(File f, String[] set) throws UnsupportedAudioFileException, IOException, TagException {
 //    save();
 //  }
-  private void load(File f) throws UnsupportedAudioFileException, IOException {
-    ma.setFile(f);
-    ma.initAudioStream();
+  public final void load(File f) throws UnsupportedAudioFileException, IOException {
+    select.setText(f.getName());
+    song = new Skladba(f.getPath());
+    song.initMusicAnalizer();
     SongInfo i = new SongInfo();
-    i.load(f);
-    sep.load(i.getSet(), ma);
+    i.setInfo(song);
+    sep.load(song);
+  }
+
+  public final void loadSond(Skladba s) throws UnsupportedAudioFileException, IOException {
+    select.setText(new File(s.getPath()).getName());
+    song = s;
+    song.initMusicAnalizer();
+    sep.load(song);
   }
 
   private void save() throws UnsupportedAudioFileException, IOException, TagException {
-    String[] set = sep.getSet();
     File directory = new File(MP.SgetString("MusicDir"));
     if (!directory.exists()) {
       directory.mkdir();
     }
-
-    Path f = new File(directory.toString() + File.separator + set[1] + "-" + set[0] + ".mp3").toPath();
-
-    Files.copy(ma.getFile().toPath(), f, StandardCopyOption.REPLACE_EXISTING);
-
-    MP3File mp3file = new MP3File(f.toString());
-    TagOptionSingleton.getInstance().setDefaultSaveMode(TagConstant.MP3_FILE_SAVE_OVERWRITE);
-
-    if (mp3file.hasID3v2Tag()) {
-      mp3file.getID3v2Tag().clearFrameMap();
-    } else {
-      mp3file.setID3v2Tag(new ID3v2_2());
-      mp3file.setID3v2Tag(new ID3v2_3());
-      mp3file.setID3v2Tag(new ID3v2_4());
-      mp3file.save();
+    sep.apply(song);
+    if (song.getLangue().equals("none")) {
+      return;
     }
-
-//    String s = "MyPlayer%@%";
-//    for (String seti : set) {
-//      s += seti + "%@%";
-//    }
-//    s += "0.0%@%" + Float.toString(ma.getAverangeVolume());
-//
-//    AbstractID3v2Frame frame;
-//    AbstractID3v2FrameBody frameBody;
-//    frameBody = new FrameBodyTDAT((byte) 0, s);
-//    frame = new ID3v2_4Frame(frameBody);
-//    mp3file.getID3v2Tag().setFrame(frame);
-    for (int i = 0; i < set.length; i++) {
-      if (set[i].equals("")) {
-        set[i] = " ";
-      }
-    }
-
-    AbstractID3v2FrameBody frameBody = new FrameBodyTMED((byte) 0, "MyPlayer");
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTIT2((byte) 0, set[0]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTPE1((byte) 0, set[1]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTALB((byte) 0, set[2]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTOPE((byte) 0, set[3]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTPUB((byte) 0, set[4]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTCOP((byte) 0, set[5]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTSRC((byte) 0, set[6]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTRCK((byte) 0, set[7]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTEXT((byte) 0, set[8]);
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTCOM((byte) 0, Float.toString(ma.getAverangeVolume()));
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-    frameBody = new FrameBodyTENC((byte) 0, "0.0");
-    mp3file.getID3v2Tag().setFrame(new ID3v2_4Frame(frameBody));
-
-    mp3file.save();
-
+    song.save(directory.getPath());
     MP.reloadSongs();
   }
 

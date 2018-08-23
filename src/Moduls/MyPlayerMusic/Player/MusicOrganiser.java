@@ -15,6 +15,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.Timer;
@@ -234,12 +236,14 @@ public class MusicOrganiser implements IMediaOrganiser {
     Playing = ns;
     ap = player.PrepareSong(Playing);
     gui.getIpanel().setupEqualizer(ap);
+    gui.getKaraoke().setupEqualizer(ap);
     gui.getPpanel().getVcontrol().setAp(ap);
     gui.getSpanel().getSlabel().setText(Playing.getLabel());
     transferTo = volume;
     player.setVolume(volume);
     player.play();
     gui.getIpanel().ShowSong(ns);
+    gui.getKaraoke().ShowSong(ns);
     modul.repaint();
   }
 
@@ -332,6 +336,14 @@ public class MusicOrganiser implements IMediaOrganiser {
 
   public void Play() {
     if (player.getPaused()) {
+      String command = modul.SgetString("Volume_Command");
+      if (!command.equals("V") && !command.equals("G")) {
+        try {
+          Runtime.getRuntime().exec(command.replace("%v%", "0"));
+        } catch (IOException ex) {
+          Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+        }
+      }
       player.play();
       transferFrom = 0;
       transferTo = volume;
@@ -349,14 +361,6 @@ public class MusicOrganiser implements IMediaOrganiser {
     }
   }
 
-  private void pltooglePause() {
-    if (player.getPaused()) {
-      player.play();
-    } else {
-      player.pause();
-    }
-  }
-
   private void doTransform() {
     if (!(((transferFrom > transferTo) && (transferTo >= player.getVolume()))
       || ((transferFrom < transferTo) && (transferTo <= player.getVolume())))) {
@@ -371,7 +375,17 @@ public class MusicOrganiser implements IMediaOrganiser {
           UplayPrew();
           break;
         case 3:
-          pltooglePause();
+//          pltooglePause();
+          player.pause();
+          String command = modul.SgetString("Volume_Command");
+          if (!command.equals("V") && !command.equals("G")) {
+            String vol = Integer.toString((int) ((float) volume * (float) 100));
+            try {
+              Runtime.getRuntime().exec(command.replace("%v%", vol));
+            } catch (IOException ex) {
+              Logger.getLogger(Player.class.getName()).log(Level.SEVERE, null, ex);
+            }
+          }
           break;
         case 4:
           UplaySel();

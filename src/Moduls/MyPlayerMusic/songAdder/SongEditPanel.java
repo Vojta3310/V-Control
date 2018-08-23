@@ -5,13 +5,15 @@
  */
 package Moduls.MyPlayerMusic.songAdder;
 
+import Moduls.MyPlayerMusic.Player.Skladba;
 import VControl.UI.components.MyField;
 import VControl.UI.components.MyComboUI;
 import VControl.Settings.AppSettings;
 import VControl.UI.components.MyButton;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.IOException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JComboBox;
@@ -28,7 +30,6 @@ import javax.swing.JTextField;
  */
 public class SongEditPanel extends JPanel {
 
-  private String[] settings;
   private final JLabel title;
   private final JLabel album;
   private final JLabel tags;
@@ -36,6 +37,7 @@ public class SongEditPanel extends JPanel {
   private final JLabel langue;
   private final JLabel autor;
   private final MyButton editLyric;
+  private final MyButton gLyric;
   private final JFrame lyricFrame;
 
   private final JTextArea lyric;
@@ -46,16 +48,13 @@ public class SongEditPanel extends JPanel {
   private final JComboBox<String> flangue;
   private final JTextField fautor;
   private final WaveEdit WE;
-  private MusicAnalizer ma;
 
-  public SongEditPanel(String[] set, MusicAnalizer ma) throws IOException, UnsupportedAudioFileException {
+  public SongEditPanel(Skladba s) throws IOException, UnsupportedAudioFileException {
     this();
-    load(set, ma);
+    load(s);
   }
 
   public SongEditPanel() throws IOException {
-    settings = new String[]{"", "", "", "", "", "", "", "", "", ""};
-    ma = new MusicAnalizer();
 
     this.setBackground(AppSettings.getColour("BG_Color"));
 
@@ -66,14 +65,52 @@ public class SongEditPanel extends JPanel {
     langue = new JLabel("Jazyk:");
     tags = new JLabel("Tagy:");
     specialtags = new JLabel("STagy:");
-    WE = new WaveEdit(ma);
+    WE = new WaveEdit(new MusicAnalizer());
+    WE.setStart(0L);
+    WE.setEnd(0L);
     editLyric = new MyButton("Upravit text skladby");
+    gLyric = new MyButton("Vyhledat text skadby");
     lyric = new JTextArea();
     lyricFrame = new JFrame("Text skladby");
     JScrollPane sp = new JScrollPane(lyric);
     lyricFrame.add(sp);
     lyricFrame.setSize(600, 700);
     lyricFrame.setLocationRelativeTo(editLyric);
+
+    lyricFrame.addWindowListener(new WindowListener() {
+
+      @Override
+      public void windowOpened(WindowEvent e) {
+      }
+
+      @Override
+      public void windowClosing(WindowEvent e) {
+        updateButontext();
+      }
+
+      @Override
+      public void windowClosed(WindowEvent e) {
+       updateButontext();
+      }
+
+      @Override
+      public void windowIconified(WindowEvent e) {
+      }
+
+      @Override
+      public void windowDeiconified(WindowEvent e) {
+        updateButontext();
+      }
+
+      @Override
+      public void windowActivated(WindowEvent e) {
+      }
+
+      @Override
+      public void windowDeactivated(WindowEvent e) {
+       updateButontext();
+      }
+    });
 
     ftitle = new MyField();
     fautor = new MyField();
@@ -113,47 +150,18 @@ public class SongEditPanel extends JPanel {
     tags.setForeground(AppSettings.getColour("FG_Color"));
     specialtags.setForeground(AppSettings.getColour("FG_Color"));
 
-//    ftitle.setForeground(AppSettings.getColour("FG_Color"));
-//    fautor.setForeground(AppSettings.getColour("FG_Color"));
-//    falbum.setForeground(AppSettings.getColour("FG_Color"));
     flangue.setForeground(AppSettings.getColour("FG_Color"));
-//    ftags.setForeground(AppSettings.getColour("FG_Color"));
-//    fspecialtags.setForeground(AppSettings.getColour("FG_Color"));
-//
-//    ftitle.setCaretColor(AppSettings.getColour("FG_Color"));
-//    fautor.setCaretColor(AppSettings.getColour("FG_Color"));
-//    falbum.setCaretColor(AppSettings.getColour("FG_Color"));
-//    ftags.setCaretColor(AppSettings.getColour("FG_Color"));
-//    fspecialtags.setCaretColor(AppSettings.getColour("FG_Color"));
     flangue.setUI(new MyComboUI());
-//
-//    ftitle.setBackground(AppSettings.getColour("BG_Color"));
-//    fautor.setBackground(AppSettings.getColour("BG_Color"));
-//    falbum.setBackground(AppSettings.getColour("BG_Color"));
     flangue.setBackground(AppSettings.getColour("BG_Color"));
-//    ftags.setBackground(AppSettings.getColour("BG_Color"));
-//    fspecialtags.setBackground(AppSettings.getColour("BG_Color"));
-//
-//    ftitle.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-//    fautor.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-//    falbum.setBorder(javax.swing.BorderFactory.createEmptyBorder());
     flangue.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-//    ftags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-//    fspecialtags.setBorder(javax.swing.BorderFactory.createEmptyBorder());
-//
-//    ftitle.setFont(f);
-//    fautor.setFont(f);
-//    falbum.setFont(f);
     flangue.setFont(f);
-//    ftags.setFont(f);
-//    fspecialtags.setFont(f);
 
-    editLyric.addActionListener(new ActionListener() {
+    editLyric.addActionListener((ActionEvent e) -> {
+      lyricFrame.setVisible(true);
+    });
 
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        lyricFrame.setVisible(true);
-      }
+    gLyric.addActionListener((ActionEvent e) -> {
+      reGoogle();
     });
 
     javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -201,7 +209,10 @@ public class SongEditPanel extends JPanel {
             )
           )
         )
-        .addComponent(editLyric, (fieldWidth + labelWidth) * 2 + 48, (fieldWidth + labelWidth) * 2 + 48, (fieldWidth + labelWidth) * 2 + 48)
+        .addGroup(layout.createSequentialGroup()
+          .addComponent(editLyric, (fieldWidth + labelWidth) + 24, (fieldWidth + labelWidth) + 24, (fieldWidth + labelWidth) + 24)
+          .addComponent(gLyric, (fieldWidth + labelWidth) + 24, (fieldWidth + labelWidth) + 24, (fieldWidth + labelWidth) + 24)
+        )
       )
     );
     layout.setVerticalGroup(
@@ -239,48 +250,77 @@ public class SongEditPanel extends JPanel {
           )
         )
         .addGap(rowHeight / 4)
-        .addComponent(editLyric, rowHeight + 8, rowHeight + 8, rowHeight + 8)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+          .addComponent(editLyric, rowHeight + 8, rowHeight + 8, rowHeight + 8)
+          .addComponent(gLyric, rowHeight + 8, rowHeight + 8, rowHeight + 8)
+        )
         .addComponent(WE, 10, javax.swing.GroupLayout.DEFAULT_SIZE, Integer.MAX_VALUE)
       )
     );
   }
 
-  public final void load(String[] set, MusicAnalizer m) throws IOException, UnsupportedAudioFileException {
-    ma = m;
-    settings = set;
-    ftitle.setText(settings[0]);
-    fautor.setText(settings[1]);
-    falbum.setText(settings[2]);
-    flangue.setSelectedItem(settings[3]);
-    ftags.setText(settings[4]);
-    fspecialtags.setText(settings[5]);
-    if (!"".equals(settings[6])) {
-      WE.setStart(Long.parseLong(settings[6]));
-      if (!"".equals(settings[7])) {
-        WE.setEnd(WE.getStart() + Long.parseLong(settings[7]));
-      } else {
-        WE.setEnd(0L);
-      }
+  private void updateButontext() {
+    if (!lyric.getText().equals("")) {
+      editLyric.setText(lyric.getText().substring(0, 30) + " ...");
     } else {
-      WE.setStart(0L);
+      editLyric.setText("Upravit text skladby");
     }
-    WE.setMa(ma);
-    lyric.setText(settings[8]);
   }
 
-  public String[] getSet() {
-    String[] set = new String[]{
-      ftitle.getText(),
-      fautor.getText(),
-      falbum.getText(),
-      flangue.getSelectedItem().toString(),
-      ftags.getText()+" ",
-      fspecialtags.getText()+" ",
-      Long.toString(WE.getStart()),
-      Long.toString(WE.getEnd()),
-      lyric.getText()+" "
-    };
-    return set;
+  public final void load(Skladba s) {
+    ftitle.setText(s.getTitle());
+    fautor.setText(s.getAutor());
+    falbum.setText(s.getAlbum());
+    if (!s.getLangue().equals("none")) {
+      flangue.setSelectedItem(s.getLangue());
+    }
+    ftags.setText(s.getTags());
+    fspecialtags.setText(s.getSpecialTags());
+    WE.setStart(s.getStart());
+    WE.setEnd(s.getStart() + s.getLenght());
+    if (s.getMusicAnalizer() != null) {
+      WE.setMa(s.getMusicAnalizer());
+    }
+    lyric.setText(s.getLyric());
+    updateButontext();
   }
 
+  public final void clear() {
+    ftitle.setText("");
+    fautor.setText("");
+    falbum.setText("");
+    flangue.setSelectedItem("");
+    ftags.setText("");
+    fspecialtags.setText("");
+    WE.setStart(0L);
+    WE.setEnd(0L);
+    lyric.setText("");
+    editLyric.setText("Upravit text skladby");
+    WE.setMa(new MusicAnalizer());
+  }
+
+  private void reGoogle() {
+    Skladba s = new Skladba();
+    apply(s);
+    SongInfo.findLiric(s);
+    load(s);
+  }
+
+  public void apply(Skladba s) {
+    if (s.getMusicAnalizer() != null) {
+      s.setVolume(s.getMusicAnalizer().getAverangeVolume());
+    }
+    s.setTitle(ftitle.getText());
+    s.setAutor(fautor.getText());
+    s.setAlbum(falbum.getText());
+    if (flangue.getSelectedItem() == null) {
+      s.setLangue("none");
+    } else {
+      s.setLangue(flangue.getSelectedItem().toString());
+    }
+    s.setTags(ftags.getText() + " ");
+    s.setSpecialTags(fspecialtags.getText() + " ");
+    s.setStart(WE.getStart());
+    s.setLenght(WE.getEnd() - WE.getStart());
+  }
 }

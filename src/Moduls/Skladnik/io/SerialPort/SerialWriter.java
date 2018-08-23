@@ -15,7 +15,7 @@ public class SerialWriter {
     }
     
     public void write(String text){
-        //System.out.println("Odesláno: " + text);
+        System.out.println("Odesílám: " + text);
         try{
             for (int i = 0; i < text.length(); i++) {
                 this.out.write(text.charAt(i));
@@ -23,11 +23,12 @@ public class SerialWriter {
             this.out.write((char)0);
             this.out.write((char)0);
             this.out.flush();
+        System.out.println("Odesláno: " + text);
         }
         catch (IOException e){
             // TODO Auto-generated catch block
             e.printStackTrace();
-            System.exit(-1);
+//            System.exit(-1);
         }
     }
     

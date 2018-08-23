@@ -41,7 +41,7 @@ public class MusicAnalizer {
         initAudioStream();
       }
       lines = new ArrayList<>();
-      int frames_per_pixel = audioData.length / w;
+      int frames_per_pixel =Math.round(audioData.length / (w+0.001f));
       double y_last = 0;
       for (double x = 0; x < w; x++) {
         int idx = (int) (frames_per_pixel * x);

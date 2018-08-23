@@ -1,16 +1,18 @@
 package Moduls.Skladnik.skladnik;
 
+import Moduls.Modul;
 import Moduls.Skladnik.DataStructure.Box;
 import Moduls.Skladnik.DataStructure.Buffer;
 import Moduls.Skladnik.DataStructure.ISklad;
 import Moduls.Skladnik.DataStructure.IVzdalenost;
 import Moduls.Skladnik.DataStructure.ModelService;
 import Moduls.Skladnik.Enums.typOperace;
+import Moduls.Skladnik.io.Scanner;
 import Moduls.Skladnik.io.SerialPort.RXTX;
 import Moduls.Skladnik.io.xml.XML;
-import Moduls.Skladnik.ui.graphics.GUI;
-import Moduls.Skladnik.ui.graphics.IGUI;
+import Moduls.Skladnik.ui.ModulUI.MGUI;
 import Moduls.Skladnik.utilities.Settings;
+import VControl.Command;
 import java.awt.Color;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -35,16 +37,20 @@ public class Robot extends Thread {
   private final ModelService vyndane;
   private final RXTX rxtx;
   private final JTextPane console;
-  private IGUI gui;
+  private MGUI gui;
   private final Buffer<Box> buffer;
   private Box box;
+  private Box vyndany = null;
   private final XML xml;
 
   private boolean pracuje;
   private boolean sleep = false;
   private boolean reffered = false;
+  private boolean badbox = false;
   private boolean buferVindej = Settings.bufer_videj;
   private int SleepAfter = Settings.SleepAfter;
+  private final Scanner sc;
+  private Modul m;
 
   public Robot(ISklad sklad, RXTX rxtx, XML xml) {
     this.sklad = sklad;
@@ -52,6 +58,7 @@ public class Robot extends Thread {
     this.xml = xml;
     this.pracuje = false;
 
+    this.sc = new Scanner(sklad);
     this.console = new JTextPane();
     this.console.setFocusable(false);
     this.console.setEditable(false);
@@ -59,38 +66,50 @@ public class Robot extends Thread {
 
     this.vyndane = sklad.getVyndane();
     this.buffer = new Buffer();
+    m = null;
   }
 
-  public Robot(ISklad sklad, RXTX rxtx, XML xml, boolean bufVindej, int sleepafter) {
+  public Robot(ISklad sklad, RXTX rxtx, XML xml, boolean bufVindej, int sleepafter, Modul mod) {
     this(sklad, rxtx, xml);
     buferVindej = bufVindej;
     SleepAfter = sleepafter;
+    m = mod;
   }
 
   @Override
   public void run() {
+    this.sc.start();
     while (true) {
       if (buffer.jePrazdny()) {
         pracuje = false;
+        if (rxtx.Ping()) {
+          rxtx.setGled(true);
+          rxtx.setRled(false);
+        }
       }
       int s = 0;
-      while (buffer.jePrazdny() || !rxtx.Ping()) {
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-          System.err.println("Vlákno robota se nepodařilo uspat!");
-        }
+      boolean u = maUklidit();
+      while ((buffer.jePrazdny() && !u) || !rxtx.Ping()) {
+        spi(1000);
         if (s >= SleepAfter && !sleep) {
           pracuje = true;
           reffered = false;
           if (rxtx.Ping()) {
+            rxtx.EnableMot();
             sleep = true;
             posunNa(1, 1);
+            rxtx.ref("Z");
             rxtx.DisableMot();
+            rxtx.setGled(true);
+            rxtx.setRled(false);
           }
           pracuje = false;
         }
+        if (sleep && !rxtx.Ping()) {
+          sleep = false;
+        }
         s++;
+        u = maUklidit();
       }
       pracuje = true;
       if (sleep) {
@@ -105,7 +124,13 @@ public class Robot extends Thread {
         reffered = true;
       }
 
-      if (buffer.Zpristupni().getStav() == typOperace.PODEJ) {
+      if (u) {
+        Box b = sc.ScanBox();
+        if (b != null && b.getStav() == typOperace.NIC) {
+          b.setStav(typOperace.VLOZ);
+          vloz(b);
+        }
+      } else if (buffer.Zpristupni().getStav() == typOperace.PODEJ) {
         podej(buffer.Odeber());
 //        System.out.println("+++++++++++++++++++++++++++++");
       } else if (buffer.Zpristupni().getStav() == typOperace.VLOZ) {
@@ -119,19 +144,47 @@ public class Robot extends Thread {
         try {
           xml.stow(sklad);
         } catch (IOException | XMLStreamException ex) {
-          Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+          Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, null, ex);
         }
       }
     }
   }
 
   public void reference() {
+    rxtx.EnableMot();
     rxtx.refAll();
     x = 1;
     y = 1;
   }
 
-  public void setGui(IGUI gui) {
+  private boolean maUklidit() {
+    Box namiste = sc.ScanBox();
+    if (namiste == null) {
+      if (sc.isBox()) {
+        rxtx.setGled(true);
+        rxtx.setRled(true);
+        badbox = true;
+      } else if (badbox) {
+        badbox = false;
+        rxtx.setGled(true);
+        rxtx.setRled(false);
+      }
+      vyndany = null;
+      return false;
+    } else {
+      if (namiste.equals(vyndany)) {
+        rxtx.setGled(true);
+        rxtx.setRled(false);
+        return false;
+      } else {
+        rxtx.setGled(false);
+        rxtx.setRled(true);
+        return true;
+      }
+    }
+  }
+
+  public void setGui(MGUI gui) {
     this.gui = gui;
     this.gui.nacti();
   }
@@ -198,6 +251,20 @@ public class Robot extends Thread {
   }
 
   private void pustVyndane() {
+    int i = 0;
+    while (sc.isBox()) {
+      rxtx.setRled(true);
+      spi(500);
+      rxtx.setRled(false);
+      spi(500);
+      i += 1;
+      if (i >= 10) {
+        i = 0;
+        if (m != null) {
+          m.getCommander().Execute(new Command("Say", "Prosím odeberte box.", "Speaker", m.GetModulName()));
+        }
+      }
+    }
     rxtx.pojedZ(Settings.Z_vydej + 1, 2);
     spi(Settings.cekani);
     rxtx.pojedZ(0, 3);
@@ -207,20 +274,45 @@ public class Robot extends Thread {
     rxtx.pojedZ(-Settings.Z_vydej, 2);
     rxtx.ref("Z");
     vyndane.vlozBox(box);
+    vyndany = box;
     box = null;
   }
 
   private void chytniVyndane(Box box) {
+    checkBox(box);
     rxtx.close();
     rxtx.pojedZ(Settings.Z_vydej, 0);
     rxtx.pust();
     rxtx.pojedZ(1, 2);
     spi(Settings.cekani);
+    checkBox(box);
     rxtx.pojedZ(0, 3);
     rxtx.chytni();
     rxtx.pojedZ(-Settings.Z_vydej - 1, 2);
     rxtx.ref("Z");
     this.box = vyndane.vyndejBox(box);
+  }
+
+  private void checkBox(Box b) {
+    if (sc.isCam()) {
+      rxtx.setGled(false);
+      int i = 0;
+      while (sc.ScanBox() != b) {
+        rxtx.setRled(true);
+        spi(500);
+        rxtx.setRled(false);
+        spi(500);
+        i += 1;
+        if (i >= 10) {
+          i = 0;
+
+          if (m != null) {
+            m.getCommander().Execute(new Command("Say", "Prosím vložte správný box.", "Speaker", m.GetModulName()));
+          }
+        }
+      }
+      rxtx.setRled(true);
+    }
   }
 
   public int getX() {
@@ -240,6 +332,8 @@ public class Robot extends Thread {
   }
 
   public void vloz(Box bx) {
+    rxtx.setGled(false);
+    rxtx.setRled(true);
     gui.nacti();
     console.setText("");
     if (x != Settings.X_vydej || y != Settings.Y_vydej) {
@@ -247,6 +341,8 @@ public class Robot extends Thread {
       this.posunNa(Settings.X_vydej, Settings.Y_vydej);
     }
     this.chytniVyndane(bx);
+    rxtx.setGled(true);
+    rxtx.setRled(false);
     println("Krabicka chytnuta na domovských souřadnicích.", Color.WHITE);
     print("Obsah robota je ", Color.WHITE);
     println(box.getObsah(), Color.YELLOW);
@@ -277,6 +373,8 @@ public class Robot extends Thread {
   }
 
   public void podej(Box bx) {
+    rxtx.setGled(false);
+    rxtx.setRled(true);
     gui.nacti();
     int[] souradnice = sklad.najdiBox(bx);
     //souradnice[0] XXX
@@ -364,6 +462,11 @@ public class Robot extends Thread {
     this.pustVyndane();
     bx.zvysVytazeno();
     println("\nOperace úspěšně dokončena.", Color.GREEN);
+    rxtx.setGled(true);
+    rxtx.setRled(false);
+    if (m != null) {
+      m.getCommander().Execute(new Command("Say", "Box připraven.", "Speaker", m.GetModulName()));
+    }
   }
 
   public void print(String text, Color barva) {
@@ -374,7 +477,7 @@ public class Robot extends Thread {
       doc.insertString(doc.getLength(), text, style);
 
     } catch (BadLocationException ex) {
-      Logger.getLogger(this.getClass().getName()).log(Level.WARNING,"nepodarilo se vypsat text!");
+      Logger.getLogger(this.getClass().getName()).log(Level.WARNING, "nepodarilo se vypsat text!");
     }
 
   }
@@ -387,7 +490,7 @@ public class Robot extends Thread {
     try {
       Thread.sleep(time);
     } catch (InterruptedException ex) {
-      System.err.println("Nepovedlo se uspat vlákno!");
+      System.err.println("Nepovedlo se uspat robota!");
     }
   }
 

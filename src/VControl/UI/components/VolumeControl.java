@@ -101,6 +101,8 @@ public class VolumeControl extends JPanel {
   }
 
   public void setVolume(float volume) {
+    if(volume>1) volume=1;
+    if(volume<0) volume=0;
     this.volume = volume;
   }
 

@@ -74,8 +74,8 @@ public class SearchFieldListener implements DocumentListener {
     DefaultListModel newModel = new DefaultListModel();
     for (int i = 0; i < listModel.getSize(); i++) {
       Box box = listModel.getElementAt(i);
-      if ((text != null)&&(tree.getSelectionPath()!=null)) {
-        if (TextUtilities.normalize(box.getInfo()).contains(TextUtilities.normalize(this.text))) {
+      if ((text != null) && (tree.getSelectionPath() != null)) {
+        if (TextUtilities.normalize(box.getInfo()).contains(TextUtilities.normalize(this.text)) || (text.startsWith("#") && text.equals("#" + Integer.toString(box.getID())))) {
           if (kategorie.isPodkategorie(box.getKategorie(), (DefaultMutableTreeNode) (tree.getSelectionPath().getLastPathComponent()))) {
             newModel.addElement(listModel.elementAt(i));
           }

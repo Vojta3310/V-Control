@@ -9,6 +9,16 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.Normalizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -60,5 +70,46 @@ public class utiliti {
     String min = Long.toString(m / 60000);
     String s = Double.toString((double) Math.round(((double) m / 60000 - Math.floor(m / 60000)) * 6000) / 100);
     return min + ":" + s;
+  }
+
+  public static BufferedImage getImage(String path) {
+    BufferedImage img = null;
+    try {
+
+      URL url = new URL(path);
+      final HttpURLConnection connection = (HttpURLConnection) url
+        .openConnection();
+      connection.setReadTimeout(500);
+      connection.setConnectTimeout(500);
+      connection.setRequestProperty(
+        "User-Agent",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.181 Safari/537.36");
+//      System.out.println(connection.getInputStream().read());
+      img = ImageIO.read(connection.getInputStream());
+
+    } catch (MalformedURLException ex) {
+      Logger.getLogger(utiliti.class.getName()).log(Level.SEVERE, null, ex);
+    } catch (IOException ex) {
+      Logger.getLogger(utiliti.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return img;
+  }
+
+  public static String titleize(final String in) {
+    String input = in.toLowerCase();
+    Pattern bound = Pattern.compile("\\b(\\w)");
+    StringBuffer sb = new StringBuffer(input.length());
+    Matcher mat = bound.matcher(input);
+    while (mat.find()) {
+      mat.appendReplacement(sb, mat.group().toUpperCase());
+    }
+    mat.appendTail(sb);
+    return sb.toString();
+  }
+
+  public static String stripAccents(String s) {
+    s = Normalizer.normalize(s, Normalizer.Form.NFD);
+    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+    return s;
   }
 }
