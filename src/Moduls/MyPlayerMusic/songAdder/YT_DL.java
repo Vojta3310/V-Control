@@ -181,7 +181,7 @@ public class YT_DL {
     public final String find(String co) {
       String o = "";
       try {
-        String f = new File(YT_DL.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+        String f = new File(YT_DL.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
         this.out.setText(this.out.getText() + "Run from: " + f + "\n");
 
         out.setText("Finding ...\n");
@@ -233,7 +233,7 @@ public class YT_DL {
     public final Skladba download(String url) {
       Skladba o = null;
       try {
-        String f = new File(YT_DL.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+        String f = new File(YT_DL.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParent();
         this.out.setText(this.out.getText() + "Run from: " + f + "\n");
 
         out.setText("Getting info ...\n");

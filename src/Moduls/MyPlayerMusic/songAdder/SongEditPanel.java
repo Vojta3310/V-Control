@@ -90,7 +90,7 @@ public class SongEditPanel extends JPanel {
 
       @Override
       public void windowClosed(WindowEvent e) {
-       updateButontext();
+        updateButontext();
       }
 
       @Override
@@ -108,7 +108,7 @@ public class SongEditPanel extends JPanel {
 
       @Override
       public void windowDeactivated(WindowEvent e) {
-       updateButontext();
+        updateButontext();
       }
     });
 
@@ -271,16 +271,24 @@ public class SongEditPanel extends JPanel {
     ftitle.setText(s.getTitle());
     fautor.setText(s.getAutor());
     falbum.setText(s.getAlbum());
-    if (!s.getLangue().equals("none")) {
+    if (s.getLangue() != null && !s.getLangue().equals("none")) {
       flangue.setSelectedItem(s.getLangue());
     }
     ftags.setText(s.getTags());
     fspecialtags.setText(s.getSpecialTags());
-    WE.setStart(s.getStart());
-    WE.setEnd(s.getStart() + s.getLenght());
-    if (s.getMusicAnalizer() != null) {
-      WE.setMa(s.getMusicAnalizer());
+    if (s.getMusicAnalizer() == null) {
+      s.initMusicAnalizer();
     }
+    WE.setMa(s.getMusicAnalizer());
+    WE.setStart(s.getStart());
+    if (s.getLenght() == 0) {
+      WE.setEnd(s.getMusicAnalizer().getLenght());
+    } else {
+      WE.setEnd(s.getStart() + s.getLenght());
+    }
+
+    //if (s.getMusicAnalizer() != null) {
+    //}
     lyric.setText(s.getLyric());
     updateButontext();
   }
@@ -303,7 +311,8 @@ public class SongEditPanel extends JPanel {
     Skladba s = new Skladba();
     apply(s);
     SongInfo.findLiric(s);
-    load(s);
+    lyric.setText(s.getLyric());
+    updateButontext();
   }
 
   public void apply(Skladba s) {
@@ -322,5 +331,6 @@ public class SongEditPanel extends JPanel {
     s.setSpecialTags(fspecialtags.getText() + " ");
     s.setStart(WE.getStart());
     s.setLenght(WE.getEnd() - WE.getStart());
+    s.setLyric(lyric.getText());
   }
 }

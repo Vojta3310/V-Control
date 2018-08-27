@@ -371,7 +371,7 @@ public class Karaoke extends JPanel {
   }
 
   public void ShowSong(Skladba s) {
-    int w = Title.getWidth();
+    int w = 370;
     String txt = s.getTitle();
     if (Title.getGraphics() != null) {
       final FontMetrics fm = Title.getGraphics().getFontMetrics();

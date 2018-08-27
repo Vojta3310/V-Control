@@ -145,16 +145,16 @@ public class InfoPanel extends JPanel {
 
   public void ShowSong(Skladba s) {
     sk = s;
-    int w = Title.getWidth();
+    int w = 370;
     String txt = s.getTitle();
     if (Title.getGraphics() != null) {
       final FontMetrics fm = Title.getGraphics().getFontMetrics();
       while (fm.stringWidth(txt) > w) {
-        txt = txt.substring(0, txt.length() - 5) + " ...";
+        txt = txt.substring(0, txt.length() - 4) + "...";
       }
       System.out.println(txt);
     } else if (txt.length() > 19) {
-      txt = txt.substring(0, 20) + " ...";
+      txt = txt.substring(0, 20) + "...";
     }
     Title.setText(txt);
 
