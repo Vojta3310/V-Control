@@ -145,7 +145,7 @@ public class MyPlayerVideo extends Modul {
   public void Deactivate() {
     getCommander().Execute(new Command("Play", "MyPlayerMusic", GetModulName()));
     getCommander().Execute(new Command("Enable", "ScreenSaver", GetModulName()));
-    if (VO.getPaused()) {
+    if (!VO.getPaused()) {
       VO.Pause();
     }
     super.Deactivate(); //To change body of generated methods, choose Tools | Templates.
