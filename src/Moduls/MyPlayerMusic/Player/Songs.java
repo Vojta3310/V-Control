@@ -8,6 +8,7 @@ package Moduls.MyPlayerMusic.Player;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import org.farng.mp3.TagException;
 
 /**
@@ -16,7 +17,7 @@ import org.farng.mp3.TagException;
  */
 public class Songs {
 
-  private ArrayList<Skladba> Songs=new ArrayList<>();
+  private ArrayList<Skladba> Songs = new ArrayList<>();
   private float statMinVol = 1;
   private float statMaxVol = 0;
 //  private model
@@ -40,6 +41,7 @@ public class Songs {
         statMaxVol = Math.max(a.getVolume(), statMaxVol);
       }
     }
+    Collections.sort(Songs, Skladba.SkladbaComparator);
   }
 
   public ArrayList<Skladba> getSongs() {
@@ -85,7 +87,7 @@ public class Songs {
           a = sk.getTags();
           break;
       }
-      if (!out.contains(a) && !a.equals("")) {
+      if (a != null && !out.contains(a) && !a.equals("")) {
         out.add(a);
       }
     }

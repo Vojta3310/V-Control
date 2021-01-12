@@ -33,7 +33,6 @@ public class MusicOrganiser implements IMediaOrganiser {
   private final DefaultListModel<Skladba> PlayedSongs;
   private final DefaultListModel<RandomSong> NextSongs;
   private Skladba Playing;
-  private int lastSelected;
   private final Player player;
   private byte afterTransform = 0; //0 nic; 1 další; 2 předchozí; 3 pause;
   private long transformStart;
@@ -51,17 +50,9 @@ public class MusicOrganiser implements IMediaOrganiser {
     modul = mod;
     gui = new MPgui(this);
     player = new Player(mod);
-    NextSongs = new DefaultListModel<>();
+    NextSongs = gui.getNextSongs();
     PlayedSongs = new DefaultListModel<>();
-    gui.getSpanel().getRlist().setModel(NextSongs);
     gui.getSpanel().getSlist().setModel(PlayedSongs);
-    NextSongs.addElement(new RandomSong(Songs));
-    NextSongs.addElement(new AddSongSign(Songs));
-    gui.getSpanel().getRlist().setSelectedIndex(0);
-    gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    gui.getSpanel().getRlist().addListSelectionListener((javax.swing.event.ListSelectionEvent evt) -> {
-      clearRlist();
-    });
 
     gui.getPpanel().getSlider().addMouseListener(new MouseListener() {
 
@@ -102,6 +93,7 @@ public class MusicOrganiser implements IMediaOrganiser {
   }
 
   public final void start() throws IOException, TagException {
+    gui.clearRlist();
     volume = Float.parseFloat(modul.SgetString("Default_Volume"));
     Songs.load(modul.SgetString("MusicDir"));
     player.setStatMaxVol(Songs.getStatMaxVol());
@@ -111,7 +103,7 @@ public class MusicOrganiser implements IMediaOrganiser {
       Timer tim = new Timer(10, (ActionEvent ae) -> {
         doTransform();
         checkNextSong();
-        updateGUI();
+        gui.updateGUI();
         updateVolume();
       });
       tim.start();
@@ -202,10 +194,13 @@ public class MusicOrganiser implements IMediaOrganiser {
     }
     newSong = true;
     RandomSong rs = NextSongs.elementAt(gui.getSpanel().getRlist().getSelectedIndex());
+    System.out.println(rs.getRepead());
+    System.out.println(rs.getRepeaded());
+    
     if (rs.getRepead() > rs.getRepeaded()) {
       Skladba ns = rs.getSkladba();
       rs.Repeaded();
-      if (PlayedSongs.isEmpty() || !Playing.equals(PlayedSongs.elementAt(PlayedSongs.getSize() - 1))) {
+      if (PlayedSongs.isEmpty() || !Playing.equals(ns)) {
         PlayedSongs.addElement(Playing);
         gui.getSpanel().getSlist().scrollRectToVisible(gui.getSpanel().getSlist().getCellBounds(PlayedSongs.size() - 1, PlayedSongs.size() - 1));
         gui.getSpanel().getSlist().setSelectedIndex(PlayedSongs.size() - 1);
@@ -405,48 +400,6 @@ public class MusicOrganiser implements IMediaOrganiser {
     }
   }
 
-  private void updateGUI() {
-    gui.getPpanel().getSizeLabel().setText(utiliti.MilToTime(Playing.getLenght()));
-    gui.getPpanel().getStateLabel().setText(utiliti.MilToTime(player.getPos() - Playing.getStart()));
-    gui.getPpanel().getSlider().setMaximum(Integer.MAX_VALUE);
-    if (!player.getPaused()) {
-      gui.getPpanel().getSlider().setValue(
-        (int) (((float) (player.getPos() - Playing.getStart()) / Playing.getLenght()) * Integer.MAX_VALUE));
-    }
-    gui.repaint();
-  }
-
-  private void clearRlist() {
-    if (lastSelected != gui.getSpanel().getRlist().getSelectedIndex()) {
-      if (gui.getSpanel().getRlist().getSelectedValue().getClass().equals(AddSongSign.class
-      )) {
-        gui.getSpanel()
-          .getRlist().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        NextSongs.add(NextSongs.getSize() - 1, new RandomSong(Songs));
-        gui.getSpanel()
-          .getRlist().setSelectedIndex(lastSelected);
-        gui.getSpanel()
-          .getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-      } else {
-        boolean l = false;
-        for (int i = 0; i < NextSongs.size(); i++) {
-          RandomSong s = NextSongs.elementAt(i);
-          if (s.isEmty() && l) {
-            NextSongs.elementAt(i - 1).setRepead(NextSongs.elementAt(i - 1).getRepead() + 1);
-            if (gui.getSpanel().getRlist().getSelectedIndex() == i) {
-              gui.getSpanel().getRlist().setSelectedIndex(i - 1);
-              lastSelected = i - 1;
-            }
-            NextSongs.removeElementAt(i);
-            i--;
-          } else {
-            l = s.isEmty();
-          }
-        }
-      }
-      lastSelected = gui.getSpanel().getRlist().getSelectedIndex();
-    }
-  }
 
   public void playSongByTerm(ArrayList<Term> terms) {
     RandomSong rs = new RandomSong(Songs);

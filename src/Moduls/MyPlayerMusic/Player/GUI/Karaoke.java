@@ -396,7 +396,7 @@ public class Karaoke extends JPanel {
   }
 
   private void updateVolume() {
-    if (!volumeCmd.equals("") && volume != Volume.getVolume()) {
+    if (!volumeCmd.equals("") ) {//&& volume != Volume.getVolume()
       String vol = Integer.toString((int) (Volume.getVolume() * maxVolume));
       try {
         Runtime.getRuntime().exec(volumeCmd.replace("%v%", vol));
@@ -407,6 +407,11 @@ public class Karaoke extends JPanel {
     }
   }
 
+  public void setMicVolume(float v){
+    Volume.setVolume(v);
+    volume = v;
+  }
+  
   public void setVolumeCmd(String volumeCmd) {
     this.volumeCmd = volumeCmd;
   }

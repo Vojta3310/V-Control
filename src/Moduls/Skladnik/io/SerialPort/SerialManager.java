@@ -27,6 +27,7 @@ public class SerialManager implements ISerialManager {
 
   }
 
+  @Override
   public boolean Ping() {
     reader.lock();
     writer.write("PING");

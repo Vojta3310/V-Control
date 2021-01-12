@@ -165,6 +165,7 @@ public class MyPlayerMusic extends Modul {
     p.setProperty("Modul_" + this.GetModulName() + "_Mic_Volume_Command", "amixer set Capture %v%%");
     p.setProperty("Modul_" + this.GetModulName() + "_MaxVolume", "150");
     p.setProperty("Modul_" + this.GetModulName() + "_Loudness_Controll_Strenght", "0.35");
+    p.setProperty("Modul_" + this.GetModulName() + "_Mic_Default_Volume", "0.25");
   }
 
   @Override
@@ -225,6 +226,7 @@ public class MyPlayerMusic extends Modul {
     super.setMyGrafics(Player.getGui());
     Player.getGui().getKaraoke().setVolumeCmd(SgetString("Mic_Volume_Command"));
     Player.getGui().getKaraoke().setMaxVolume(SgetInt("MaxVolume"));
+    Player.getGui().getKaraoke().setMicVolume(Float.parseFloat(SgetString("Mic_Default_Volume")));
     Player.getGui().setKaraoke(false);
   }
 

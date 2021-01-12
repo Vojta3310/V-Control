@@ -5,13 +5,17 @@
  */
 package Moduls.MyPlayerMusic.Player.GUI;
 
+import Moduls.MyPlayerMusic.Player.AddSongSign;
 import Moduls.MyPlayerMusic.Player.MusicOrganiser;
 import Moduls.MyPlayerMusic.Player.RandomSong;
 import VControl.Settings.AppSettings;
+import VControl.utiliti;
 import java.awt.BorderLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.DefaultListModel;
 import javax.swing.JPanel;
+import javax.swing.ListSelectionModel;
 
 /**
  *
@@ -25,16 +29,22 @@ public class MPgui extends JPanel {
   private final NextSongFilter RSpanel;
   private final JPanel a;
   private final Karaoke karaoke;
+  private int lastSelected = 0;
+  private final DefaultListModel<RandomSong> NextSongs;
+  private final MusicOrganiser Mo;
+  private final SongSearchGUI ssg;
 
   private boolean karaokeb = false;
 
   public MPgui(final MusicOrganiser o) {
+    this.Mo = o;
     ipanel = new InfoPanel();
     spanel = new SongPanel();
     RSpanel = new NextSongFilter(this, o);
     ppanel = new PlayerPanel(o);
     a = new JPanel();
     karaoke = new Karaoke();
+    NextSongs = new DefaultListModel<>();
     a.setLayout(new BorderLayout());
     a.add(ipanel, BorderLayout.CENTER);
     a.add(ppanel, BorderLayout.PAGE_END);
@@ -43,6 +53,17 @@ public class MPgui extends JPanel {
     this.add(spanel, BorderLayout.LINE_START);
     this.setBackground(AppSettings.getColour("BG_Color"));
 
+    NextSongs.addElement(new RandomSong(Mo.getSongs()));
+    NextSongs.addElement(new AddSongSign(Mo.getSongs()));
+    spanel.getRlist().setModel(NextSongs);
+    spanel.getRlist().setSelectedIndex(0);
+    spanel.getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    spanel.getRlist().addListSelectionListener((javax.swing.event.ListSelectionEvent evt) -> {
+      clearRlist();
+    });
+
+    ssg = new SongSearchGUI(Mo.getSongs(), spanel.getRlist());
+    spanel.getSlist().setTransferHandler(new SlistTransferHandler(Mo.getSongs()));
     spanel.getSlist().addMouseListener(new MouseListener() {
 
       @Override
@@ -73,12 +94,17 @@ public class MPgui extends JPanel {
 
       @Override
       public void mouseClicked(MouseEvent e) {
-        if (e.getClickCount() == 2
-          && spanel.getRlist().getSelectedIndex() < spanel.getRlist().getModel().getSize()) {
-          showRS();
+        if (e.getButton() == 1) {
+          if (e.getClickCount() == 2
+            && spanel.getRlist().getSelectedIndex() < spanel.getRlist().getModel().getSize()) {
+            showRS();
+          } else {
+            showInfo();
+          }
         } else {
-          showInfo();
+          ssg.setVisible(true);
         }
+
       }
 
       @Override
@@ -144,6 +170,61 @@ public class MPgui extends JPanel {
 //    }
   }
 
+  public void clearRlist() {
+    if (getSpanel().getRlist().getSelectedValue() == null) {
+      getSpanel()
+        .getRlist().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+      getSpanel()
+        .getRlist().setSelectedIndex(0);
+      getSpanel()
+        .getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      lastSelected = 0;
+    }
+    if (lastSelected != getSpanel().getRlist().getSelectedIndex()) {
+      if (getSpanel().getRlist().getSelectedValue() != null
+        && getSpanel().getRlist().getSelectedValue().getClass().equals(AddSongSign.class
+        )) {
+        getSpanel()
+          .getRlist().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        NextSongs.add(NextSongs.getSize() - 1, new RandomSong(Mo.getSongs()));
+        getSpanel()
+          .getRlist().setSelectedIndex(lastSelected);
+        getSpanel()
+          .getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      } else {
+        boolean l = false;
+        for (int i = 0; i < NextSongs.size(); i++) {
+          RandomSong s = NextSongs.elementAt(i);
+          if (s.isEmty() && l) {
+            NextSongs.elementAt(i - 1).setRepead(NextSongs.elementAt(i - 1).getRepead() + 1);
+            if (getSpanel().getRlist().getSelectedIndex() == i) {
+              getSpanel().getRlist().setSelectedIndex(i - 1);
+              lastSelected = i - 1;
+            }
+            if (i < NextSongs.getSize() - 1) {
+              NextSongs.removeElementAt(i);
+            }
+            i--;
+          } else {
+            l = s.isEmty();
+          }
+        }
+      }
+      lastSelected = getSpanel().getRlist().getSelectedIndex();
+    }
+  }
+
+  public void updateGUI() {
+    getPpanel().getSizeLabel().setText(utiliti.MilToTime(Mo.getPlaying().getLenght()));
+    getPpanel().getStateLabel().setText(utiliti.MilToTime(Mo.getAplayer().getPos() - Mo.getPlaying().getStart()));
+    getPpanel().getSlider().setMaximum(Integer.MAX_VALUE);
+    if (!Mo.getAplayer().getPaused()) {
+      getPpanel().getSlider().setValue(
+        (int) (((float) (Mo.getAplayer().getPos() - Mo.getPlaying().getStart()) / Mo.getPlaying().getLenght()) * Integer.MAX_VALUE));
+    }
+    repaint();
+  }
+
   public InfoPanel getIpanel() {
     return ipanel;
   }
@@ -164,4 +245,9 @@ public class MPgui extends JPanel {
     karaokeb = b;
     showInfo();
   }
+
+  public DefaultListModel<RandomSong> getNextSongs() {
+    return NextSongs;
+  }
+
 }

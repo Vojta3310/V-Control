@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import javax.swing.BoxLayout;
+import javax.swing.DropMode;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -38,6 +39,13 @@ public class SongPanel extends JPanel {
     rlist.setBackground(AppSettings.getColour("BG_Color"));
     slist.setCellRenderer(new MyCellRenderer(slist));
     rlist.setCellRenderer(new MyCellRenderer(rlist));
+
+    rlist.setDragEnabled(true);
+    rlist.setTransferHandler(new RSTransferHandler());
+    rlist.setDropMode(DropMode.INSERT);
+
+    slist.setDragEnabled(true);
+    slist.setDropMode(DropMode.INSERT);
 //    rlist.se
     JScrollPane b = new JScrollPane(slist);
     b.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

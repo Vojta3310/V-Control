@@ -52,7 +52,7 @@ public AutoCompletion(final JComboBox comboBox) {
                 break;
                 // ignore delete key
                 case KeyEvent.VK_DELETE : e.consume();
-                comboBox.getToolkit().beep();
+                //comboBox.getToolkit().beep();
                 break;
             }
         }
@@ -111,7 +111,7 @@ public void remove(int offs, int len) throws BadLocationException {
             if (hitBackspaceOnSelection) offs--;
         } else {
             // User hit backspace with the cursor positioned on the start => beep
-            comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
+            //comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
         }
         highlightCompletedText(offs);
     } else {
@@ -135,7 +135,7 @@ public void insertString(int offs, String str, AttributeSet a) throws BadLocatio
         // imitate no insert (later on offs will be incremented by str.length(): selection won't move forward)
         offs = offs-str.length();
         // provide feedback to the user that his input has been received but can not be accepted
-        comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
+        //comboBox.getToolkit().beep(); // when available use: UIManager.getLookAndFeel().provideErrorFeedback(comboBox);
     }
     setText(item.toString());
     // select the completed part

@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sound.sampled.AudioInputStream;
@@ -100,7 +101,6 @@ public class Skladba implements ISkladba {
 //          System.out.println("  start: " + start);
 //          System.out.println("  lenght: " + lenght);
 //          System.out.println("  lirics: " + Lyric.length() + "b");
-
           if (f.getName().contains("-")) {
             String a[] = f.getName().split("-");
             if (a.length == 2) {
@@ -195,6 +195,12 @@ public class Skladba implements ISkladba {
       Logger.getLogger(Skladba.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
+
+  public static Comparator<Skladba> SkladbaComparator = (Skladba s1, Skladba s2) -> {
+    String StudentName1 = s1.toString().toUpperCase();
+    String StudentName2 = s2.toString().toUpperCase();
+    return StudentName1.compareTo(StudentName2);
+  };
 
   public MusicAnalizer getMusicAnalizer() {
     return ma;

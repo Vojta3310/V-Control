@@ -55,7 +55,7 @@ public class SearchFieldListener implements DocumentListener {
   public synchronized void updateList() {
     DefaultListModel newModel = new DefaultListModel();
     for (int i = 0; i < listModel.getSize(); i++) {
-      String v = (String) listModel.getElementAt(i);
+      String v = (String) listModel.getElementAt(i).toString();
       if (text != null) {
         if (TextUtilities.normalize(v).contains(TextUtilities.normalize(this.text))) {
           newModel.addElement(listModel.elementAt(i));

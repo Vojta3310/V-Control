@@ -88,10 +88,10 @@ public class NextSongFilter extends JPanel {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (gui.getSpanel().getRlist().getModel().getSize() > 2) {
+          ((DefaultListModel) gui.getSpanel().getRlist().getModel()).removeElement(RS);
           gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
           gui.getSpanel().getRlist().setSelectedIndex(0);
           gui.getSpanel().getRlist().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-          ((DefaultListModel) gui.getSpanel().getRlist().getModel()).removeElement(RS);
         }
       }
     });
@@ -160,11 +160,11 @@ public class NextSongFilter extends JPanel {
                 .addComponent(STags, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(stars, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE))
-              .addComponent(panely.get(0), javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(panely.get(1), javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(panely.get(2), javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(panely.get(3), javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-              .addComponent(panely.get(4), javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+              .addComponent(panely.get(0), 810, javax.swing.GroupLayout.DEFAULT_SIZE, 810)
+              .addComponent(panely.get(1), 810, javax.swing.GroupLayout.DEFAULT_SIZE, 810)
+              .addComponent(panely.get(2), 810, javax.swing.GroupLayout.DEFAULT_SIZE, 810)
+              .addComponent(panely.get(3), 810, javax.swing.GroupLayout.DEFAULT_SIZE, 810)
+              .addComponent(panely.get(4), 810, javax.swing.GroupLayout.DEFAULT_SIZE, 810))))
         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
         .addComponent(hide, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
       )

@@ -40,18 +40,17 @@ public class RandomSong implements ISkladba {
       } else if (Pripustne.size() == 1) {
         choosedOne = true;
         song = Pripustne.get(0);
-        song.setRepead(repead);
-        this.repeaded = repead - 1;
+        song.setRepead(0);
+        //this.repeaded = repead - 1;
       } else {
         choosedOne = false;
         ArrayList<Integer> b = new ArrayList<>();
         int sum = 0;
 
-        for (Skladba s : Pripustne) {
-          int o = (int) (s.getOblibenost() * 100 / (s.getPlayed() * 3 + 1)) + 1;
+        sum = Pripustne.stream().map((s) -> (int) (s.getOblibenost() * 100 / (s.getPlayed() * 3 + 1)) + 1).map((o) -> {
           b.add(o);
-          sum += o;
-        }
+          return o;
+        }).map((o) -> o).reduce(sum, Integer::sum);
         int n = (int) (Math.random() * (sum - 1));
         for (int i = 0; i < b.size(); i++) {
           n -= b.get(i);
@@ -69,7 +68,7 @@ public class RandomSong implements ISkladba {
   public String getLabel() {
     String l = "";
     if (repead > 0) {
-      l = "(" + repead + "x) ";
+      l = "(" + (repead + 1) + "x) ";
     }
     if (choosedOne) {
       l = l + song.getTitle() + "-" + song.getAutor();
@@ -114,11 +113,12 @@ public class RandomSong implements ISkladba {
   }
 
   public void ResetRepeaded() {
-    if (!choosedOne) {
-      this.repeaded = 0;
-    } else {
-      repeaded = repead - 1;
-    }
+//    if (!choosedOne) {
+//      this.repeaded = 0;
+//    } else {
+//      repeaded = repead - 1;
+//    }
+    this.repeaded = 0;
   }
 
   public int getRepead() {
@@ -132,6 +132,49 @@ public class RandomSong implements ISkladba {
   public void setPodm(ArrayList<Term> podm) {
     choosedOne = false;
     this.podm = new ArrayList<>(podm);
+    Pripustne = songs.getSongsByTern(podm);
+    chooseSong();
+  }
+
+  public void setSong(Skladba s) {
+    choosedOne = false;
+    this.podm = new ArrayList<>();
+
+    Term star = new Term();
+    star.setType("Stars");
+    star.setVal(s.getOblibenost());
+    podm.add(star);
+
+    Term stag = new Term();
+    stag.setType("STag");
+    stag.setValue(s.getSpecialTags());
+    podm.add(stag);
+
+    Term name = new Term();
+    name.setType("Název");
+    name.setValue(s.getTitle());
+    podm.add(name);
+
+    Term aut = new Term();
+    aut.setType("Autor");
+    aut.setValue(s.getAutor());
+    podm.add(aut);
+
+    Term alb = new Term();
+    alb.setType("Album");
+    alb.setValue(s.getAlbum());
+    podm.add(alb);
+
+    Term lang = new Term();
+    lang.setType("Jazyk");
+    lang.setValue(s.getLangue());
+    podm.add(lang);
+
+    Term tag = new Term();
+    tag.setType("Tagy");
+    tag.setValue(s.getTags());
+    podm.add(tag);
+
     Pripustne = songs.getSongsByTern(podm);
     chooseSong();
   }

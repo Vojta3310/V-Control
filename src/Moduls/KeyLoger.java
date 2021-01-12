@@ -169,6 +169,9 @@ public class KeyLoger extends Modul {
               String d = LocalDateTime.now().format(DateTimeFormatter.ofPattern("cccc  d.  MMMM  yyyy"));
               getCommander().Execute(new Command("Say", "Dnes je: " + d, "Speaker", GetModulName()));
               break;
+            case 109:
+              getCommander().Execute(new Command("SMail", "Mailer", GetModulName()));
+              break;
           }
           special2 = false;
         } else {

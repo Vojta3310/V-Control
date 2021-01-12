@@ -13,7 +13,6 @@ import VControl.UI.components.MyComboUI;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -68,8 +67,11 @@ public class TermPanel extends JPanel {
     Dimension pref = new Dimension(150, AppSettings.getInt("Font_Size") + 20);
     Dimension max = new Dimension(500, AppSettings.getInt("Font_Size") + 20);
     Type.setPreferredSize(pref);
+    Type.setMaximumSize(pref);
     Comparation.setPreferredSize(pref);
+    Comparation.setMaximumSize(pref);
     Value.setPreferredSize(max);
+    Value.setMaximumSize(max);
 
     this.setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
     this.add(Type);
@@ -77,7 +79,7 @@ public class TermPanel extends JPanel {
     this.add(Comparation);
     this.add(Box.createRigidArea(new Dimension(5, 10)));
     this.add(Value);
-
+    
     Type.setSelectedIndex(0);
     Comparation.setSelectedIndex(0);
     Value.setEditable(true);
@@ -88,29 +90,17 @@ public class TermPanel extends JPanel {
     podminka.setComparation(Comparation.getSelectedItem().toString());
     podminka.setType(Type.getSelectedItem().toString());
 
-    Value.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        podminka.setValue(Value.getSelectedItem().toString());
-      }
+    Value.addActionListener((ActionEvent e) -> {
+      podminka.setValue(Value.getSelectedItem().toString());
     });
 
-    Comparation.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        podminka.setComparation(Comparation.getSelectedItem().toString());
-      }
+    Comparation.addActionListener((ActionEvent e) -> {
+      podminka.setComparation(Comparation.getSelectedItem().toString());
     });
 
-    Type.addActionListener(new ActionListener() {
-
-      @Override
-      public void actionPerformed(ActionEvent e) {
-        podminka.setType(Type.getSelectedItem().toString());
-        updateList();
-      }
+    Type.addActionListener((ActionEvent e) -> {
+      podminka.setType(Type.getSelectedItem().toString());
+      updateList();
     });
   }
 
@@ -123,11 +113,9 @@ public class TermPanel extends JPanel {
 
   public void setOstatni(ArrayList<Term> vse) {
     this.ostatni.clear();
-    for (Term vse1 : vse) {
-      if (vse1 != podminka) {
-        ostatni.add(vse1);
-      }
-    }
+    vse.stream().filter((vse1) -> (vse1 != podminka)).forEachOrdered((vse1) -> {
+      ostatni.add(vse1);
+    });
   }
 
   public Term getPodminka() {
@@ -153,4 +141,9 @@ public class TermPanel extends JPanel {
 
   }
 
+  @Override
+  public Dimension getPreferredSize() {
+    return new Dimension(900, AppSettings.getInt("Font_Size") + 20);
+  }
+  
 }
